@@ -4,7 +4,7 @@
 
 
 [nexusci]
-10.9.61.222 ansible_hostname=craig-nexus
+10.9.61.229 ansible_hostname=craig-nexus
 
 
 [sonarci]

@@ -1,0 +1,8 @@
+---
+
+- name: Make sure we have the necessary yum packages available for selinux
+  yum:
+    name:
+      - libselinux-python
+      - libsemanage-python
+    state: present

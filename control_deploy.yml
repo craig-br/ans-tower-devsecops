@@ -1,0 +1,9 @@
+---
+- name: Configure Control Server
+  hosts: all
+  
+  - role: geerlingguy.repo-epel
+  - role:  geerlingguy.pip
+    vars:
+      - pip_install_packages:
+        - name: jmespath
