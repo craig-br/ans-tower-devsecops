@@ -15,12 +15,15 @@
 - name: geerlingguy.java
   src: https://github.com/geerlingguy/ansible-role-java.git
   scm: git
-- name: savoirfairelinux.nexus3-oss
-  src: https://github.com/savoirfairelinux/ansible-nexus3-oss.git
-  scm: git
 - name: wtanaka.unzip
   src: https://github.com/wtanaka/ansible-role-unzip.git
   scm: git
 - name: geerlingguy.sonar
   src: https://github.com/geerlingguy/ansible-role-sonar.git
+  scm: git
+- name: ansible-thoteam.nexus3-oss
+  src: https://github.com/ansible-ThoTeam/nexus3-oss.git
+  scm: git
+- name: geerlingguy.apache
+  src: https://github.com/geerlingguy/ansible-role-apache.git
   scm: git

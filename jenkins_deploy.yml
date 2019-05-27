@@ -10,3 +10,6 @@
     - geerlingguy.git
     - tecris.maven
     - geerlingguy.ansible
+  tags:
+    - jenkins
+    - devsecops

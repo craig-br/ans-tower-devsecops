@@ -1,0 +1,23 @@
+---
+- name: Deploy Nexus Server
+  hosts: all
+  vars:
+    public_hostname: nexus.ansibledemo.local
+    nexus_admin_password: admin
+    nexus_config_bower: true
+    nexus_config_npm: true
+
+  roles:
+  - role: ansible-thoteam.nexus3-oss
+    # tags:
+    #   - ansible-ThoTeam.nexus3-oss
+
+  - role: geerlingguy.java
+    when: "ansible_os_family == RedHat"
+    vars:
+      - java_packages: java-1.8.0-openjdk
+      
+  - role: geerlingguy.apache
+    vars:
+      - apache_create_vhosts: false
+      - apache_remove_default_vhost: true

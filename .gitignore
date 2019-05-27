@@ -24,4 +24,15 @@ scripts/*.rc
 virtualenv/
 .idea
 .code-workspace
-
+geerlingguy.ansible
+geerlingguy.jenkins
+geerlingguy.sonar
+tecris.maven
+geerlingguy.git
+geerlingguy.mysql
+wtanaka.unzip
+geerlingguy.java
+geerlingguy.repo-epel
+ansible-thoteam.nexus3-oss
+geerlingguy.apache
+anisble.cfg
