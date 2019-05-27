@@ -25,3 +25,4 @@ virtualenv/
 .idea
 .code-workspace
 !./roles/requirements.yml
+./roles/*
