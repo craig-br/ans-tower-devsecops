@@ -2,7 +2,7 @@
 *.bak
 tmp/
 *.retry
-./local/
+local/
 env_*
 .gitignore
 *.pub
@@ -25,4 +25,4 @@ virtualenv/
 .idea
 .code-workspace
 !./roles/requirements.yml
-./roles/*
+roles/*
