@@ -18,7 +18,7 @@
   #     dest: lookup('env', 'HOME')/.ssh/devsecopskey.pem
   #     mode: 0600
   #   when: ec2_key.changed
-  - name: Create an ec2 instance
+  - name: Create EC Instances
     ec2:
       key_name: "{{ ec2_keyname }}"
       group: "{{ ec2_sg_group }}"
@@ -42,12 +42,12 @@
       groupname: ec2_devsecops_hosts
     loop: "{{ ec2.instances }}"
 
-  - name: Wait for SSH to come up
-    delegate_to: "{{ item.public_dns_name }}"
-    wait_for_connection:
-      delay: 60 
-      timeout: 320
-    loop: "{{ ec2.instances }}"
+  # - name: Wait for SSH to come up
+  #   delegate_to: "{{ item.public_dns_name }}"
+  #   wait_for_connection:
+  #     delay: 60 
+  #     timeout: 320
+  #   loop: "{{ ec2.instances }}"
 
 - name: Gather Facts from EC2 Hosts
   user: ec2-user
