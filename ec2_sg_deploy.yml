@@ -1,6 +1,6 @@
 ---
 - name: Create EC2 Security Group
-  hosts: all
+  hosts: localhost
   gather_facts: false
 
   tasks:

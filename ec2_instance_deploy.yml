@@ -27,7 +27,7 @@
       image: "{{ ami }}"
       wait: true
       region: "{{ region }}"
-      count: 3 # default
+      count: 3
       count_tag:
         Name: ec2_devsecops
       instance_tags:

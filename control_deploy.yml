@@ -1,7 +1,7 @@
 ---
 - name: Configure Control Server
   hosts: all
-  vars_files: "./local/vars/vault_aws_vars.yml"
+
   roles:
   - role: geerlingguy.repo-epel
   - role:  geerlingguy.pip
