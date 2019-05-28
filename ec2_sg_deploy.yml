@@ -3,7 +3,6 @@
   hosts: localhost
   connection: local
   become: false
-  # remote_user: root
   gather_facts: false
 
   tasks:
