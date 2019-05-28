@@ -55,7 +55,7 @@
       state: started 
     loop: "{{ ec2.instances }}"
 
-- name: Gather Facts from EC2 Hosts
-  user: ec2-user
-  hosts: ec2_devsecops_hosts
-  gather_facts: true
+# - name: Gather Facts from EC2 Hosts
+#   user: ec2-user
+#   hosts: ec2_devsecops_hosts
+#   gather_facts: true
