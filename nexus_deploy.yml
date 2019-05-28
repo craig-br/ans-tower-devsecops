@@ -1,9 +1,6 @@
 ---
 - name: Deploy Nexus Server
   hosts: all
-  vars:
-
-
   roles:
   - role: geerlingguy.java
     when: "ansible_os_family == 'RedHat'"
