@@ -27,3 +27,4 @@ virtualenv/
 !./roles/requirements.yml
 roles/*
 ansible.cfg
+.DS_Store

@@ -1,4 +1,3 @@
-
 [jenkinsci]
 10.9.61.218 ansible_hostname=craig-jenkins
 
@@ -9,3 +8,7 @@
 
 [sonarci]
 10.9.61.228 ansible_hostname=craig-sonar
+
+
+[controlservers]
+10.9.61.216 ansible_hostname=craig-control
