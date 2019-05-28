@@ -30,7 +30,7 @@
       count_tag:
         Name: ec2_devsecops
       instance_tags:
-        name: ec2_devsecops
+        Name: ec2_devsecops
         function: webserver
       wait_timeout: 500
     register: ec2
