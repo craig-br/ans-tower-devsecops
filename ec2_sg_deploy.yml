@@ -2,8 +2,8 @@
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
-  become: true
-  remote_user: root
+  # become: true
+  # remote_user: root
   gather_facts: false
 
   tasks:
