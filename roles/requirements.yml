@@ -27,6 +27,9 @@
 - name: geerlingguy.apache
   src: https://github.com/geerlingguy/ansible-role-apache.git
   scm: git
-- name:  geerlingguy.pip
+- name: geerlingguy.pip
   src: https://github.com/geerlingguy/ansible-role-pip.git 
+  scm: git
+- name: openstack.redhat-subscription
+  src: https://github.com/openstack/ansible-role-redhat-subscription.git
   scm: git
