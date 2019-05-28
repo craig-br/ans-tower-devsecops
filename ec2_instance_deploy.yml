@@ -1,6 +1,7 @@
 ---
 - name: Deploy EC2 Instances
-  hosts: all
+  hosts: localhost
+  connection: local
   gather_facts: false
 
   tasks:
@@ -19,15 +20,13 @@
   #   when: ec2_key.changed
   - name: Create an ec2 instance
     ec2:
-      # aws_access_key: "{{ aws_access_key_id }}"
-      # aws_secret_key: "{{ aws_secret_access_key }}"
       key_name: devsecopskey
       group: devsecopssg
       instance_type: "{{ instance_type }}"
-      image: "{{ ami }}"
+      image: "{{ ec2_ami }}"
       wait: true
-      region: "{{ region }}"
-      count: 3
+      region: "{{ ec2_region }}"
+      count: "{{ ec2_count }}"
       count_tag:
         Name: ec2_devsecops
       instance_tags:
