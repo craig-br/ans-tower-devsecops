@@ -1,0 +1,16 @@
+---
+- name: Create EC2 Security Group
+  hosts: all
+  gather_facts: false
+
+  tasks:
+  - name: Create security group
+    ec2_group:
+      name: "{{ ec2_sg_name }}"
+      description: "DevSecOps Demo Security Group"
+      region: "{{ ec2_region }}"
+      rules:
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
