@@ -38,6 +38,7 @@
   - name: Add all instance public IPs to host group
     add_host: 
       hostname: "{{ item.public_ip }}"
+      ansible_hostname: "{{ item.public_dns_name }}"
       groupname: devsecops_ec2hosts
     loop: "{{ ec2.instances }}"
   - name: Wait for SSH to come up
