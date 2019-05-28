@@ -42,11 +42,17 @@
       groupname: ec2_devsecops_hosts
     loop: "{{ ec2.instances }}"
 
+  # - name: Wait for SSH to come up
+  #   delegate_to: "{{ item.public_dns_name }}"
+  #   wait_for_connection:
+  #     delay: 60 
+  #     timeout: 320
+  #   loop: "{{ ec2.instances }}"
   - name: Wait for SSH to come up
-    delegate_to: "{{ item.public_dns_name }}"
-    wait_for_connection:
-      delay: 60 
-      timeout: 320
+    wait_for:
+      host: "{{ item.public_ip }}"
+      port: 22 
+      state: started 
     loop: "{{ ec2.instances }}"
 
 - name: Gather Facts from EC2 Hosts
