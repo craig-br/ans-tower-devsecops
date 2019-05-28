@@ -30,5 +30,20 @@
       count_tag:
         Name: ec2_devsecops
       instance_tags:
-        Name: ec2_devsecops
+        name: ec2_devsecops
+        function: webserver
+      wait_timeout: 500
+      assign_public_ip: true
+
     register: ec2
+
+  - name: Add all instance public IPs to host group
+    add_host: 
+      hostname: "{{ item.public_ip }}"
+      groupname: devsecops_ec2hosts
+    loop: "{{ ec2.instances }}"
+
+- name: Gather Facts from EC2 Hosts
+  user: ec2-user
+  hosts: ec2_devsecops_hosts
+  gather_facts: true
