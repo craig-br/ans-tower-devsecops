@@ -1,0 +1,7 @@
+---
+- name: Deploy SonarType Server
+  hosts: all
+  
+  roles:
+    - wtanaka.unzip
+    - geerlingguy.sonar

@@ -1,0 +1,15 @@
+---
+- name: Deploy Jenkins Server
+  hosts: all
+  vars:
+    jenkins_plugins:
+      - ansi-color
+  roles:
+    - geerlingguy.repo-epel
+    - geerlingguy.jenkins
+    - geerlingguy.git
+    - tecris.maven
+    - geerlingguy.ansible
+  tags:
+    - jenkins
+    - devsecops
