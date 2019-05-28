@@ -2,6 +2,7 @@
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
+  user: root
   gather_facts: false
 
   tasks:
