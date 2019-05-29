@@ -13,7 +13,7 @@
         image: "{{ ec2_ami }}"
         wait: true
         region: "{{ ec2_region }}"
-        count: "{{ ec2_count }}"
+        # count: "{{ ec2_count }}"
         count_tag:
           Name: ec2_devsecops
         exact_count: "{{ ec2_count }}"
