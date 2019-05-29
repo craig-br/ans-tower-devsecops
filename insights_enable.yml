@@ -1,0 +1,15 @@
+---
+- name: Install and enable Insights client
+  hosts: all
+  tasks:
+    - name: Install Insights client
+      package:
+        state: present
+        name: insights-client
+      tags:
+        - insights
+    - name: Register Guest with Inights
+      command: >
+        insights-client --register
+      tags:
+        - insights 
