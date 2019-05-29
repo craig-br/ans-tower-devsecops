@@ -1,7 +1,6 @@
 ---
 - name: Terminate EC2 WebServers
-  hosts: localhost
-  connection: local
+  hosts: all
   gather_facts: false
 
   tasks:
@@ -14,7 +13,7 @@
   - name: Remove from Insights
     command: >
       insights-client  --unregister
-      
+
   - name: Terminate instances that were previously launched
     ec2:
       state: 'absent'
@@ -23,6 +22,7 @@
     with_inventory_hostnames:
       - all
     delegate_to: localhost
+    connection: local
   # - name: Add all instances to host group
   #   add_host: 
   #     hostname: "{{ item.public_dns_name }}"
