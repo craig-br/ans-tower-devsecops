@@ -2,6 +2,12 @@
 - name: Deploy Jenkins Server
   hosts: all
   roles:
+  - role: geerlingguy.java
+    when: "ansible_os_family == 'RedHat'"
+    vars:
+      - java_packages: 
+        - java-1.8.0-openjdk-devel
+      
     - geerlingguy.repo-epel
     - geerlingguy.jenkins
     - geerlingguy.git
