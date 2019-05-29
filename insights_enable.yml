@@ -1,6 +1,7 @@
 ---
 - name: Install and enable Insights client
   hosts: all
+  gather_facts: false
   tasks:
     - name: Install Insights client
       package:

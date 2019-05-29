@@ -1,7 +1,8 @@
 ---
 - name: Deploy EC2 Instances
   hosts: localhost
-  connection: local  gather_facts: false
+  connection: local
+  gather_facts: false
 
   tasks:
   # - name: Create an EC2 key
