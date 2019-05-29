@@ -45,3 +45,9 @@
 - name: nginxinc.nginx
   src: https://github.com/nginxinc/ansible-role-nginx.git
   scm: git
+- name: geerlingguy.repo-epel
+  src: https://github.com/geerlingguy/ansible-role-repo-epel.git
+  scm: git
+- name: lrk.sonarqube
+  src: https://github.com/lrk/ansible-role-sonarqube.git
+  scm: git
