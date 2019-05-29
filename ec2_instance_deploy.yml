@@ -1,8 +1,7 @@
 ---
 - name: Deploy EC2 Instances
   hosts: localhost
-  connection: local
-  gather_facts: false
+  connection: local  gather_facts: false
 
   tasks:
   # - name: Create an EC2 key
@@ -48,12 +47,12 @@
   #     delay: 60 
   #     timeout: 320
   #   loop: "{{ ec2.instances }}"
-  - name: Wait for SSH to come up
-    wait_for:
-      host: "{{ item.public_ip }}"
-      port: 22
-      state: started 
-    loop: "{{ ec2.instances }}"
+  # - name: Wait for SSH to come up
+  #   wait_for:
+  #     host: "{{ item.public_ip }}"
+  #     port: 22
+  #     state: started 
+  #   loop: "{{ ec2.instances }}"
 
 # - name: Gather Facts from EC2 Hosts
 #   user: ec2-user
