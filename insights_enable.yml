@@ -10,7 +10,7 @@
         name: insights-client
       tags:
         - insights
-    - name: Register Guest with Inights
+    - name: Register Guest with Insights
       command: >
         insights-client --register
       tags:
