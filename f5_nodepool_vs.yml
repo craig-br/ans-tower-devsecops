@@ -1,0 +1,91 @@
+---
+- name: configureF5
+  hosts: localhost
+
+  vars:
+    validate_certs: no
+    username: ansible
+    password: candyace
+    state: present
+
+  tasks:
+    - name: Create pools
+      bigip_pool:
+        name: AnsibleHackazonPool
+        lb_method: round-robin
+        state: "{{ state }}"
+        monitors: ['/Common/tcp']
+        monitor_type: and_list
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+    - name: CreatePoolMember1
+      bigip_pool_member:
+        pool: AnsibleHackazonPool
+        host: 10.1.20.102
+        port: 80
+        state: "{{ state }}"
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+    - name: CreatePoolMember2
+      bigip_pool_member:
+        pool: AnsibleHackazonPool
+        host: 10.1.20.102
+        port: 81
+        state: "{{ state }}"
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+ 
+    - name: CreatePoolMember3
+      bigip_pool_member:
+        pool: AnsibleHackazonPool
+        host: 10.1.20.102
+        port: 82
+        state: "{{ state }}"
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+    - name: CreateVS
+      bigip_virtual_server:
+        description: AnsibleHackazonVIP
+        destination: 10.1.10.103
+        name: AnsibleHackazon
+        pool: AnsibleHackazonPool
+        port: 443
+        snat: Automap
+        all_profiles:
+          - http
+          - f5demo_client_ssl
+          - websecurity
+        all_policies:
+          - asm_auto_l7_policy__HackazonVS_HTTP
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+    - name: assign security logging profile to VS
+      bigip_command:
+        commands: 'modify ltm virtual AnsibleHackazon security-log-profiles replace-all-with { LogAllDDoS }'
+        server: 10.1.20.240
+        user: "{{ username }}"
+        password: "{{ password }}"

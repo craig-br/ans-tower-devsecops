@@ -1,0 +1,75 @@
+---
+- name: configureF5
+  hosts: localhost
+
+  vars:
+    validate_certs: no
+    username: ansible
+    password: candyace
+    state: absent
+ 
+  tasks:
+    - name: DeleteVS
+      bigip_virtual_server:
+        name: AnsibleHackazon
+        state: "{{ state }}"
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+
+    - name: DeletePoolMember1
+      bigip_pool_member:
+        pool: AnsibleHackazonPool
+        port: 80
+        host: 10.1.20.102
+        preserve_node: yes
+        state: "{{ state }}"
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+    - name: DeletePoolMember2
+      bigip_pool_member:
+        pool: AnsibleHackazonPool
+        host: 10.1.20.102
+        port: 81
+        preserve_node: yes
+        state: "{{ state }}"
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+    - name: DeletePoolMember3
+      bigip_pool_member:
+        pool: AnsibleHackazonPool
+        host: 10.1.20.102
+        port: 82
+        state: "{{ state }}"
+        preserve_node: no
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
+
+    - name: Delete pool
+      bigip_pool:
+        name: AnsibleHackazonPool
+        state: "{{ state }}"
+        provider:
+          user: "{{ username }}"
+          password: "{{ password }}"
+          server: 10.1.20.240
+          validate_certs: "{{ validate_certs }}"
+          transport: rest
