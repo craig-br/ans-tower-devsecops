@@ -8,11 +8,11 @@
       - java_packages: 
         - java-1.8.0-openjdk-devel
       
-    - geerlingguy.repo-epel
-    - geerlingguy.jenkins
-    - geerlingguy.git
-    - tecris.maven
-    - geerlingguy.ansible
+  - geerlingguy.repo-epel
+  - geerlingguy.jenkins
+  - geerlingguy.git
+  - tecris.maven
+  - geerlingguy.ansible
   tags:
     - jenkins
     - devsecops
