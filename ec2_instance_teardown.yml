@@ -4,15 +4,14 @@
   gather_facts: false
 
   tasks:
-  - name: Remove from RHSM
-    redhat_subscription:
-      state: absent
-    with_inventory_hostnames:
-      - all
 
   - name: Remove from Insights
     command: >
-      insights-client  --unregister
+      insights-client --unregister
+  
+  - name: Remove from RHSM
+    redhat_subscription:
+      state: absent
 
   - name: Terminate instances that were previously launched
     ec2:
