@@ -20,6 +20,7 @@
   hosts: localhost
   connection: local
   gather_facts: true
+  become: true
 
   tasks:
   - name: debug instance vars2
