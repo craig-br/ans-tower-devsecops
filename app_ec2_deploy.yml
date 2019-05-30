@@ -1,5 +1,5 @@
 ---
-- name: Deploy Jenkins Server
+- name: Deploy Application to WebServers
   hosts: all
   roles:
   - role: geerlingguy.java
@@ -7,12 +7,7 @@
     vars:
       - java_packages: 
         - java-1.8.0-openjdk-devel
-      
-  - geerlingguy.repo-epel
-  - geerlingguy.jenkins
-  - geerlingguy.git
-  - tecris.maven
-  - geerlingguy.ansible
   tags:
-    - jenkins
+    - webservers
     - devsecops
+
