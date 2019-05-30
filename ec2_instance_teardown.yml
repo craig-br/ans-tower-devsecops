@@ -28,14 +28,19 @@
   #   debug:
   #     var: item
   #   loop: "{{ query('inventory_hostnames', 'all') }}"
+  - ec2_instance_facts:
+    register: ec2_instances
+
+  - debug:
+      var: ec2_instances
 
   - name: Teardown EC2 Instances
     ec2:
       state: 'absent'
       region: "{{ ec2_region }}"
       instance_ids: '{{ item.instance_id }}'
-    with_inventory_hostnames:
-      - all
+    loop: "{{ ec2_instances }}"
+
     # delegate_to: localhost
 # - name: Add all instances to host group
   #   add_host: 
