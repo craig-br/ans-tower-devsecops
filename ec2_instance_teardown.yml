@@ -8,7 +8,7 @@
   - name: Remove from Insights
     package:
       name: insights-client
-      status: absent
+      state: absent
 
   - name: Remove from RHSM
     redhat_subscription:
