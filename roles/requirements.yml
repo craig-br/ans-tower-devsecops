@@ -51,3 +51,6 @@
 - name: lrk.sonarqube
   src: https://github.com/lrk/ansible-role-sonarqube.git
   scm: git
+- name: geerlingguy.mysql
+  src: https://github.com/geerlingguy/ansible-role-mysql.git
+  scm: git
