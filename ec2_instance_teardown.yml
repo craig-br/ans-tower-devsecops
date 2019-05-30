@@ -36,6 +36,7 @@
       instance_ids: '{{ item.instance_id }}'
     with_inventory_hostnames:
       - all
+    delegate_to:localhost
 # - name: Add all instances to host group
   #   add_host: 
   #     hostname: "{{ item.public_dns_name }}"
