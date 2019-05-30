@@ -41,7 +41,7 @@
     ec2:
       state: 'absent'
       region: "{{ ec2_region }}"
-      id: '{{ item.instance_id }}'
+      instance_ids: '{{ item.instance_id }}'
     loop: '{{ ec2_instances.instances }}'
     # loop: "{{ ec2_instances.instances }}"
 
