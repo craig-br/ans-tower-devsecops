@@ -31,7 +31,8 @@
   - ec2_instance_facts:
     register: ec2_instances
 
-  - debug:
+  - name: debug facts
+    debug:
       var: ec2_instances
 
   - name: Teardown EC2 Instances
