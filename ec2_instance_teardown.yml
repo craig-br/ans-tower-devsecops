@@ -18,16 +18,16 @@
 
 
 - name: Terminate instances that were previously launched
-  hosts: all
+  hosts: localhost
   connection: local
   gather_facts: true
   become: false
 
   tasks:
-  - name: debug instance vars2
-    debug:
-      var: item
-    loop: "{{ query('inventory_hostnames', 'all') }}"
+  # - name: debug instance vars2
+  #   debug:
+  #     var: item
+  #   loop: "{{ query('inventory_hostnames', 'all') }}"
 
   - name: Teardown EC2 Instances
     ec2:
@@ -36,7 +36,7 @@
       instance_ids: '{{ item.instance_id }}'
     with_inventory_hostnames:
       - all
-    delegate_to: localhost
+    # delegate_to: localhost
 # - name: Add all instances to host group
   #   add_host: 
   #     hostname: "{{ item.public_dns_name }}"
