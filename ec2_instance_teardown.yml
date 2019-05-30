@@ -1,7 +1,6 @@
 ---
 - name: Terminate EC2 WebServers
   hosts: all
-  gather_facts: false
 
   tasks:
 ## TODO proper tests for insights client
@@ -17,8 +16,8 @@
   - name: debug instance vars
     debug:
       var: item
-    with_inventory_hostnames:
-      - all
+    loop: "{{ ansible_play_batch }}"
+
 
   - name: Terminate instances that were previously launched
     ec2:
