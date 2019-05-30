@@ -18,7 +18,7 @@
 
 
 - name: Terminate instances that were previously launched
-  hosts: localhost
+  hosts: all
   connection: local
   gather_facts: true
   become: false
@@ -29,13 +29,13 @@
       var: item
     loop: "{{ query('inventory_hostnames', 'all') }}"
 
-  # - name: Teardown EC2 Instances
-  #   ec2:
-  #     state: 'absent'
-  #     region: "{{ ec2_region }}"
-  #     instance_ids: '{{ item.instance_id }}'
-  #   with_inventory_hostnames:
-  #     - all
+  - name: Teardown EC2 Instances
+    ec2:
+      state: 'absent'
+      region: "{{ ec2_region }}"
+      instance_ids: '{{ item.instance_id }}'
+    with_inventory_hostnames:
+      - all
 # - name: Add all instances to host group
   #   add_host: 
   #     hostname: "{{ item.public_dns_name }}"
