@@ -22,6 +22,7 @@
   connection: local
   gather_facts: true
   become: true
+  user: root
 
   tasks:
   - name: debug instance vars2
