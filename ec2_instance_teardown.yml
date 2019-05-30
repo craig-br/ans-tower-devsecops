@@ -13,9 +13,10 @@
     redhat_subscription:
       state: absent
 
-  - name: debug instance vars
+  - name: debug instance vars2
     debug:
       var: item
+    verbosity: 3
     loop: "{{ ansible_play_batch }}"
 
 
