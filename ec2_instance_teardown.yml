@@ -4,11 +4,12 @@
   gather_facts: false
 
   tasks:
-
+## TODO proper tests for insights client
   - name: Remove from Insights
-    command: >
-      insights-client --unregister
-  
+    package:
+      name: insights-client
+      status: absent
+
   - name: Remove from RHSM
     redhat_subscription:
       state: absent
