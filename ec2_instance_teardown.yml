@@ -25,15 +25,15 @@
   - name: debug instance vars2
     debug:
       var: item
-    loop: "{{ ansible_play_batch }}"
+    loop: "{{ query('inventory_hostnames', 'all') }}"
 
-  - name: Teardown EC2 Instances
-    ec2:
-      state: 'absent'
-      region: "{{ ec2_region }}"
-      instance_ids: '{{ item.instance_id }}'
-    with_inventory_hostnames:
-      - all
+  # - name: Teardown EC2 Instances
+  #   ec2:
+  #     state: 'absent'
+  #     region: "{{ ec2_region }}"
+  #     instance_ids: '{{ item.instance_id }}'
+  #   with_inventory_hostnames:
+  #     - all
 # - name: Add all instances to host group
   #   add_host: 
   #     hostname: "{{ item.public_dns_name }}"
