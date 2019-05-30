@@ -34,7 +34,8 @@
 
   - name: debug facts
     debug:
-      msg: " InstancesSS {{ ec2_instances.instances }}"
+      msg: " InstancesSS {{ item }}"
+    loop: '{{ ec2_instances.instances }}'
 
   - name: Teardown EC2 Instances
     ec2:
