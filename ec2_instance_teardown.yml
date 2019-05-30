@@ -13,23 +13,27 @@
     redhat_subscription:
       state: absent
 
-  - name: debug instance vars2
+
+
+
+- name: Terminate instances that were previously launched
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  tasks:
+    - name: debug instance vars2
     debug:
       var: item
     verbosity: 3
     loop: "{{ ansible_play_batch }}"
-
-
-  - name: Terminate instances that were previously launched
+    
     ec2:
       state: 'absent'
       region: "{{ ec2_region }}"
       instance_ids: '{{ item.instance_id }}'
     with_inventory_hostnames:
       - all
-    delegate_to: localhost
-    connection: local
-  # - name: Add all instances to host group
+# - name: Add all instances to host group
   #   add_host: 
   #     hostname: "{{ item.public_dns_name }}"
   #     # ansible_hostname: "{{ item.public_dns_name }}"
