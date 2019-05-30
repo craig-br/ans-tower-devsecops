@@ -21,12 +21,12 @@
   connection: local
   gather_facts: true
   tasks:
-    - name: debug instance vars2
+  - name: debug instance vars2
     debug:
       var: item
     verbosity: 3
     loop: "{{ ansible_play_batch }}"
-    
+
     ec2:
       state: 'absent'
       region: "{{ ec2_region }}"
