@@ -1,6 +1,7 @@
 ---
 - name: Terminate EC2 WebServers
   hosts: all
+  become: true
 
   tasks:
 ## TODO proper tests for insights client
