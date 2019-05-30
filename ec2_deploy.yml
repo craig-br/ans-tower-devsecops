@@ -48,7 +48,7 @@
       region: "{{ region }}"
       count: 3 # default
       count_tag:
-        Name: ec2_devsecops
+        Name: ec2_devsecops_instance
       instance_tags:
         Name: ec2_devsecops
     register: ec2
