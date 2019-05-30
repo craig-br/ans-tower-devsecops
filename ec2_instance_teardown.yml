@@ -14,6 +14,12 @@
     redhat_subscription:
       state: absent
 
+  - name: debug instance vars
+    debug:
+      var: item
+    with_inventory_hostnames:
+      - all
+
   - name: Terminate instances that were previously launched
     ec2:
       state: 'absent'
