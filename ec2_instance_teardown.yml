@@ -40,7 +40,7 @@
     ec2:
       state: 'absent'
       region: "{{ ec2_region }}"
-      instance_ids: '{{ item.instance_id }}'
+      instance_ids: '{{ item.instances.instance_id }}'
     loop: "{{ ec2_instances }}"
 
     # delegate_to: localhost
