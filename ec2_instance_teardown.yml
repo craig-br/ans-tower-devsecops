@@ -34,14 +34,14 @@
 
   - name: debug facts
     debug:
-      var: ec2_instances
+      msg: " InstancesSS {{ ec2_instances.instances }}"
 
   - name: Teardown EC2 Instances
     ec2:
       state: 'absent'
       region: "{{ ec2_region }}"
-      instance_ids: '{{ item.instances.instance_id }}'
-    loop: "{{ ec2_instances }}"
+      instance_ids: '{{ ec2_instances.instance_ids }}'
+    # loop: "{{ ec2_instances.instances }}"
 
     # delegate_to: localhost
 # - name: Add all instances to host group
