@@ -21,8 +21,7 @@
   hosts: localhost
   connection: local
   gather_facts: true
-  become: true
-  remote_user: root
+  become: false
 
   tasks:
   - name: debug instance vars2
