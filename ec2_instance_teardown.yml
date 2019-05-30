@@ -29,6 +29,7 @@
   #     var: item
   #   loop: "{{ query('inventory_hostnames', 'all') }}"
   - ec2_instance_facts:
+      region: "{{ ec2_region }}"
     register: ec2_instances
 
   - name: debug facts
