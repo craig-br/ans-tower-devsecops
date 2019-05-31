@@ -29,7 +29,7 @@
 
   - name: debug ec2 instances
     debug:
-      var: item.tags.Name
+      msg: "TAGS: {{ item.tags.Name }}"
     loop: "{{ ec2_instances.instances }}"
     when: item.tags.Name == "ec2_devsecops"
     delegate_to: localhost
