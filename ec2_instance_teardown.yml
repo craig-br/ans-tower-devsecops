@@ -1,5 +1,5 @@
 ---
-- name: Terminate EC2 WebServers
+- name: Unsubscribe from RHSM and Insights
   hosts: all
   become: true
 
@@ -16,7 +16,7 @@
 - name: Terminate instances that were previously launched
   hosts: localhost
   connection: local
-  gather_facts: true
+  gather_facts: false
   become: false
 
   tasks:
