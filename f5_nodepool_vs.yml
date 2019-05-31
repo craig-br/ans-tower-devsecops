@@ -10,10 +10,12 @@
 
   tasks:
 
-    - name: Gather F5 facts
+    - name: Gather facts
       ec2_instance_facts:
       register: ec2
-
+      tags:
+      - debug
+      
     - name: Debug ec2
       debug:
         var: ec2
