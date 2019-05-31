@@ -17,7 +17,7 @@
 - name: Terminate instances that were previously launched
   hosts: all
   gather_facts: false
-  become: false
+  become: true
 
   tasks:
   - name: Gather EC2 Facts
