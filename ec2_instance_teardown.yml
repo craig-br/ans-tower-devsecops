@@ -24,7 +24,9 @@
     ec2_instance_facts:
       region: "{{ ec2_region }}"
     register: ec2_instances
-
+  - name: debug ec2 instances
+    debug:
+      var: ec2_instances
   # - name: Teardown EC2 Instances
   #   ec2:
   #     state: 'absent'
