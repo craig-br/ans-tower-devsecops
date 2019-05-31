@@ -29,7 +29,8 @@
 
   - name: debug ec2 instances
     debug:
-      var: ec2_instances
+      var: item.instances
+    loop: "{{ ec2_instances.instances }}"
     delegate_to: localhost
     
   # - name: Teardown EC2 Instances
