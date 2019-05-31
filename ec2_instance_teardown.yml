@@ -24,12 +24,10 @@
     ec2_instance_facts:
       region: "{{ ec2_region }}"
     register: ec2_instances
-    delegate_to: localhost
 
   - name: debug ec2 instances
     debug:
       var: ec2_instances
-    delegate_to: localhost
   # - name: Teardown EC2 Instances
   #   ec2:
   #     state: 'absent'
