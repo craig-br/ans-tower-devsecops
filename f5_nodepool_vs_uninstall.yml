@@ -1,14 +1,19 @@
 ---
-- name: configureF5
+- name: F5 Virtual Switch Uninstall
   hosts: localhost
+  connection: local
 
   vars:
     validate_certs: no
     username: ansible
     password: candyace
     state: absent
- 
+  
   tasks:
+    - name: Gather ec2 facts
+        ec2_instance_facts:
+      register: ec2
+
     - name: DeleteVS
       bigip_virtual_server:
         name: AnsibleHackazon
@@ -19,7 +24,8 @@
           server: 10.1.20.240
           validate_certs: "{{ validate_certs }}"
           transport: rest
-
+      when: item.key_name == 
+      loop: "{{ ec2.instances }}"
 
     - name: DeletePoolMember1
       bigip_pool_member:
