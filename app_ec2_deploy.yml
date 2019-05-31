@@ -1,13 +1,37 @@
 ---
-- name: Deploy Application to WebServers
+- name: Deploy Application to EC2 Instances
   hosts: all
+  gather_facts: true
   roles:
   - role: geerlingguy.nodejs
     vars:
       nodejs_version: "10.x"
+  
+  tasks:
+  - name: Extract download
+    unarchive:
+      src: https://github.com/bkimminich/juice-shop/releases/download/v8.6.2/juice-shop-8.6.2_node10_linux_x64.tgz
+      remote_src: true
+      dest: /usr/local/
+    register: app_download
+    tags:
+      - extract
+
+  - name: Debug download location 
+    debug:
+      msg: "app_downloadSSS {{ app_download }}"
+    tags:
+      - extract
+
+  - name: Run application
+    command: "npm start"
+      chdir: /usr/local/juice-shop_8.6.2
+    tags:
+      - run_app
+
 
   tags:
-    - hackazon
+    - juicebox
     - webservers
     - devsecops
 

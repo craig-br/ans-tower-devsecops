@@ -18,6 +18,6 @@
           to_port: 22
           cidr_ip: 0.0.0.0/0
         - proto: tcp
-          from_port: 80
-          to_port: 80
-          cidr_ip: 172.31.25.163/32
+          from_port: 3000
+          to_port: 3000
+          cidr_ip: 0.0.0.0/0
