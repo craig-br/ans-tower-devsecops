@@ -1,4 +1,5 @@
 ---
+# TODO get F5 IP from facts
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local

@@ -4,7 +4,6 @@
   become: true
 
   tasks:
-## TODO proper tests for insights client
   - name: Remove from Insights
     package:
       name: insights-client
