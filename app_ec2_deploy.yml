@@ -17,21 +17,44 @@
     tags:
       - extract
 
-  - name: Debug download location 
-    debug:
-      msg: "app_downloadSSS {{ app_download }}"
+  - name: Install Forever
+    npm: 
+      name: forever 
+      global: yes 
+      state: present
     tags:
-      - extract
+      - run_app
+
+  # - name: Check list of running Node.js apps.
+  #   command: forever list
+  #   register: forever_list
+  #   changed_when: false
+  #   tags:
+  #     - run_app
+
+  # - name: Debug forever_list
+  #   debug:
+  #     msg: "Forevver List: {{ forever_list }}"
+  #   tags:
+  #     - run_app
+
+  # - name: Start example Node.js app.
+  #   command: "forever start /usr/local/juice-shop_8.6.2/app.js"
+  #   # when: "forever_list.stdout.find(/usr/local/juice-shop_8.6.2/ + 'app.js') == -1"
+  #   tags:
+  #     - run_app
 
   - name: Run application
-    command: "npm start"
-      chdir: /usr/local/juice-shop_8.6.2
+    become: true
+    command: 
+      cmd: "forever start app.js"
+      chdir: /usr/local/juice-shop_8.6.2/
     tags:
       - run_app
 
 
   tags:
-    - juicebox
+    - app_deploy
     - webservers
     - devsecops
 
