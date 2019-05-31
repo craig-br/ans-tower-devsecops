@@ -2,6 +2,8 @@
 - name: Deploy Application to EC2 Instances
   hosts: all
   gather_facts: true
+  vars:
+    node_app_dir: "/usr/local/juice-shop_8.6.2/"
   roles:
   - role: geerlingguy.nodejs
     vars:
@@ -25,30 +27,11 @@
     tags:
       - run_app
 
-  # - name: Check list of running Node.js apps.
-  #   command: forever list
-  #   register: forever_list
-  #   changed_when: false
-  #   tags:
-  #     - run_app
-
-  # - name: Debug forever_list
-  #   debug:
-  #     msg: "Forevver List: {{ forever_list }}"
-  #   tags:
-  #     - run_app
-
-  # - name: Start example Node.js app.
-  #   command: "forever start /usr/local/juice-shop_8.6.2/app.js"
-  #   # when: "forever_list.stdout.find(/usr/local/juice-shop_8.6.2/ + 'app.js') == -1"
-  #   tags:
-  #     - run_app
-
   - name: Run application
     become: true
     command: 
       cmd: "forever start app.js"
-      chdir: /usr/local/juice-shop_8.6.2/
+      chdir: "{{node_app_dir}}"
     tags:
       - run_app
 
