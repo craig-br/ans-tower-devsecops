@@ -29,7 +29,7 @@
 
   - name: debug ec2 instances
     debug:
-      var: item.instances
+      var: item.tags.Name
     loop: "{{ ec2_instances.instances }}"
     delegate_to: localhost
     
