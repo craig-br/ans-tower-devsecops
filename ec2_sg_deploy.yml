@@ -20,4 +20,5 @@
         - proto: tcp
           from_port: 3000
           to_port: 3000
-          cidr_ip: 108.128.213.140/32
+          # cidr_ip: 108.128.213.140/32
+          cidr_ip: 0.0.0.0/0
