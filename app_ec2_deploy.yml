@@ -2,21 +2,9 @@
 - name: Deploy Application to WebServers
   hosts: all
   roles:
-  - role: geerlingguy.mysql
-    become: yes
+  - role: geerlingguy.nodejs
     vars:
-      mysql_root_password: admin
-      mysql_databases:
-        - name: hackazon
-          encoding: latin1
-          collation: latin1_general_ci
-      mysql_users:
-        - name: hackazon_user
-          host: "%"
-          password: hackazon
-          priv: "hacakzon.*:ALL"
-
-  # - role: geerlingguy.apache
+      nodejs_version: "10.x"
 
   tags:
     - hackazon

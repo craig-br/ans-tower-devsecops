@@ -54,3 +54,6 @@
 - name: geerlingguy.mysql
   src: https://github.com/geerlingguy/ansible-role-mysql.git
   scm: git
+- name: geerlingguy.nodejs
+  src: https://github.com/geerlingguy/ansible-role-nodejs.git
+  scm: git

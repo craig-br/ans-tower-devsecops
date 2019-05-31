@@ -7,6 +7,9 @@
     vars:
       - java_packages: 
         - java-1.8.0-openjdk-devel
+  - role: geerlingguy.nodejs
+    vars:
+      nodejs_version: "10.x"
       
   - geerlingguy.repo-epel
   - geerlingguy.jenkins
