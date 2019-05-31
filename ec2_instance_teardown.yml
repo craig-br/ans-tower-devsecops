@@ -2,7 +2,8 @@
 - name: Unsubscribe from RHSM and Insights
   hosts: all
   become: true
-
+  gather_facts: false
+  
   tasks:
   - name: Remove from Insights
     package:
