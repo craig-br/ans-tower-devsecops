@@ -27,17 +27,19 @@
     tags:
       - run_app
 
-  # - name: Check list of running Node.js apps.
-  #   command: forever list
-  #   register: forever_list
-  #   changed_when: false
+  - name: Check list of running Node.js apps.
+    command: forever list
+    register: forever_list
+    changed_when: false
+    tags:
+      - run_app
 
   - name: Run application
     become: true
     command: 
       cmd: "forever start app.js"
       chdir: "{{node_app_dir}}"
-    # when: "forever_list.stdout.find('app.js') == -1"
+    when: "forever_list.stdout.find('app.js') == -1"
     tags:
       - run_app
 
