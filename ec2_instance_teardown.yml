@@ -3,7 +3,7 @@
   hosts: all
   become: true
   gather_facts: false
-  
+
   tasks:
   - name: Remove from Insights
     package:
@@ -15,8 +15,7 @@
       state: absent
 
 - name: Terminate instances that were previously launched
-  hosts: localhost
-  connection: local
+  hosts: all
   gather_facts: false
   become: false
 
@@ -25,9 +24,12 @@
     ec2_instance_facts:
       region: "{{ ec2_region }}"
     register: ec2_instances
+    delegate_to: localhost
+
   - name: debug ec2 instances
     debug:
       var: ec2_instances
+    delegate_to: localhost
   # - name: Teardown EC2 Instances
   #   ec2:
   #     state: 'absent'
