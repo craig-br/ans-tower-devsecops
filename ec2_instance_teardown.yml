@@ -16,7 +16,6 @@
 
 - name: Terminate instances that were previously launched
   hosts: all
-  connection: local
   gather_facts: false
   become: false
 
@@ -26,6 +25,7 @@
       region: "{{ ec2_region }}"
     register: ec2_instances
     delegate_to: localhost
+
   - name: debug ec2 instances
     debug:
       var: ec2_instances
