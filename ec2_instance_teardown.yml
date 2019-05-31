@@ -15,9 +15,10 @@
       state: absent
 
 - name: Terminate instances that were previously launched
-  hosts: all
+  hosts: localhost
+  connection: local
   gather_facts: false
-  become: true
+  become: false
 
   tasks:
   - name: Gather EC2 Facts
