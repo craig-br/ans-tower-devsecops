@@ -21,7 +21,7 @@
   - name: Debug ec2
     debug:
       msg: "F5 tagSS: {{ item.tags }}"
-    ÷when: item.tags.find('f5group')
+    # when: item.tags.find('f5group')
     loop: "{{ ec2.instances }}"
     tags:
       - debug
