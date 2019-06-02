@@ -64,7 +64,7 @@
       monitors: ['/Common/tcp']
       monitor_type: and_list
       provider:
-        user: "{{ username }}"
+        user: "{{ user }}"
         password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
         server_port: 8443
@@ -82,7 +82,7 @@
       state: "{{ ec2_f5_state }}"
       provider:
         server_port: 8443
-        user: "{{ username }}"
+        user: "{{ user }}"
         password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
         validate_certs: "{{ ec2_validate_certs }}"
