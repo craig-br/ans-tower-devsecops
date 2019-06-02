@@ -20,9 +20,9 @@
 
   - name: Debug ec2
     debug:
-      msg: "F5 tagSS: {{ item.tags }}"
+      msg: "F5 tagSS: {{ item }}"
     # when: item.tags.find('f5group')
-    loop: "{{ ec2.instances }}"
+    loop: "{{ query('group', 'f5group') }}"
     tags:
       - debug
       - debug_ec2
