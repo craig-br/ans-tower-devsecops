@@ -22,7 +22,7 @@
     set_fact:
       f5_public_ip: "{{ item.public_ip_address }}"
       cacheable: true
-    when: item.tags.function == ec2_f5_tag
+    # when: item.tags.function == ec2_f5_tag
     loop: "{{ ec2.instances }}"
     loop_control:
       label: "{{ item.public_ip_address }}"
