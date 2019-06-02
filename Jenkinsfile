@@ -14,6 +14,7 @@ stage('Code Analysis') {
         }
     }
 }
+
 stage('Deploy Cloud Servers with Tower') {
     node {
         ansibleTower(
@@ -31,20 +32,39 @@ stage('Deploy Cloud Servers with Tower') {
         )
     }
 }
-
-stage('Deploy App with Tower') {
-    node {
-        ansibleTower(
-            towerServer: 'devsecops_tower',
-            templateType: 'job',
-            jobTemplate: 'DevSecOps EC2 Deploy App',
-            importTowerLogs: true,
-            jobTags: '',
-            skipJobTags: '',
-            limit: '',
-            removeColor: false,
-            verbose: true,
-            credential: '',
-        )
+stage('Deploy!!!') {
+    parallel('Deploy App with Tower': { 
+        node {
+            ansibleTower(
+                towerServer: 'devsecops_tower',
+                templateType: 'job',
+                jobTemplate: 'DevSecOps EC2 Deploy App',
+                importTowerLogs: true,
+                jobTags: '',
+                skipJobTags: '',
+                limit: '',
+                removeColor: false,
+                verbose: true,
+                credential: '',
+            )
+        }
+        
+    }, 'Configure Load Balancer': {
+        node {
+            ansibleTower(
+                towerServer: 'devsecops_tower',
+                templateType: 'job',
+                jobTemplate: 'DevSecOps Configure F5',
+                importTowerLogs: true,
+                jobTags: '',
+                skipJobTags: '',
+                limit: '',
+                removeColor: false,
+                verbose: true,
+                credential: '',
+            )
+        }
     }
+    
+    )
 }
