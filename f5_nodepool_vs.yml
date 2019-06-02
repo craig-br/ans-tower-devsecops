@@ -46,8 +46,6 @@
       cacheable: true
     when: item.tags.function == ec2_f5_tag
     loop: "{{ ec2.instances }}"
-    loop_control:
-      label: "{{ item.public_ip_address }}"
     tags:
       - f5_facts
 
@@ -90,8 +88,6 @@
     when: item.tags.function == ec2_webserver_tag
     delegate_to: localhost
     loop: "{{ ec2.instances }}"
-    loop_control:
-      label: "{{ item.private_ip_address }} "
     tags:
       - create_pool
 
