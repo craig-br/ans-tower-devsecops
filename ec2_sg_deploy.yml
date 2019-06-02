@@ -1,5 +1,5 @@
 ---
-# TODO get F5 IP from facts
+# TODO add checks for vars and state if ec2 instances
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
@@ -15,6 +15,7 @@
       # aws_access_key: "{{ aws_access_key_id }}"
       # aws_secret_key: "{{ aws_secret_access_key }}"
     register: ec2
+    failed_when: ec2.instances == ""
     tags:
      - ec2_facts
 

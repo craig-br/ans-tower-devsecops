@@ -1,4 +1,5 @@
 ---
+# TODO add checks for vars and state if ec2 instances
 - name: configure F5
   hosts: localhost
   connection: local
@@ -44,16 +45,23 @@
       f5_public_ip: "{{ item.public_ip_address }}"
       f5_private_ip: "{{ item.private_ip_address }}"
       cacheable: true
-    when: item.tags.function == ec2_f5_tag
+    when: (item.tags.function == ec2_f5_tag) and (item.state.name == "running")
     loop: "{{ ec2.instances }}"
+    failed_when: ec2.instances == ""
     tags:
       - f5_facts
-
-  # - name: Debug facts
+    
+  # - name: F5 facts var
   #   debug:
-  #     var: hostvars.localhost.private_ip
-  #     verbosity: 2
+      # var: f5_facts
 
+  - name: Debug facts
+    debug:
+      var: item.state.name
+      # verbosity: 2
+    when: (item.tags.function == ec2_webserver_tag) and (item.state.name == "running")
+    loop: "{{ ec2.instances }}"
+    
   - name: Create Pool
     bigip_pool:
       name: AnsibleJuiceShopPool
@@ -85,8 +93,7 @@
         server: "{{ hostvars.localhost.f5_public_ip }}"
         validate_certs: "{{ ec2_validate_certs }}"
         transport: rest
-    when: item.tags.function == ec2_webserver_tag
-    delegate_to: localhost
+    when: (item.tags.function == ec2_webserver_tag) and (item.state.name == "running")
     loop: "{{ ec2.instances }}"
     tags:
       - create_pool
