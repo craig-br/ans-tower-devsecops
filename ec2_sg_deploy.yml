@@ -20,7 +20,7 @@
 
   - name: Create Facts for F5 configuration
     set_fact:
-      f5_priivate_ip: "{{ item.private_ip_address }}"
+      f5_private_ip: "{{ item.private_ip_address }}"
       cacheable: true
     when: item.tags.function == ec2_f5_tag
     loop: "{{ ec2.instances }}"
