@@ -38,6 +38,6 @@
           to_port: 22
           cidr_ip: 0.0.0.0/0
         - proto: tcp
-          from_port: 3000
-          to_port: 3000
+          from_port: 2000
+          to_port: 2000
           cidr_ip: "{{ hostvars.localhost.f5_public_ip}}/32"
