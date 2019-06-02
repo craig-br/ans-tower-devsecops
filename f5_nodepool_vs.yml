@@ -3,10 +3,11 @@
   hosts: all
 
   vars:
-    validate_certs: no
-    username: redhat
-    password: 9876tjYbsj567
-    state: present
+  # TODO secure passwords
+    # validate_certs: no
+    # username: redhat
+    # password: 9876tjYbsj567
+    # state: present
 
   tasks:
 
@@ -15,7 +16,7 @@
       register: ec2
       tags:
       - debug
-      
+
     - name: Debug ec2
       debug:
         var: ec2
