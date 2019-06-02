@@ -4,16 +4,16 @@
   hosts: localhost
   connection: local
   gather_facts: true
-  vars_files:
-    - ./local/vars/ec2_vars.yml
-    - ./local/vars/vault_aws_vars.yml
+  # vars_files:
+  #   - ./local/vars/ec2_vars.yml
+  #   - ./local/vars/vault_aws_vars.yml
 
   tasks:
   - name: Gather EC2 facts
     ec2_instance_facts:
       region: "{{ ec2_region }}"
-      aws_access_key: "{{ aws_access_key_id }}"
-      aws_secret_key: "{{ aws_secret_access_key }}"
+      # aws_access_key: "{{ aws_access_key_id }}"
+      # aws_secret_key: "{{ aws_secret_access_key }}"
     register: ec2
     tags:
      - ec2_facts
