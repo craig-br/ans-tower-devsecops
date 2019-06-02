@@ -1,6 +1,7 @@
 ---
 - name: configure F5
-  hosts: all
+  hosts: localhost
+  gather_facts: false
 
   vars:
   # TODO secure passwords
@@ -25,7 +26,7 @@
         - debug
         - debug_ec2
       delegate_to: localhost
-      
+
     # - name: Create pools
     #   bigip_pool:
     #     name: AnsibleJuiceShopPool
