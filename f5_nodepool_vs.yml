@@ -11,22 +11,21 @@
     # state: present
 
   tasks:
+  - name: Gather facts
+    ec2_instance_facts:
+    region: "{{ ec2_region }}"
+    register: ec2
+    tags:
+    - debug
+    delegate_to: localhost
 
-    - name: Gather facts
-      ec2_instance_facts:
-      region: "{{ ec2_region }}"
-      register: ec2
-      tags:
+  - name: Debug ec2
+    debug:
+      var: ec2
+    tags:
       - debug
-      delegate_to: localhost
-
-    - name: Debug ec2
-      debug:
-        var: ec2
-      tags:
-        - debug
-        - debug_ec2
-      delegate_to: localhost
+      - debug_ec2
+    delegate_to: localhost
 
     # - name: Create pools
     #   bigip_pool:
