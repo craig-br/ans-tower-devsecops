@@ -40,4 +40,4 @@
         - proto: tcp
           from_port: 3000
           to_port: 3000
-          cidr_ip: "{{ hostvars.localhost.f5_public_ip}}/32"
+          cidr_ip: "{{ hostvars.localhost.f5_private_ip}}/32"
