@@ -1,80 +1,122 @@
 ---
 - name: configure F5
-  hosts: all
-  gather_facts: false
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars_files:
+    - ./local/vars/vault_aws_vars.yml
+    - ./local/vars/ec2_vars.yml
 
-  # vars:
+
+  vars:
   # TODO secure passwords
     # validate_certs: no
-    # username: redhat
-    # password: 9876tjYbsj567
+
     # state: present
+
 
   tasks:
   - name: Gather facts
     ec2_instance_facts:
       region: "{{ ec2_region }}"
+      aws_access_key: "{{ aws_access_key_id }}"
+      aws_secret_key: "{{ aws_secret_access_key }}"
     register: ec2
     tags:
      - ec2_facts
     delegate_to: localhost
 
-  - name: Debug ec2
-    debug:
-      msg: "F5 tagSS: {{ item }}"
-    when: "{{ item.tags }} is search('f5group')" 
+  # - name: Debug ec2 firewall
+  #   debug:
+  #     msg: "IP {{ item.public_ip_address }}"
+  #   when: item.tags.function == ec2_firewall_tag
+  #   loop: "{{ ec2.instances }}"
+  #   loop_control:
+  #     label: "{{ item.public_ip_address }} "
+  #   tags:
+  #     - debug
+  #     - debug_firewall
+
+  # - name: Debug ec2 instances IP
+  #   debug:
+  #     msg: "INternal IP {{ item.private_ip_address }}"
+  #   when: item.tags.function == ec2_webserver_tag
+  #   loop: "{{ ec2.instances }}"
+  #   loop_control:
+  #     label: "{{ item.public_dns_name }} "
+  #   tags:
+  #     - debug
+  #     - debug_instances
+
+  - name: Create Facts for F5 configuration
+    set_fact:
+      f5_public_ip: "{{ item.public_ip_address }}"
+      cacheable: true
+    when: item.tags.function == ec2_f5_tag
     loop: "{{ ec2.instances }}"
-    # with_inventory_hostnames:
-      # - f5group
+    loop_control:
+      label: "{{ item.public_ip_address }}"
+
+  - name: Debug facts
+    debug:
+      var: hostvars.localhost.f5_public_ip
+      verbosity: 2
+    delegate_to: localhost 
+
+
+  - name: Create pools
+    bigip_pool:
+      name: AnsibleJuiceShopPool
+      lb_method: round-robin
+      state: "{{ ec2_f5_state }}"
+      monitors: ['/Common/tcp']
+      monitor_type: and_list
+      provider:
+        user: "{{ username }}"
+        password: "{{ password }}"
+        server: "{{ hostvars.localhost.f5_public_ip }}"
+        server_port: 8443
+        validate_certs: "{{ ec2_validate_certs }}"
+        transport: rest
+    delegate_to: localhost
     tags:
-      - debug
-      - debug_ec2
+      - create_pool
 
-    # - name: Create pools
-    #   bigip_pool:
-    #     name: AnsibleJuiceShopPool
-    #     lb_method: round-robin
-    #     state: "{{ state }}"
-    #     monitors: ['/Common/tcp']
-    #     monitor_type: and_list
-    #     # server_port: 8443
-    #     provider:
-    #       user: "{{ username }}"
-    #       password: "{{ password }}"
-    #       server: 108.128.213.140
-    #       server_port: 8443
-    #       validate_certs: "{{ validate_certs }}"
-    #       transport: rest
-    #   delegate_to: localhost 
-    #   tags:
-    #     - create_pool
 
-    # - name: CreatePoolMember1
-    #   bigip_pool_member:
-    #     pool: AnsibleJuiceShopPool
-    #     host: 10.1.20.102
-    #     port: 80
-    #     state: "{{ state }}"
-    #     provider:
-    #       user: "{{ username }}"
-    #       password: "{{ password }}"
-    #       server: 10.1.20.240
-    #       validate_certs: "{{ validate_certs }}"
-    #       transport: rest
+  # - name: Create Pool Members
+  #   bigip_pool_member:
+  #     pool: AnsibleJuiceShopPool
+  #     host: "{{ item.private_ip_address }}"
+  #     port: 3000
+  #     state: "{{ ec2_state }}"
+  #     provider:
+  #       server_port: 8443
+  #       user: "{{ username }}"
+  #       password: "{{ password }}"
+  #       server: "{{ hostvars.localhost.f5_public_ip }}"
+  #       validate_certs: "{{ ec2_validate_certs }}"
+  #       transport: rest
+  #   when: item.tags.function == ec2_webserver_tag
+  #   delegate_to: localhost
+  #   loop: "{{ ec2.instances }}"
+  #   loop_control:
+  #     label: "{{ item.private_ip_address }} "
+  #   tags:
+  #     - create_pool    
 
-    # - name: CreatePoolMember2
-    #   bigip_pool_member:
-    #     pool: AnsibleJuiceShopPool
-    #     host: 172.31.30.94
-    #     port: 3000
-    #     state: "{{ state }}"
-    #     provider:
-    #       user: "{{ username }}"
-    #       password: "{{ password }}"
-    #       server: 108.128.213.140
-    #       server_port: 8443
-    #       validate_certs: "{{ validate_certs }}"
-    #       transport: rest
+  - name: CreatePoolMember2
+    bigip_pool_member:
+      pool: AnsibleJuiceShopPool
+      host: 172.31.30.94
+      port: 3000
+      state: "{{ state }}"
+      provider:
+        user: "{{ username }}"
+        password: "{{ password }}"
+        server: 108.128.213.140
+        server_port: 8443
+        validate_certs: "{{ validate_certs }}"
+        transport: rest
  
     # - name: CreatePoolMember3
     #   bigip_pool_member:
@@ -89,27 +131,27 @@
     #       validate_certs: "{{ validate_certs }}"
     #       transport: rest
 
-    # - name: CreateVS
-    #   bigip_virtual_server:
-    #     description: AnsibleJuiceShopVIP
-    #     destination: 172.31.19.43
-    #     name: AnsibleJuiceShopVS
-    #     pool: AnsibleJuiceShopPool
-    #     port: 443
-    #     snat: Automap
-    #     all_profiles:
-    #       - http
-    #       - clientssl
-    #     #   - websecurity
-    #     # all_policies:
-    #     #   - asm_auto_l7_policy__HackazonVS_HTTP
-    #     provider:
-    #       user: "{{ username }}"
-    #       password: "{{ password }}"
-    #       server: 108.128.213.140
-    #       server_port: 8443
-    #       validate_certs: "{{ validate_certs }}"
-    #       transport: rest
+  - name: CreateVS
+    bigip_virtual_server:
+      description: AnsibleJuiceShopVIP
+      destination: 172.31.19.43
+      name: AnsibleJuiceShopVS
+      pool: AnsibleJuiceShopPool
+      port: 443
+      snat: Automap
+      all_profiles:
+        - http
+        - clientssl
+      #   - websecurity
+      # all_policies:
+      #   - asm_auto_l7_policy__HackazonVS_HTTP
+      provider:
+        user: "{{ username }}"
+        password: "{{ password }}"
+        server: 108.128.213.140
+        server_port: 8443
+        validate_certs: "{{ validate_certs }}"
+        transport: rest
 
     # - name: assign security logging profile to VS
     #   bigip_command:
