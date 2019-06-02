@@ -56,7 +56,7 @@
   #     var: hostvars.localhost.private_ip
   #     verbosity: 2
 
-  - name: Create pools
+  - name: Create Pool
     bigip_pool:
       name: AnsibleJuiceShopPool
       lb_method: round-robin
@@ -64,8 +64,8 @@
       monitors: ['/Common/tcp']
       monitor_type: and_list
       provider:
-        user: "{{ username }}"
-        password: "{{ password }}"
+        # user: "{{ username }}"
+        # password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
         server_port: 8443
         validate_certs: "{{ ec2_validate_certs }}"
@@ -82,8 +82,8 @@
       state: "{{ ec2_f5_state }}"
       provider:
         server_port: 8443
-        user: "{{ username }}"
-        password: "{{ password }}"
+        # user: "{{ username }}"
+        # password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
         validate_certs: "{{ ec2_validate_certs }}"
         transport: rest
@@ -110,8 +110,8 @@
       # all_policies:
       #   - asm_auto_l7_policy__HackazonVS_HTTP
       provider:
-        user: "{{ username }}"
-        password: "{{ password }}"
+        # user: "{{ username }}"
+        # password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
         server_port: 8443
         validate_certs: "{{ ec2_validate_certs }}"
