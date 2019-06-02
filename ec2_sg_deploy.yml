@@ -3,10 +3,30 @@
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
-  become: false
   gather_facts: false
+  # vars_files:
+  #   - ./local/vars/ec2_vars.yml
+  #   - ./local/vars/vault_aws_vars.yml
 
   tasks:
+  - name: Gather EC2 facts
+    ec2_instance_facts:
+      region: "{{ ec2_region }}"
+      # aws_access_key: "{{ aws_access_key_id }}"
+      # aws_secret_key: "{{ aws_secret_access_key }}"
+    register: ec2
+    tags:
+     - ec2_facts
+
+  - name: Create Facts for F5 configuration
+    set_fact:
+      f5_public_ip: "{{ item.public_ip_address }}"
+      cacheable: true
+    when: item.tags.function == ec2_f5_tag
+    loop: "{{ ec2.instances }}"
+    loop_control:
+      label: "{{ item.public_ip_address }}"
+
   - name: Create security group
     ec2_group:
       name: "{{ ec2_sg_name }}"
@@ -20,5 +40,4 @@
         - proto: tcp
           from_port: 3000
           to_port: 3000
-          cidr_ip: 108.128.213.140/32
-          # cidr_ip: 0.0.0.0/0
+          cidr_ip: "{{ hostvars.localhost.f5_public_ip}}/32"
