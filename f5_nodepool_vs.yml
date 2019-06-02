@@ -1,6 +1,6 @@
 ---
 - name: configure F5
-  hosts: localhost
+  hosts: all
   gather_facts: false
 
   # vars:
@@ -17,12 +17,15 @@
     register: ec2
     tags:
      - ec2_facts
+    delegate_to: localhost
 
   - name: Debug ec2
     debug:
       msg: "F5 tagSS: {{ item }}"
-    # when: item.tags.find('f5group')
-    loop: "{{ query('group', 'f5group') }}"
+      when: item.tags.find('f5group')
+    loop: "{{ ec2.instances }}"
+    # with_inventory_hostnames:
+      # - f5group
     tags:
       - debug
       - debug_ec2
