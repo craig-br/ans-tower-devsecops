@@ -3,16 +3,16 @@
   hosts: localhost
   connection: local
   gather_facts: true
-  vars_files:
-    - ./local/vars/vault_aws_vars.yml
-    - ./local/vars/ec2_vars.yml
+  # vars_files:
+  #   - ./local/vars/vault_aws_vars.yml
+  #   - ./local/vars/ec2_vars.yml
 
   tasks:
   - name: Gather EC2 facts
     ec2_instance_facts:
       region: "{{ ec2_region }}"
-      aws_access_key: "{{ aws_access_key_id }}"
-      aws_secret_key: "{{ aws_secret_access_key }}"
+      # aws_access_key: "{{ aws_access_key_id }}"
+      # aws_secret_key: "{{ aws_secret_access_key }}"
     register: ec2
     tags:
      - ec2_facts
@@ -51,11 +51,10 @@
     tags:
       - f5_facts
 
-  - name: Debug facts
-    debug:
-      var: hostvars.localhost.private_ip
-      verbosity: 2
-
+  # - name: Debug facts
+  #   debug:
+  #     var: hostvars.localhost.private_ip
+  #     verbosity: 2
 
   - name: Create pools
     bigip_pool:
@@ -95,33 +94,6 @@
       label: "{{ item.private_ip_address }} "
     tags:
       - create_pool
-
-  # - name: CreatePoolMember2
-  #   bigip_pool_member:
-  #     pool: AnsibleJuiceShopPool
-  #     host: 172.31.30.94
-  #     port: 3000
-  #     state: "{{ state }}"
-  #     provider:
-  #       user: "{{ username }}"
-  #       password: "{{ password }}"
-  #       server: 108.128.213.140
-  #       server_port: 8443
-  #       validate_certs: "{{ validate_certs }}"
-  #       transport: rest
- 
-    # - name: CreatePoolMember3
-    #   bigip_pool_member:
-    #     pool: AnsibleJuiceShopPool
-    #     host: 10.1.20.102
-    #     port: 82
-    #     state: "{{ state }}"
-    #     provider:
-    #       user: "{{ username }}"
-    #       password: "{{ password }}"
-    #       server: 10.1.20.240
-    #       validate_certs: "{{ validate_certs }}"
-    #       transport: rest
 
   - name: CreateVS
     bigip_virtual_server:
