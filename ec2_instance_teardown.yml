@@ -10,13 +10,6 @@
     ec2_instance_facts:
       region: "{{ ec2_region }}"
     register: ec2_instances
-
-  # - name: debug ec2 instances
-  #   debug:
-  #     msg: "TAGS: {{ item.tags.Name }}"
-  #   loop: "{{ ec2_instances.instances }}"
-  #   when: item.tags.Name == "ec2_devsecops"
-  #   delegate_to: localhost
     
   - name: Teardown EC2 Instances
     ec2:
