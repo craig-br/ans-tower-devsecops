@@ -16,16 +16,16 @@
       region: "{{ ec2_region }}"
     register: ec2
     tags:
-    - debug
-    delegate_to: localhost
+     - ec2_facts
 
   - name: Debug ec2
     debug:
-      var: ec2
+      msg: "F5 tagSS: {{ item.tags }}"
+    ÷when: item.tags.find('f5group')
+    loop: "{{ ec2.instances }}"
     tags:
       - debug
       - debug_ec2
-    delegate_to: localhost
 
     # - name: Create pools
     #   bigip_pool:
