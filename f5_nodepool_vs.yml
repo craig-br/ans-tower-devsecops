@@ -59,19 +59,19 @@
     #       validate_certs: "{{ validate_certs }}"
     #       transport: rest
 
-    - name: CreatePoolMember2
-      bigip_pool_member:
-        pool: AnsibleJuiceShopPool
-        host: 172.31.30.94
-        port: 3000
-        state: "{{ state }}"
-        provider:
-          user: "{{ username }}"
-          password: "{{ password }}"
-          server: 108.128.213.140
-          server_port: 8443
-          validate_certs: "{{ validate_certs }}"
-          transport: rest
+    # - name: CreatePoolMember2
+    #   bigip_pool_member:
+    #     pool: AnsibleJuiceShopPool
+    #     host: 172.31.30.94
+    #     port: 3000
+    #     state: "{{ state }}"
+    #     provider:
+    #       user: "{{ username }}"
+    #       password: "{{ password }}"
+    #       server: 108.128.213.140
+    #       server_port: 8443
+    #       validate_certs: "{{ validate_certs }}"
+    #       transport: rest
  
     # - name: CreatePoolMember3
     #   bigip_pool_member:
@@ -86,27 +86,27 @@
     #       validate_certs: "{{ validate_certs }}"
     #       transport: rest
 
-    - name: CreateVS
-      bigip_virtual_server:
-        description: AnsibleJuiceShopVIP
-        destination: 172.31.19.43
-        name: AnsibleJuiceShopVS
-        pool: AnsibleJuiceShopPool
-        port: 443
-        snat: Automap
-        all_profiles:
-          - http
-          - clientssl
-        #   - websecurity
-        # all_policies:
-        #   - asm_auto_l7_policy__HackazonVS_HTTP
-        provider:
-          user: "{{ username }}"
-          password: "{{ password }}"
-          server: 108.128.213.140
-          server_port: 8443
-          validate_certs: "{{ validate_certs }}"
-          transport: rest
+    # - name: CreateVS
+    #   bigip_virtual_server:
+    #     description: AnsibleJuiceShopVIP
+    #     destination: 172.31.19.43
+    #     name: AnsibleJuiceShopVS
+    #     pool: AnsibleJuiceShopPool
+    #     port: 443
+    #     snat: Automap
+    #     all_profiles:
+    #       - http
+    #       - clientssl
+    #     #   - websecurity
+    #     # all_policies:
+    #     #   - asm_auto_l7_policy__HackazonVS_HTTP
+    #     provider:
+    #       user: "{{ username }}"
+    #       password: "{{ password }}"
+    #       server: 108.128.213.140
+    #       server_port: 8443
+    #       validate_certs: "{{ validate_certs }}"
+    #       transport: rest
 
     # - name: assign security logging profile to VS
     #   bigip_command:
