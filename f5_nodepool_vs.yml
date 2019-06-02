@@ -24,24 +24,24 @@
         - debug
         - debug_ec2
 
-    - name: Create pools
-      bigip_pool:
-        name: AnsibleJuiceShopPool
-        lb_method: round-robin
-        state: "{{ state }}"
-        monitors: ['/Common/tcp']
-        monitor_type: and_list
-        # server_port: 8443
-        provider:
-          user: "{{ username }}"
-          password: "{{ password }}"
-          server: 108.128.213.140
-          server_port: 8443
-          validate_certs: "{{ validate_certs }}"
-          transport: rest
-      delegate_to: localhost 
-      tags:
-        - create_pool
+    # - name: Create pools
+    #   bigip_pool:
+    #     name: AnsibleJuiceShopPool
+    #     lb_method: round-robin
+    #     state: "{{ state }}"
+    #     monitors: ['/Common/tcp']
+    #     monitor_type: and_list
+    #     # server_port: 8443
+    #     provider:
+    #       user: "{{ username }}"
+    #       password: "{{ password }}"
+    #       server: 108.128.213.140
+    #       server_port: 8443
+    #       validate_certs: "{{ validate_certs }}"
+    #       transport: rest
+    #   delegate_to: localhost 
+    #   tags:
+    #     - create_pool
 
     # - name: CreatePoolMember1
     #   bigip_pool_member:
