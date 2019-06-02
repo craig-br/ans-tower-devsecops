@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
 
-  vars:
+  # vars:
   # TODO secure passwords
     # validate_certs: no
     # username: redhat
@@ -13,7 +13,7 @@
   tasks:
   - name: Gather facts
     ec2_instance_facts:
-    region: "{{ ec2_region }}"
+      region: "{{ ec2_region }}"
     register: ec2
     tags:
     - debug
