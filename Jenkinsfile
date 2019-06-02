@@ -32,7 +32,7 @@ stage('Deploy Cloud Servers with Tower') {
         )
     }
 }
-stage('Deploy!!!') {
+stage('Deploy') {
     parallel('Deploy App with Tower': { 
         node {
             ansibleTower(
