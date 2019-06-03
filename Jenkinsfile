@@ -22,7 +22,6 @@ stage('Deploy Cloud Servers with Tower') {
             templateType: 'workflow',
             jobTemplate: 'DevSecOps EC2 Environment',
             importTowerLogs: true,
-            // inventory: 'RHEV',
             jobTags: '',
             skipJobTags: '',
             limit: '',
@@ -49,22 +48,22 @@ stage('Deploy') {
             )
         }
         
-    }, 'Configure Load Balancer': {
-        node {
-            ansibleTower(
-                towerServer: 'devsecops_tower',
-                templateType: 'job',
-                jobTemplate: 'DevSecOps Configure F5',
-                importTowerLogs: true,
-                jobTags: '',
-                skipJobTags: '',
-                limit: '',
-                removeColor: false,
-                verbose: true,
-                credential: '',
-            )
+        }, 'Configure Load Balancer': {
+            node {
+                ansibleTower(
+                    towerServer: 'devsecops_tower',
+                    templateType: 'workflow',
+                    jobTemplate: 'DevSecOps Configure Firewall',
+                    importTowerLogs: true,
+                    jobTags: '',
+                    skipJobTags: '',
+                    limit: '',
+                    removeColor: false,
+                    verbose: true,
+                    credential: '',
+                )
+            }
         }
-    }
     
     )
 }
