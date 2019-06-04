@@ -3,16 +3,16 @@
   hosts: localhost
   connection: local
   gather_facts: true
-  vars_files:
-    - ./local/vars/vault_aws_vars.yml
-    - ./local/vars/ec2_vars.yml
+  # vars_files:
+  #   - ./local/vars/vault_aws_vars.yml
+  #   - ./local/vars/ec2_vars.yml
 
   tasks:
   - name: Gather EC2 facts
     ec2_instance_facts:
       region: "{{ ec2_region }}"
-      aws_access_key: "{{ aws_access_key_id }}"
-      aws_secret_key: "{{ aws_secret_access_key }}"
+      # aws_access_key: "{{ aws_access_key_id }}"
+      # aws_secret_key: "{{ aws_secret_access_key }}"
     register: ec2
     tags:
      - ec2_facts
@@ -27,44 +27,8 @@
     failed_when: ec2.instances == ""
     tags:
       - f5_facts
-    
-  # - name: Create Pool
-  #   bigip_pool:
-  #     name: AnsibleJuiceShopPool
-  #     lb_method: round-robin
-  #     state: "{{ ec2_f5_state }}"
-  #     monitors: ['/Common/tcp']
-  #     monitor_type: and_list
-  #     provider:
-  #       user: "{{ user }}"
-  #       password: "{{ password }}"
-  #       server: "{{ hostvars.localhost.f5_public_ip }}"
-  #       server_port: 8443
-  #       validate_certs: "{{ ec2_validate_certs }}"
-  #       transport: rest
-  #   tags:
-  #     - create_pool
 
-
-  # - name: Create Pool Members
-  #   bigip_pool_member:
-  #     pool: AnsibleJuiceShopPool
-  #     host: "{{ item.private_ip_address }}"
-  #     port: 3000
-  #     state: "{{ ec2_f5_state }}"
-  #     provider:
-  #       server_port: 8443
-  #       user: "{{ user }}"
-  #       password: "{{ password }}"
-  #       server: "{{ hostvars.localhost.f5_public_ip }}"
-  #       validate_certs: "{{ ec2_validate_certs }}"
-  #       transport: rest
-  #   when: (item.tags.function == ec2_webserver_tag) and (item.state.name == "running")
-  #   loop: "{{ ec2.instances }}"
-  #   tags:
-  #     - create_pool
-
-  - name: CreateVS
+  - name: CreateVS with WAF
     bigip_virtual_server:
       description: AnsibleJuiceShopVIP
       destination: "{{ hostvars.localhost.f5_private_ip }}"
