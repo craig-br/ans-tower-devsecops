@@ -10,6 +10,4 @@
         - name: jmespath
         - name: boto
         - name: boto3
-        - name: awscli
-  # TODO Configure aws cli
-  
+        - name: awscli  
