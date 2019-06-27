@@ -1,4 +1,5 @@
 ---
+# TODO fix failed conditionals
 - name: Configure F5 WAF
   hosts: localhost
   connection: local
