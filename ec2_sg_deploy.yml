@@ -10,7 +10,6 @@
     ec2_instance_facts:
       region: "{{ ec2_region }}"
     register: ec2
-    failed_when: ec2.instances == ""
     tags:
      - ec2_facts
 
@@ -27,7 +26,23 @@
     when: item.tags.function == ec2_f5_tag
     loop: "{{ ec2.instances }}"
 
-  - name: Create security group
+  - name: Create security group with F5 defined
+    ec2_group:
+      name: "{{ ec2_sg_name }}"
+      description: "DevSecOps Demo Security Group"
+      region: "{{ ec2_region }}"
+      rules:
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 3000
+          to_port: 3000
+          cidr_ip: "{{ hostvars.localhost.f5_private_ip + '/32' | default('0.0.0.0/0') }}"
+    when: hostvars['localhost']['f5_private_ip'] is defined
+
+  - name: Create security group no F5 deployed
     ec2_group:
       name: "{{ ec2_sg_name }}"
       description: "DevSecOps Demo Security Group"
@@ -41,4 +56,4 @@
           from_port: 3000
           to_port: 3000
           cidr_ip: "0.0.0.0/0"
-          # cidr_ip: "{{ hostvars.localhost.f5_private_ip}}/32"
+    when: hostvars['localhost']['f5_private_ip'] is not defined
