@@ -1,5 +1,4 @@
 ---
-# TODO add checks for vars and state if ec2 instances
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
