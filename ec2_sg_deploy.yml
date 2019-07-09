@@ -2,13 +2,17 @@
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
-  gather_facts: true
-
+  gather_facts: false
+  become: false
+  vars:
+    ansible_python_interpreter: /usr/local/opt/python/libexec/bin/python
   tasks:
   - name: Gather EC2 facts
     ec2_instance_facts:
       region: "{{ ec2_region }}"
     register: ec2
+    #delegate_to: localhost
+    #connection: local
     tags:
      - ec2_facts
 
