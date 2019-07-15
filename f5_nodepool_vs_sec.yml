@@ -37,10 +37,10 @@
         - http
         - Hackazon_Client_SSL
         - websecurity
-      all_policies:
-        - Hackazon_Policy
         - Hackazon_Datasafe
         - Hackazon_Bot_Defence
+      all_policies:
+        - Hackazon_Policy
       provider:
         user: "{{ user }}"
         password: "{{ password }}"
