@@ -26,20 +26,20 @@
 
   - name: CreateVS with WAF
     bigip_virtual_server:
-      description: AnsibleJuiceShopVIP
+      description: AnsibleHackazonVIP
       destination: "{{ hostvars.localhost.f5_private_ip }}"
-      name: AnsibleJuiceShopVS
-      pool: AnsibleJuiceShopPool
+      name: AnsibleHackazonVS
+      pool: AnsibleHackazonPool
       port: "443"
       snat: Automap
       default_persistence_profile: "source_addr"
-      security_log_profiles: "Log all requests"
+      security_log_profiles: "Hackazon_Logging"
       all_profiles:
         - http
-        - clientssl
+        - Hackazon_Client_SSL
         - websecurity
       all_policies:
-        - redhat_waf_policy
+        - Hackazon_Policy
       provider:
         user: "{{ user }}"
         password: "{{ password }}"
