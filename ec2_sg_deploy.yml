@@ -4,8 +4,7 @@
   connection: local
   gather_facts: false
   become: false
-  vars:
-    ansible_python_interpreter: /usr/local/opt/python/libexec/bin/python
+
   tasks:
   - name: Gather EC2 facts
     ec2_instance_facts:
