@@ -20,7 +20,6 @@
       cacheable: true
     when: (item.tags.function == ec2_f5_tag) and (item.state.name == "running")
     loop: "{{ ec2.instances }}"
-    failed_when: ec2.instances == ""
     tags:
       - f5_facts
 
