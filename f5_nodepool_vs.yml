@@ -19,7 +19,6 @@
       cacheable: true
     when: (item.tags.function == ec2_f5_tag) and (item.state.name == "running")
     loop: "{{ ec2.instances }}"
-    failed_when: ec2.instances == ""
     tags:
       - f5_facts
     
@@ -67,7 +66,6 @@
       port: "443"
       snat: Automap
       default_persistence_profile: "source_addr"
-      # security_log_profiles: "Log all requests"
       all_profiles:
         - http
         - Hackazon_Client_SSL

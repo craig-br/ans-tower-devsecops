@@ -40,6 +40,8 @@
         - websecurity
       all_policies:
         - Hackazon_Policy
+        - Hackazon_Datasafe
+        - Hackazon_Bot_Defence
       provider:
         user: "{{ user }}"
         password: "{{ password }}"
