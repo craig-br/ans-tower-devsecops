@@ -28,4 +28,3 @@ virtualenv/
 roles/*
 ansible.cfg
 .DS_Store
-vars/

@@ -1,0 +1,27 @@
+---
+jenkins_plugins:
+  - ansicolor
+  - pipeline
+  - git
+  - ansible
+  - ansible-tower
+  - pipeline-multibranch-defaults
+  - blueocean
+  - blueocean-display-url
+  - pipeline-utility-steps
+  - nexus-platform
+  - sonarqube-scanner
+  - sonarqube
+  - nexus-artifact-uploader
+  - checkstyle 
+  - cloverphp 
+  - crap4j 
+  - dry 
+  - htmlpublisher 
+  - jdepend 
+  - plot 
+  - pmd 
+  - violations 
+  - warnings 
+  - xunit
+  - phpunit
