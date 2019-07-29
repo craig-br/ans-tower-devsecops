@@ -3,7 +3,7 @@
 - name: Configure F5 WAF
   hosts: localhost
   connection: local
-  gather_facts: true
+  gather_facts: false
 
   tasks:
   - name: Gather EC2 facts

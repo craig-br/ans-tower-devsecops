@@ -10,8 +10,6 @@
     ec2_instance_facts:
       region: "{{ ec2_region }}"
     register: ec2
-    #delegate_to: localhost
-    #connection: local
     tags:
      - ec2_facts
 
