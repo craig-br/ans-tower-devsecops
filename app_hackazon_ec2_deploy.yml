@@ -1,0 +1,20 @@
+---
+- name: Deploy Hackazon Application to EC2 Instances
+  hosts: all
+  gather_facts: false
+  
+  tasks:
+  - name: Pull Hackazon AIO Image
+    podman_image:
+      name: mutzel/all-in-one-hackazon
+      tag: postinstall
+      state: present
+    tags:
+      - app_hackazon_image_pull
+      - webservers
+      - devsecops
+
+  - name: Start hackazon AIO Image
+    command: >
+      podman run --name hackazon -p 3000:80 -d all-in-one-hackazon:postinstall
+
