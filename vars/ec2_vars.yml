@@ -8,3 +8,5 @@ ec2_validate_certs: false
 user: "F5 user"
 password: "F5 password"
 ec2_state: "ec2 default state"
+base_packages:
+  - podman
