@@ -1,0 +1,13 @@
+---
+- name: Create EC2 Security Group
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  - name: Create security group no F5 deployed
+    ec2_group:
+      name: "{{ ec2_sg_name }}"
+      state: absent
