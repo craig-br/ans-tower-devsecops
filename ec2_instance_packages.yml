@@ -1,5 +1,5 @@
 ---
-- name: Install packages on guests
+- name: Install packages on RHEL guests
   hosts: all
   gather_facts: false
   
