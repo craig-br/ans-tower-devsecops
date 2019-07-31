@@ -5,7 +5,7 @@
   
   tasks:
     - name: Install additional packages
-      package:
+      yum:
         name: "{{ item }}"
       loop: "{{ base_packages + group_packages | default([]) }}"
       tags:
