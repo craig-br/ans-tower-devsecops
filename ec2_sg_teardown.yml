@@ -1,13 +1,12 @@
 ---
-- name: Create EC2 Security Group
+- name: Remove EC2 Security Group
   hosts: localhost
   connection: local
   gather_facts: false
   become: false
 
   tasks:
-
-  - name: Create security group no F5 deployed
+  - name: Remove {{ ec2_sg_name }} security group
     ec2_group:
       name: "{{ ec2_sg_name }}"
       region: "{{ ec2_region }}"
