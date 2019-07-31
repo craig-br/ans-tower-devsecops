@@ -10,4 +10,5 @@
   - name: Create security group no F5 deployed
     ec2_group:
       name: "{{ ec2_sg_name }}"
+      region: "{{ ec2_region }}"
       state: absent
