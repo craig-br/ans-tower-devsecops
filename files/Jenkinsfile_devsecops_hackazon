@@ -19,7 +19,7 @@ stage('Configure Firewall') {
             limit: '',
             removeColor: false,
             verbose: true,
-            credential: '',
+            credential: ''
         )
     }
 }
