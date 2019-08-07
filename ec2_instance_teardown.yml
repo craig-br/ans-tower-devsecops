@@ -12,9 +12,17 @@
       region: "{{ ec2_region }}"
     register: ec2_instances
     
-  - name: Teardown EC2 Instances
+  - name: Teardown EC2 Web Servers
     ec2:
-      state: "{{ ec2_state }}"
+      state: "{{ ec2_webserver_teardown_state }}"
+      region: "{{ ec2_region }}"
+      instance_ids: '{{ item.instance_id }}'
+    loop: '{{ ec2_instances.instances }}'
+    when: (item.tags.function == ec2_webserver_tag)
+
+  - name: Teardown EC2 F5 instance
+    ec2:
+      state: "{{ ec2_f5_teardown_state }}"
       region: "{{ ec2_region }}"
       instance_ids: '{{ item.instance_id }}'
     loop: '{{ ec2_instances.instances }}'
