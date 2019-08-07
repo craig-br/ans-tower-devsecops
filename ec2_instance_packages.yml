@@ -6,10 +6,8 @@
   tasks:
     - name: Install additional packages
       package:
-        name: "{{ base_packages }}"
+        name: "{{ base_packages + group_packages | default([]) }}"
         state: present
-      # loop: "{{ base_packages }}"
-      # loop: "{{ base_packages + group_packages | default([]) }}"
       tags:
         - packages
    
