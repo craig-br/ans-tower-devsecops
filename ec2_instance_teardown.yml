@@ -1,5 +1,4 @@
 ---
-## TODO fix including instances that are already terminated
 - name: Terminate instances that were previously launched
   hosts: localhost
   connection: local
