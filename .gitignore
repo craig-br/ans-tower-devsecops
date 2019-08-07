@@ -26,5 +26,4 @@ virtualenv/
 .code-workspace
 !./roles/requirements.yml
 roles/*
-ansible.cfg
 .DS_Store
