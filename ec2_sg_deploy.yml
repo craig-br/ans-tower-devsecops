@@ -1,4 +1,5 @@
 ---
+#TODO add check for terminated F5 instances 
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
@@ -17,7 +18,7 @@
     set_fact:
       f5_private_ip: "{{ item.private_ip_address }}"
       cacheable: true
-    when: item.tags.function == ec2_f5_tag
+    when: (item.tags.function) == ec2_f5_tag and (item.state.name == "running")
     loop: "{{ ec2.instances }}"
 
   - name: Create security group with F5 defined
