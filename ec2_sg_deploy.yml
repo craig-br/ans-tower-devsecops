@@ -1,5 +1,4 @@
 ---
-#TODO add check for terminated F5 instances 
 - name: Create EC2 Security Group
   hosts: localhost
   connection: local
@@ -10,18 +9,23 @@
   - name: Gather EC2 facts
     ec2_instance_facts:
       region: "{{ ec2_region }}"
+      filters:
+        "tag:function": "{{ ec2_f5_tag }}"
     register: ec2
     tags:
-     - ec2_facts
+     - ec2_sg_deploy
+     - ec2_f5_facts
 
   - name: Create Facts for F5 configuration
     set_fact:
-      f5_private_ip: "{{ item.private_ip_address }}"
+      f5_private_ip: "{{ item['private_ip_address'] }}"
       cacheable: true
-    when: (item.tags.function) == ec2_f5_tag and (item.state.name == "running")
     loop: "{{ ec2.instances }}"
+    tags:
+     - ec2_sg_deploy
+     - ec2_sg_set_fact
 
-  - name: Create security group with F5 defined
+  - name: Create security group
     ec2_group:
       name: "{{ ec2_sg_name }}"
       description: "DevSecOps Demo Security Group"
@@ -34,21 +38,7 @@
         - proto: tcp
           from_port: 3000
           to_port: 3000
-          cidr_ip: "{{ hostvars.localhost.f5_private_ip + '/32' | default('0.0.0.0/0') }}"
-    when: hostvars['localhost']['f5_private_ip'] is defined
-
-  - name: Create security group no F5 deployed
-    ec2_group:
-      name: "{{ ec2_sg_name }}"
-      description: "DevSecOps Demo Security Group"
-      region: "{{ ec2_region }}"
-      rules:
-        - proto: tcp
-          from_port: 22
-          to_port: 22
-          cidr_ip: 0.0.0.0/0
-        - proto: tcp
-          from_port: 3000
-          to_port: 3000
-          cidr_ip: "0.0.0.0/0"
-    when: hostvars['localhost']['f5_private_ip'] is not defined
+          cidr_ip: "{{ hostvars['localhost']['f5_private_ip'] + '/32'}}"
+    tags:
+     - ec2_sg_deploy
+     - ec2_sg_create

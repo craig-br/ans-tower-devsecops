@@ -22,11 +22,11 @@
         wait_timeout: 500
     register: ec2
 
-  - name: Add all instances to host group
-    add_host: 
-      hostname: "{{ item.public_dns_name }}"
-      groupname: ec2_devsecops_hosts
-    loop: "{{ ec2.instances }}"
+  # - name: Add all instances to host group
+  #   add_host: 
+  #     hostname: "{{ item.public_dns_name }}"
+  #     groupname: ec2_devsecops_hosts
+  #   loop: "{{ ec2.instances }}"
   
   - name: Wait for SSH to come up
     wait_for:

@@ -27,3 +27,5 @@ virtualenv/
 !./roles/requirements.yml
 roles/*
 .DS_Store
+settings.json
+
