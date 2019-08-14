@@ -5,14 +5,7 @@
   gather_facts: false
   become: false
 
-  tasks:
-  - name: Gather EC2 Facts
-    ec2_instance_facts:
-      region: "{{ ec2_region }}"
-      # filters:
-      #   "tag:function": "{{ ec2_webserver_tag }}"
-    register: ec2_instances
-    
+  tasks:    
   - name: Teardown EC2 Web Servers
     ec2_instance:
       state: "{{ ec2_webserver_teardown_state }}"
