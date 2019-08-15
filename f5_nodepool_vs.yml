@@ -60,6 +60,24 @@
     tags:
       - create_pool
 
+  - name: Create Pool Members
+    bigip_pool_member:
+      pool: "{{ f5_pool_name }}"
+      host: "{{ item.private_ip_address }}"
+      port: 3000
+      state: "{{ ec2_f5_state }}"
+      provider:
+        server_port: 8443
+        user: "{{ user }}"
+        password: "{{ password }}"
+        server: "{{ hostvars.localhost.f5_public_ip }}"
+        validate_certs: "{{ ec2_validate_certs }}"
+        transport: rest
+    when: (item.tags.function == ec2_webserver_tag)
+    loop: "{{ ec2.instances }}"
+    tags:
+      - create_pool
+
   - name: Create {{ f5_vs_name }} VS
     bigip_virtual_server:
       description: "{{ f5_vs_name }}"
