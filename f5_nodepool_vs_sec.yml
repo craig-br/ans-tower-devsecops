@@ -37,8 +37,6 @@
         - http
         - Hackazon_Client_SSL
         - websecurity
-        - Hackazon_Datasafe
-        - Hackazon_Bot_Defence
       all_policies:
         - Hackazon_Policy
       provider:
