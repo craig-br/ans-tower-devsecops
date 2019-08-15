@@ -25,7 +25,7 @@
     tags:
       - f5_facts
     
-  - name: Create {{{ f5_pool_name }} Pool
+  - name: Create {{ f5_pool_name }} Pool
     bigip_pool:
       name: "{{ f5_pool_name }}"
       lb_method: round-robin
