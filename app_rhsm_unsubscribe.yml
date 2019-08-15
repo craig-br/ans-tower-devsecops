@@ -1,7 +1,7 @@
 ---
 - name: Unsubscribe from RHSM and Insights
   hosts: all
-  become: true
+  become: false
   gather_facts: false
 
   tasks:
