@@ -37,24 +37,12 @@
           validate_certs:  "{{ ec2_validate_certs }}"
           transport: rest
 
-    - name: Delete {{ f5_pool_name }} pool
-      bigip_pool:
-        name: "{{ f5_pool_name }}"
-        state: absent
-        provider:
-          user: "{{ user }}"
-          password: "{{ password }}"
-          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
-          server_port: 8443
-          validate_certs: "{{ validate_certs }}"
-          transport: rest
-
     - name: Delete Pool Members
       bigip_pool_member:
         pool: "{{ f5_pool_name }}"
         port: 80
         host: "{{ item['private_ip_address'] }}"
-        preserve_node: 
+        preserve_node: yes 
         state: absent
         provider:
           user: "{{ user }}"
@@ -65,4 +53,16 @@
           transport: rest
       when: (item.tags.function == ec2_webserver_tag)
       loop: "{{ ec2.instances }}"
+
+    - name: Delete {{ f5_pool_name }} pool
+      bigip_pool:
+        name: "{{ f5_pool_name }}"
+        state: absent
+        provider:
+          user: "{{ user }}"
+          password: "{{ password }}"
+          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          server_port: 8443
+          validate_certs: "{{ ec2_validate_certs }}"
+          transport: rest
 
