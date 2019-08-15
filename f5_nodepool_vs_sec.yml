@@ -48,4 +48,4 @@
         validate_certs: "{{ ec2_validate_certs }}"
         transport: rest
     tags:
-      - f5_vs
+      - f5_create_vs
