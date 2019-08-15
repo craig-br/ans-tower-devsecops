@@ -6,16 +6,22 @@
   become: false
 
   tasks:    
-  - name: Teardown EC2 Web Servers
+  - name: Cleanup EC2 Web Servers
     ec2_instance:
       state: "{{ ec2_webserver_teardown_state }}"
       region: "{{ ec2_region }}"
       filters:
         "tag:function": "{{ ec2_webserver_tag }}"
 
-  - name: Teardown Firewall
+  - name: Cleanup Firewall
     ec2_instance:
       state: "{{ ec2_f5_teardown_state }}"
       region: "{{ ec2_region }}"
       filters:
         "tag:function": "{{ ec2_f5_tag }}"
+
+  - name: Cleanup {{ ec2_sg_name }} security group
+    ec2_group:
+      name: "{{ ec2_sg_name }}"
+      region: "{{ ec2_region }}"
+      state: absent
