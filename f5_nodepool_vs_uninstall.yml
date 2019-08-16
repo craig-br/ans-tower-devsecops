@@ -65,4 +65,3 @@
           server_port: 8443
           validate_certs: "{{ ec2_validate_certs }}"
           transport: rest
-
