@@ -16,6 +16,8 @@ base_packages:
 ec2_instance_type: m5.large
 ec2_ami: ami-7c491f05
 ec2_count: 3
+
+#RHSM Vars 
 rhsm_pool_ids: "rhsm poolid"
 rhsm_username: "rhsm username"
 rhsm_repos_purge: false
