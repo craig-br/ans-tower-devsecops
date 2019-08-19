@@ -42,7 +42,7 @@
         pool: "{{ f5_pool_name }}"
         port: 80
         host: "{{ item['private_ip_address'] }}"
-        preserve_node: no
+        preserve_node: yes
         state: absent
         provider:
           user: "{{ user }}"
