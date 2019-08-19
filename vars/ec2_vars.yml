@@ -21,5 +21,8 @@ rhsm_repos:
   - rhel-7-server-rpms
   - rhel-7-server-extras-rpms
   - rhel-7-server-optional-rpms
+## 
+# @todo check where the best place is to add pipelining for Tower.
+##
 ansible_ssh_common_args: -C -o ControlMaster=auto -o ControlPersist=60s
 ansible_ssh_pipelining: true
