@@ -45,7 +45,7 @@
         password: "{{ password }}"
         server: "{{ hostvars['localhost']['f5_public_ip'] }}"
         server_port: 8443
-        validate_certs: "{{ ec2_validate_certs }}"
+        validate_certs: "{{ f5_validate_certs }}"
         transport: rest
     tags:
       - f5_create_vs
