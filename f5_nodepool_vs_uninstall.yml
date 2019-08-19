@@ -1,4 +1,5 @@
 ---
+## @todo add bigip_node remove play at the end
 - name: F5 Virtual Switch Uninstall
   hosts: localhost
   connection: local
