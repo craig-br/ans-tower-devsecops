@@ -37,7 +37,7 @@
         password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
         server_port: 8443
-        validate_certs: "{{ ec2_validate_certs }}"
+        validate_certs: "{{ f5_validate_certs }}"
         transport: rest
     tags:
       - create_pool
@@ -53,7 +53,7 @@
         user: "{{ user }}"
         password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
-        validate_certs: "{{ ec2_validate_certs }}"
+        validate_certs: "{{ f5_validate_certs }}"
         transport: rest
     when: (item.tags.function == ec2_webserver_tag)
     loop: "{{ ec2.instances }}"
@@ -80,7 +80,7 @@
         password: "{{ password }}"
         server: "{{ hostvars.localhost.f5_public_ip }}"
         server_port: 8443
-        validate_certs: "{{ ec2_validate_certs }}"
+        validate_certs: "{{ f5_validate_certs }}"
         transport: rest
     tags:
       - f5_vs

@@ -4,7 +4,7 @@ ec2_region: "EC2 Region"
 ec2_f5_tag: "Firewall tag"
 ec2_webserver_tag: "EC2 Web Server tag"
 ec2_f5_state: "Is F5 present on EC2?"
-ec2_validate_certs: false
+f5_validate_certs: false
 user: "F5 user"
 password: "F5 password"
 ec2_state: "ec2 default state"
