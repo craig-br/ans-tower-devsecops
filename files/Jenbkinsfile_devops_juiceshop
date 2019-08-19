@@ -20,7 +20,7 @@ stage('Deploy Cloud Servers with Tower') {
         ansibleTower(
             towerServer: 'devsecops_tower',
             templateType: 'workflow',
-            jobTemplate: 'DevSecOps EC2 Environment',
+            jobTemplate: 'DevSecOps EC2 Environment Deploy',
             importTowerLogs: true,
             jobTags: '',
             skipJobTags: '',
