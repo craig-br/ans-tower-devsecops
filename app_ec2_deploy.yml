@@ -2,8 +2,6 @@
 - name: Deploy Application to EC2 Instances
   hosts: all
   gather_facts: true
-  vars:
-    node_app_dir: "/usr/local/juice-shop_8.6.2/"
   roles:
   - role: geerlingguy.nodejs
     vars:
