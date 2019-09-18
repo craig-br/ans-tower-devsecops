@@ -21,9 +21,8 @@
     get_url: 
       url: https://raw.githubusercontent.com/craig-br/ans-tower-devsecops/master/files/devsecops.yml
       dest: "{{ node_app_dir }}config/devsecops.yml"
-      # dest: " {{ node_app_dir }}config/devsecops.yml"
     tags:
-      - get_config      
+      - get_config
 
   - name: Install Forever
     npm: 
@@ -45,6 +44,8 @@
     command: 
       cmd: "forever start app.js"
       chdir: "{{node_app_dir}}"
+    environment: 
+      NODE_ENV: "devsecops"
     when: "forever_list.stdout.find('app.js') == -1"
     tags:
       - run_app
