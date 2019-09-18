@@ -2,7 +2,7 @@ server:
   port: 3000
 application:
   domain: juice-sh.op
-  name: 'May Juice Shop'
+  name: 'Juice Shop'
   logo: JuiceShop_Logo.png
   favicon: favicon_js.ico
   numberOfRandomFakeUsers: 0
