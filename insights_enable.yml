@@ -1,0 +1,17 @@
+---
+## TODO create succes on rc for already registred systems
+- name: Install and enable Insights client
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install Insights client
+      package:
+        state: present
+        name: insights-client
+      tags:
+        - insights
+    - name: Register Guest with Insights
+      command: >
+        insights-client --register
+      tags:
+        - insights 

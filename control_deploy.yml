@@ -1,0 +1,13 @@
+---
+- name: Configure Control Server
+  hosts: all
+
+  roles:
+  - role: geerlingguy.repo-epel
+  - role:  geerlingguy.pip
+    vars:
+      - pip_install_packages:
+        - name: jmespath
+        - name: boto
+        - name: boto3
+        - name: awscli  

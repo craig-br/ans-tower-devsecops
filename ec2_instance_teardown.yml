@@ -1,0 +1,27 @@
+---
+- name: Terminate instances that were previously launched
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+
+  tasks:    
+  - name: Cleanup EC2 Web Servers
+    ec2_instance:
+      state: "{{ ec2_webserver_teardown_state }}"
+      region: "{{ ec2_region }}"
+      filters:
+        "tag:function": "{{ ec2_webserver_tag }}"
+
+  - name: Cleanup Firewall
+    ec2_instance:
+      state: "{{ ec2_f5_teardown_state }}"
+      region: "{{ ec2_region }}"
+      filters:
+        "tag:function": "{{ ec2_f5_tag }}"
+
+  - name: Cleanup {{ ec2_sg_name }} security group
+    ec2_group:
+      name: "{{ ec2_sg_name }}"
+      region: "{{ ec2_region }}"
+      state: absent

@@ -1,0 +1,86 @@
+---
+- name: configure F5 Nodepool
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+
+  tasks:
+  - name: Gather EC2 facts
+    ec2_instance_facts:
+      region: "{{ ec2_region }}"
+      filters:
+        instance-state-name: ["running"]
+    register: ec2
+    tags:
+     - ec2_facts
+
+  - name: Create Facts for F5 configuration
+    set_fact:
+      f5_public_ip: "{{ item.public_ip_address }}"
+      f5_private_ip: "{{ item.private_ip_address }}"
+      cacheable: true
+    when: (item.tags.function == ec2_f5_tag)
+    loop: "{{ ec2.instances }}"
+    tags:
+      - f5_facts
+    
+  - name: Create {{ f5_pool_name }} Pool
+    bigip_pool:
+      name: "{{ f5_pool_name }}"
+      lb_method: round-robin
+      state: "{{ ec2_f5_state }}"
+      monitors: ['/Common/http']
+      monitor_type: and_list
+      provider:
+        user: "{{ user }}"
+        password: "{{ password }}"
+        server: "{{ hostvars.localhost.f5_public_ip }}"
+        server_port: 8443
+        validate_certs: "{{ f5_validate_certs }}"
+        transport: rest
+    tags:
+      - create_pool
+
+  - name: Create Pool Members
+    bigip_pool_member:
+      pool: "{{ f5_pool_name }}"
+      host: "{{ item.private_ip_address }}"
+      port: 3000
+      state: "{{ ec2_f5_state }}"
+      provider:
+        server_port: 8443
+        user: "{{ user }}"
+        password: "{{ password }}"
+        server: "{{ hostvars.localhost.f5_public_ip }}"
+        validate_certs: "{{ f5_validate_certs }}"
+        transport: rest
+    when: (item.tags.function == ec2_webserver_tag)
+    loop: "{{ ec2.instances }}"
+    tags:
+      - create_pool
+
+  - name: Create {{ f5_vs_name }} VS
+    bigip_virtual_server:
+      description: "{{ f5_vs_name }}"
+      destination: "{{ hostvars.localhost.f5_private_ip }}"
+      name: "{{ f5_vs_name }}"
+      pool: "{{ f5_pool_name }}"
+      port: "443"
+      snat: Automap
+      default_persistence_profile: "source_addr"
+      all_profiles:
+        - http
+        - Hackazon_Client_SSL
+        - websecurity
+      all_policies:
+        - redhat_disable_waf
+      provider:
+        user: "{{ user }}"
+        password: "{{ password }}"
+        server: "{{ hostvars.localhost.f5_public_ip }}"
+        server_port: 8443
+        validate_certs: "{{ f5_validate_certs }}"
+        transport: rest
+    tags:
+      - f5_vs

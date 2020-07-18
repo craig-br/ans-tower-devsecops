@@ -1,0 +1,62 @@
+---
+- name: Deploy Hackazon Application to EC2 Instances
+  hosts: all
+  gather_facts: false
+  
+  tasks:
+  - name: Pull Hackazon AIO Image
+    podman_image:
+      name: mutzel/all-in-one-hackazon
+      tag: postinstall
+      state: present
+    tags:
+      - app_hackazon_image_pull
+      - app
+      - devsecops
+
+  - name: Get current running Containers
+    command: >
+      podman ps --filter name="{{ container_name }}"
+    register: podman_status
+    tags:
+      - app_hackazon_pod_status
+      - app_hackazon
+      - devsecops
+
+  - name: Debug podman status
+    debug:
+      var: podman_status
+      verbosity: 2
+    tags:
+    - debug_app_hackazon_pod_status
+    - app_hackazon
+    - devsecops
+
+  - name: Stop current Hackazon Container if it running
+    command: >
+      podman stop {{ container_name }}
+    when: podman_status.stdout is search('Up ')
+    tags:
+    - app_hackazon_pod_stop
+    - app_hackazon
+    - devsecops
+
+  - name: Remove current Hackazon Container if it Exists
+    command: >
+      podman rm {{ container_name }}
+    when: podman_status.stdout is search('Exited ')
+    tags:
+    - app_hackazon_pod_remove
+    - app_hackazon
+    - devsecops
+
+
+  - name: Start hackazon AIO Image
+    command: >
+      podman run --rm --name {{ container_name }} -p 3000:80 -d all-in-one-hackazon:postinstall
+    tags:
+    - app_hackazon_pod_start
+    - app_hackazon
+    - devsecops
+
+

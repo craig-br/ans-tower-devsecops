@@ -1,0 +1,56 @@
+---
+- name: Deploy Application to EC2 Instances
+  hosts: all
+  gather_facts: true
+  roles:
+  - role: geerlingguy.nodejs
+    vars:
+      nodejs_version: "10.x"
+  
+  tasks:
+  - name: Extract download
+    unarchive:
+      src: https://github.com/bkimminich/juice-shop/releases/download/v8.6.2/juice-shop-8.6.2_node10_linux_x64.tgz
+      remote_src: true
+      dest: /usr/local/
+    register: app_download
+    tags:
+      - extract
+  
+  - name: Download DevSecOps JuiceShop config file
+    get_url: 
+      url: https://raw.githubusercontent.com/craig-br/ans-tower-devsecops/master/files/devsecops.yml
+      dest: "{{ node_app_dir }}config/devsecops.yml"
+    tags:
+      - get_config
+
+  - name: Install Forever
+    npm: 
+      name: forever 
+      global: yes 
+      state: present
+    tags:
+      - run_app
+
+  - name: Check list of running Node.js apps.
+    command: forever list
+    register: forever_list
+    changed_when: false
+    tags:
+      - run_app
+
+  - name: Run application
+    become: true
+    command: 
+      cmd: "forever start app.js"
+      chdir: "{{node_app_dir}}"
+    environment: 
+      NODE_ENV: "devsecops"
+    when: "forever_list.stdout.find('app.js') == -1"
+    tags:
+      - run_app
+
+  tags:
+    - app_deploy
+    - webservers
+    - devsecops

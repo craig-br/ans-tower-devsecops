@@ -1,0 +1,87 @@
+---
+## @todo add bigip_node remove play at the end
+- name: F5 Virtual Switch Uninstall
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Gather ec2 facts
+      ec2_instance_facts:
+        region: "{{ ec2_region }}"
+        filters:
+          instance-state-name: ["running","shutting-down", "stopping", "stopped"]
+      register: ec2
+      tags:
+        - ec2_facts
+
+    - name: Create Facts for F5 configuration
+      set_fact:
+        f5_public_ip: "{{ item['public_ip_address'] }}"
+        f5_private_ip: "{{ item['private_ip_address'] }}"
+        cacheable: true
+      when: (item.tags.function == ec2_f5_tag)
+      loop: "{{ ec2.instances }}"
+      tags:
+        - f5_facts
+
+    - name: Delete {{ f5_vs_name }} VS
+      bigip_virtual_server:
+        name: "{{ f5_vs_name }}"
+        state: absent
+        provider:
+          user: "{{ user }}"
+          password: "{{ password }}"
+          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          server_port: 8443
+          validate_certs:  "{{ f5_validate_certs }}"
+          transport: rest
+
+    - name: Delete Pool Members
+      bigip_pool_member:
+        pool: "{{ f5_pool_name }}"
+        port: 80
+        host: "{{ item['private_ip_address'] }}"
+        preserve_node: yes
+        state: absent
+        provider:
+          user: "{{ user }}"
+          password: "{{ password }}"
+          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          server_port: 8443
+          validate_certs: "{{ f5_validate_certs }}"
+          transport: rest
+      when: (item.tags.function == ec2_webserver_tag)
+      loop: "{{ ec2.instances }}"
+
+    - name: Delete {{ f5_pool_name }} pool
+      bigip_pool:
+        name: "{{ f5_pool_name }}"
+        state: absent
+        provider:
+          user: "{{ user }}"
+          password: "{{ password }}"
+          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          server_port: 8443
+          validate_certs: "{{ f5_validate_certs }}"
+          transport: rest
+
+    - name: Delete F5 nodes
+      bigip_node:
+        name: "{{ item['private_ip_address'] }}"
+        # pool: "{{ f5_pool_name }}"
+        # port: 80
+        server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+        # host: "{{ item['private_ip_address'] }}"
+        # preserve_node: yes
+        state: absent
+        provider:
+          user: "{{ user }}"
+          password: "{{ password }}"
+          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          server_port: 8443
+          validate_certs: "{{ f5_validate_certs }}"
+          transport: rest
+      when: (item.tags.function == ec2_webserver_tag)
+      loop: "{{ ec2.instances }}"
