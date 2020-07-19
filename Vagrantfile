@@ -31,8 +31,9 @@ Vagrant.configure("2") do |config|
       ansible.verbose = "vvv"
       ansible.groups = {
         "ciservers" => ["jenkins"],
-        "adminservers" => ["tower"]
-        "" => ["tower"]
+        "adminservers" => ["tower"],
+        "qcservers" => ["sonar"]
+
       }
     end
   end
@@ -59,8 +60,9 @@ Vagrant.configure("2") do |config|
     #   ansible.verbose = "vvv"
     #   ansible.groups = {
     #     "ciservers" => ["jenkins"],
-    #     "adminservers" => ["tower"]
-    #   }
+    #     "adminservers" => ["tower"],
+    #     "qcservers" => ["sonar"]
+    # # }
     # end
   end
 
@@ -71,11 +73,11 @@ Vagrant.configure("2") do |config|
     s.vm.hostname = "sonar.vagrant.local"
     s.vm.synced_folder ".", "/vagrant", disabled: true
     # Jenkins Node VirtualBox Customisations
-    j.vm.provider :virtualbox do |v|
-      v.memory = 2048
-      v.cpus = 2
-      v.customize ["modifyvm", :id, "--ioapic", "on"]
-      v.name = "sonar"
+    s.vm.provider :virtualbox do |v|
+      s.memory = 2048
+      s.cpus = 2
+      s.customize ["modifyvm", :id, "--ioapic", "on"]
+      s.name = "sonar"
     end
     # Jenkins Node Ansible
     # j.vm.provision "ansible" do |ansible|
@@ -85,8 +87,9 @@ Vagrant.configure("2") do |config|
     #   ansible.galaxy_roles_path = "./roles"
     #   ansible.verbose = "vvv"
     #   ansible.groups = {
-    #     "ciservers" => ["jenkins"],
-    #     "adminservers" => ["tower"]
+      # "ciservers" => ["jenkins"],
+      # "adminservers" => ["tower"],
+      # "qcservers" => ["sonar"]
     #   }
     # end
   end
