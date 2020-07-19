@@ -32,10 +32,10 @@ Vagrant.configure("2") do |config|
       ansible.groups = {
         "ciservers" => ["jenkins"],
         "adminservers" => ["tower"]
+        "" => ["tower"]
       }
     end
   end
-
 
   # Define Jenkins Node
   config.vm.define "jenkins" do |j|
@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
     j.vm.synced_folder ".", "/vagrant", disabled: true
     # Jenkins Node VirtualBox Customisations
     j.vm.provider :virtualbox do |v|
-      v.memory = 4096
+      v.memory = 2048
       v.cpus = 2
       v.customize ["modifyvm", :id, "--ioapic", "on"]
       v.name = "jenkins"
@@ -63,29 +63,34 @@ Vagrant.configure("2") do |config|
     #   }
     # end
   end
-#   config.vm.define "tower" do |tower|
-#     tower.vm.box = "generic/rhel7"
-#     tower.vm.network "private_network", virtualbox__natnet: "ansible_demo_mgmt", ip: "192.168.20.10", nic_type: "virtio"
-#     tower.vm.hostname = "tower.vagrant.local"
-#     tower.vm.synced_folder ".", "/vagrant", disabled: true
-# 		#Spec
-#     tower.vm.provider "virtualbox" do |v|
-#       v.memory = 4096
-#       v.cpus = 2
-#     end
-# 		#Configuration
-# 		config.vm.provision :ansible do |ansible|
-# 			ansible.config_file = "./ansible.cfg"
-# 			ansible.playbook = "./playbooks/tower_install.yml" 
-# 			ansible.galaxy_role_file = "./roles/requirements.yml"
-# 			ansible.galaxy_roles_path = "./roles"
-# 			#ansible.ask_vault_pass = true
-# 			ansible.verbose = "vvv"
-# 			ansible.groups = {
-# 				"adminservers" => ["tower"]
-# 			}
-# 		end
-#   end
+
+  # Define SonarQube Node
+  config.vm.define "sonar" do |s|
+    s.vm.box = "generic/rhel8"
+    s.vm.network "private_network", ip: "192.168.20.12", nic_type: "virtio"
+    s.vm.hostname = "sonar.vagrant.local"
+    s.vm.synced_folder ".", "/vagrant", disabled: true
+    # Jenkins Node VirtualBox Customisations
+    j.vm.provider :virtualbox do |v|
+      v.memory = 2048
+      v.cpus = 2
+      v.customize ["modifyvm", :id, "--ioapic", "on"]
+      v.name = "sonar"
+    end
+    # Jenkins Node Ansible
+    # j.vm.provision "ansible" do |ansible|
+    #   ansible.config_file = "./ansible.cfg"
+    #   ansible.playbook = "./jenkins_deploy.yml" 
+    #   ansible.galaxy_role_file = "./roles/requirements.yml"
+    #   ansible.galaxy_roles_path = "./roles"
+    #   ansible.verbose = "vvv"
+    #   ansible.groups = {
+    #     "ciservers" => ["jenkins"],
+    #     "adminservers" => ["tower"]
+    #   }
+    # end
+  end
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
