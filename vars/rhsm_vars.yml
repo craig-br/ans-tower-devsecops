@@ -1,0 +1,5 @@
+---
+# https://github.com/openstack/ansible-role-redhat-subscription
+rhsm_pool_ids: "Your Pool IDs"
+rhsm_username: "Your RHSM username"
+rhsm_password: "Your RHSM Password"
