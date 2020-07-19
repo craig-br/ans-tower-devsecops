@@ -51,17 +51,17 @@ Vagrant.configure("2") do |config|
       v.name = "jenkins"
     end
     # Jenkins Node Ansible
-    j.vm.provision "ansible" do |ansible|
-      ansible.config_file = "./ansible.cfg"
-      ansible.playbook = "./jenkins_deploy.yml" 
-      ansible.galaxy_role_file = "./roles/requirements.yml"
-      ansible.galaxy_roles_path = "./roles"
-      ansible.verbose = "vvv"
-      ansible.groups = {
-        "ciservers" => ["jenkins"],
-        "adminservers" => ["tower"]
-      }
-    end
+    # j.vm.provision "ansible" do |ansible|
+    #   ansible.config_file = "./ansible.cfg"
+    #   ansible.playbook = "./jenkins_deploy.yml" 
+    #   ansible.galaxy_role_file = "./roles/requirements.yml"
+    #   ansible.galaxy_roles_path = "./roles"
+    #   ansible.verbose = "vvv"
+    #   ansible.groups = {
+    #     "ciservers" => ["jenkins"],
+    #     "adminservers" => ["tower"]
+    #   }
+    # end
   end
 #   config.vm.define "tower" do |tower|
 #     tower.vm.box = "generic/rhel7"
