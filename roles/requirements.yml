@@ -3,11 +3,10 @@
   src: https://github.com/geerlingguy/ansible-role-repo-epel.git
   scm: git
 - name: geerlingguy.jenkins
-- name: geerlingguy.git
   src: https://github.com/geerlingguy/ansible-role-jenkins.git
   scm: git
-- name: tecris.maven
-  src: https://github.com/tecris/ansible-maven.git
+- name: geerlingguy.git
+  src: https://github.com/geerlingguy/ansible-role-jenkins.git
   scm: git
 - name: geerlingguy.ansible
   src: https://github.com/geerlingguy/ansible-role-ansible.git
@@ -15,44 +14,14 @@
 - name: geerlingguy.java
   src: https://github.com/geerlingguy/ansible-role-java.git
   scm: git
-- name: wtanaka.unzip
-  src: https://github.com/wtanaka/ansible-role-unzip.git
-  scm: git
-- name: geerlingguy.sonar
-  src: https://github.com/geerlingguy/ansible-role-sonar.git
-  scm: git
-- name: ansible-thoteam.nexus3-oss
-  src: https://github.com/ansible-ThoTeam/nexus3-oss.git
-  scm: git
-- name: geerlingguy.apache
-  src: https://github.com/geerlingguy/ansible-role-apache.git
-  scm: git
-- name: geerlingguy.pip
-  src: https://github.com/geerlingguy/ansible-role-pip.git 
-  scm: git
 - name: openstack.redhat-subscription
   src: https://github.com/openstack/ansible-role-redhat-subscription.git
-  scm: git
-- name: lean_delivery.sonarqube
-  src: https://github.com/lean-delivery/ansible-role-sonarqube.git 
-  scm: git
-- name: anxs.postgresql 
-  src: https://github.com/ANXS/postgresql.git
-  scm: git
-- name: jdauphant.ssl-certs
-  src: https://github.com/jdauphant/ansible-role-ssl-certs.git
-  scm: git
-- name: nginxinc.nginx
-  src: https://github.com/nginxinc/ansible-role-nginx.git
   scm: git
 - name: geerlingguy.repo-epel
   src: https://github.com/geerlingguy/ansible-role-repo-epel.git
   scm: git
 - name: lrk.sonarqube
   src: https://github.com/lrk/ansible-role-sonarqube.git
-  scm: git
-- name: geerlingguy.mysql
-  src: https://github.com/geerlingguy/ansible-role-mysql.git
   scm: git
 - name: geerlingguy.nodejs
   src: https://github.com/geerlingguy/ansible-role-nodejs.git
