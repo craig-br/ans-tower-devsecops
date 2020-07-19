@@ -24,7 +24,6 @@ Vagrant.configure("2") do |config|
     tower.vm.provider "virtualbox" do |v|
       v.memory = 4096
       v.cpus = 2
-      # v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.customize ["modifyvm", :id, "--ioapic", "on"]
       v.name = "tower"
     end
@@ -39,7 +38,6 @@ Vagrant.configure("2") do |config|
     j.vm.provider :virtualbox do |v|
       v.memory = 2048
       v.cpus = 2
-      # v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.customize ["modifyvm", :id, "--ioapic", "on"]
       v.name = "jenkins"
     end
