@@ -17,5 +17,4 @@ jenkins_plugins:
   - blueocean-display-url
   - pipeline-utility-steps
   - sonarqube-scanner
-  - sonarqube
   - checkstyle

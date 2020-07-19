@@ -5,29 +5,29 @@
   vars_files:
     - vars/rhsm_vars.yml
     - vars/jenkins_vars.yml
+
   roles:
   - role: openstack.redhat-subscription
   - role: geerlingguy.java
-
     when: "ansible_os_family == 'RedHat'"
-    # java_packages: 
-    #   - java-11-openjdk-devel
-  # - role: geerlingguy.nodejs
-  #   vars:
-  #     nodejs_version: "10.x"
       
-  - geerlingguy.repo-epel
+  # - geerlingguy.repo-epel
   - role: geerlingguy.jenkins
     vars_files:
     - vars/jenkins_vars.yml
-    # vars:
-    #   jenkins_hostname: jenkins.vagrant.local
-      # jenkins_plugins:
-      #   - blueocean
 
-  # - geerlingguy.git
-  # - tecris.maven
-  # - geerlingguy.ansible
+  tasks:
+  - name: Enable Jenkins http 8080
+    firewalld:
+      state: enabled
+      permanent: true
+      port: 80/tcp
+  - name: Restart Jenkins service
+    service:
+      name: jenkins
+      state: restarted
+      enabled: true
+
   tags:
     - jenkins
     - devsecops
