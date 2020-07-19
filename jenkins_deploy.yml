@@ -1,21 +1,32 @@
 ---
 - name: Deploy Jenkins Server
-  hosts: all
+  hosts: ciservers
+  become: true
+
   roles:
+  # - role: openstack.redhat-subscription
   - role: geerlingguy.java
+    var_files:
+      - vars/rhsm_vars.yml
     when: "ansible_os_family == 'RedHat'"
-    vars:
-      - java_packages: 
-        - java-1.8.0-openjdk-devel
-  - role: geerlingguy.nodejs
-    vars:
-      nodejs_version: "10.x"
+    # java_packages: 
+    #   - java-11-openjdk-devel
+  # - role: geerlingguy.nodejs
+  #   vars:
+  #     nodejs_version: "10.x"
       
   - geerlingguy.repo-epel
-  - geerlingguy.jenkins
-  - geerlingguy.git
-  - tecris.maven
-  - geerlingguy.ansible
+  - role: geerlingguy.jenkins
+    vars_files:
+    - vars/jenkins_vars.yml
+    # vars:
+    #   jenkins_hostname: jenkins.vagrant.local
+      # jenkins_plugins:
+      #   - blueocean
+
+  # - geerlingguy.git
+  # - tecris.maven
+  # - geerlingguy.ansible
   tags:
     - jenkins
     - devsecops

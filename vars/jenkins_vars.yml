@@ -1,4 +1,11 @@
 ---
+# - role: geerlingguy.java
+java_packages: 
+  - java-11-openjdk-devel
+
+# - role: geerlingguy.jenkins
+jenkins_hostname: jenkins.vagrant.local
+jenkins_java_options: "-Djenkins.install.runSetupWizard=false -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
 jenkins_plugins:
   - ansicolor
   - pipeline
@@ -9,19 +16,6 @@ jenkins_plugins:
   - blueocean
   - blueocean-display-url
   - pipeline-utility-steps
-  - nexus-platform
   - sonarqube-scanner
   - sonarqube
-  - nexus-artifact-uploader
-  - checkstyle 
-  - cloverphp 
-  - crap4j 
-  - dry 
-  - htmlpublisher 
-  - jdepend 
-  - plot 
-  - pmd 
-  - violations 
-  - warnings 
-  - xunit
-  - phpunit
+  - checkstyle
