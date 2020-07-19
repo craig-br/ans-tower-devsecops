@@ -2,12 +2,13 @@
 - name: Deploy Jenkins Server
   hosts: ciservers
   become: true
-
+  vars_files:
+    - vars/rhsm_vars.yml
+    - vars/jenkins_vars.yml
   roles:
-  # - role: openstack.redhat-subscription
+  - role: openstack.redhat-subscription
   - role: geerlingguy.java
-    var_files:
-      - vars/rhsm_vars.yml
+
     when: "ansible_os_family == 'RedHat'"
     # java_packages: 
     #   - java-11-openjdk-devel
