@@ -33,7 +33,6 @@ Vagrant.configure("2") do |config|
         "ciservers" => ["jenkins"],
         "adminservers" => ["tower"],
         "qcservers" => ["sonar"]
-
       }
     end
   end
