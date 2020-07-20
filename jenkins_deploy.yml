@@ -10,23 +10,23 @@
   - role: openstack.redhat-subscription
   - role: geerlingguy.java
     when: "ansible_os_family == 'RedHat'"
-      
-  # - geerlingguy.repo-epel
   - role: geerlingguy.jenkins
-    vars_files:
-    - vars/jenkins_vars.yml
 
   tasks:
   - name: Enable Jenkins http 8080
     firewalld:
       state: enabled
       permanent: true
-      port: 80/tcp
-  - name: Restart Jenkins service
+      port: 8080/tcp
+    tags:
+      - jenkins_firewall
+  - name: Reload firewalld service
     service:
-      name: jenkins
-      state: restarted
+      name: firewalld
+      state: reloaded
       enabled: true
+    tags:
+      - restart_jenkins
 
   tags:
     - jenkins
