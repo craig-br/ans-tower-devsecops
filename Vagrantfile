@@ -9,34 +9,6 @@ Vagrant.configure("2") do |config|
   config.hostmanager.manage_host = true
   config.hostmanager.manage_guest = true
 
-  # Define Tower Node
-  config.vm.define "tower" do |tower|
-    tower.vm.box = "ansible/tower"
-    tower.vm.network "private_network", ip: "192.168.20.10", nic_type: "virtio"
-    tower.vm.hostname = "tower.vagrant.local"
-    tower.vm.synced_folder ".", "/vagrant", disabled: true
-    # Tower Node VirtualBox Customisations
-    tower.vm.provider "virtualbox" do |v|
-      v.memory = 2048
-      v.cpus = 2
-      v.customize ["modifyvm", :id, "--ioapic", "on"]
-      v.name = "tower"
-    end
-    # Tower Node Ansible
-    tower.vm.provision "ansible" do |ansible|
-      ansible.config_file = "./ansible.cfg"
-      ansible.playbook = "./tower_deploy.yml" 
-      ansible.galaxy_role_file = "./roles/requirements.yml"
-      ansible.galaxy_roles_path = "./roles"
-      ansible.verbose = "vvv"
-      ansible.groups = {
-        "ciservers" => ["jenkins"],
-        "adminservers" => ["tower"],
-        "qcservers" => ["sonar"]
-      }
-    end
-  end
-
   # Define Jenkins Node
   config.vm.define "jenkins" do |j|
     j.vm.box = "generic/rhel8"
@@ -71,14 +43,14 @@ Vagrant.configure("2") do |config|
     s.vm.network "private_network", ip: "192.168.20.12", nic_type: "virtio"
     s.vm.hostname = "sonar.vagrant.local"
     s.vm.synced_folder ".", "/vagrant", disabled: true
-    # Jenkins Node VirtualBox Customisations
+    # Sonar Node VirtualBox Customisations
     s.vm.provider :virtualbox do |v|
-      s.memory = 2048
-      s.cpus = 2
-      s.customize ["modifyvm", :id, "--ioapic", "on"]
-      s.name = "sonar"
+      v.memory = 2048
+      v.cpus = 2
+      v.customize ["modifyvm", :id, "--ioapic", "on"]
+      v.name = "sonar"
     end
-    # Jenkins Node Ansible
+    # SonarQube Node Ansible
     # j.vm.provision "ansible" do |ansible|
     #   ansible.config_file = "./ansible.cfg"
     #   ansible.playbook = "./jenkins_deploy.yml" 
@@ -93,6 +65,33 @@ Vagrant.configure("2") do |config|
     # end
   end
 
+  # Define Tower Node
+  config.vm.define "tower" do |tower|
+    tower.vm.box = "ansible/tower"
+    tower.vm.network "private_network", ip: "192.168.20.10", nic_type: "virtio"
+    tower.vm.hostname = "tower.vagrant.local"
+    tower.vm.synced_folder ".", "/vagrant", disabled: true
+    # Tower Node VirtualBox Customisations
+    tower.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 2
+      v.customize ["modifyvm", :id, "--ioapic", "on"]
+      v.name = "tower"
+    end
+    # Tower Node Ansible
+    tower.vm.provision "ansible" do |ansible|
+      ansible.config_file = "./ansible.cfg"
+      ansible.playbook = "./tower_deploy.yml" 
+      ansible.galaxy_role_file = "./roles/requirements.yml"
+      ansible.galaxy_roles_path = "./roles"
+      ansible.verbose = "vvv"
+      ansible.groups = {
+        "ciservers" => ["jenkins"],
+        "adminservers" => ["tower"],
+        "qcservers" => ["sonar"]
+      }
+    end
+  end
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.

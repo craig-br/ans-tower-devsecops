@@ -1,0 +1,77 @@
+---
+- hosts: all
+  become: true
+  vars:
+    aw_home: /var/lib/awx
+    aw_user: awx
+    aw_group: awx
+    reset_playbook_dir: '/etc/tower/reset'
+    admin_password_file: '{{reset_playbook_dir}}/.admin_password'
+    reconfigured_file: '{{reset_playbook_dir}}/.reconfigured'
+
+  tasks:
+    - name: Gather ec2 facts
+      ec2_metadata_facts:
+      ignore_errors: yes
+      when: "'10.42.0.42' not in ansible_all_ipv4_addresses"
+
+    - name: Assert correct directory permission
+      file:
+        path: '{{ reset_playbook_dir }}'
+        state: directory
+        owner: root
+        group: '{{ aw_group }}'
+        mode: '0750'
+
+    # this is a bit ugly.
+    - name: Reset the admin password
+      shell: echo "usr=User.objects.get(username='admin'); usr.set_password('admin'); usr.save(); open('{{admin_password_file}}', 'w').write(passwd); import os; os.chmod('{{admin_password_file}}', 0o0640);" | awx-manage shell
+
+    - name: Slurp the admin password
+      slurp:
+        src: '{{ admin_password_file }}'
+      register: admin_password
+
+    - name: Generate a random secret key
+      command: awx-python -c 'import base64, os; f = open("/etc/tower/SECRET_KEY", "w"); f.write(base64.encodebytes(os.urandom(33)).decode().rstrip()); f.close()'
+
+    - name: Generate a random db password
+      command: openssl rand -base64 32
+      register: db_password
+
+    - name: Update the postgresql awx user passwd
+      postgresql_user:
+        name: '{{ aw_user }}'
+        password: '{{ db_password.stdout }}'
+        login_user: postgres
+      become: true
+      become_user: postgres
+
+    - name: Update the DB password in settings.py
+      lineinfile:
+        dest: /etc/tower/conf.d/postgres.py
+        regexp: "^ *'PASSWORD':"
+        line: "       'PASSWORD': '{{ db_password.stdout }}',"
+        state: present
+
+    # - name: Update the motd
+    #   template:
+    #     src: 51-tower-welcome.j2
+    #     dest: /etc/profile.d/ansible-tower.sh
+    #     mode: 0744
+
+    # - name: Remove temporary admin password file
+    #   file:
+    #     path: '{{ admin_password_file }}'
+    #     state: absent
+
+    - name: Leave a configuration breadcrumb
+      file:
+        path: '{{ reconfigured_file }}'
+        state: touch
+        owner: root
+        group: awx
+        mode: 0640
+
+    - name: Restart ansible-tower
+      command: ansible-tower-service restart

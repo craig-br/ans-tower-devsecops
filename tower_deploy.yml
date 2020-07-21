@@ -10,7 +10,12 @@
   gather_facts: false
 
   tasks:
-
+  # - name: MOTD
+  #   command: >
+  #     cat /etc/motd
+  #   register: motd
+  #   tags:
+  #     -  tower_motd
   - name: Create {{ tower_organization }} Organisation
     tower_organization:
       name: "{{ tower_organization }}"
@@ -24,24 +29,24 @@
       - tower-config
       - create-org
 
-  - name: Create RHV credential
-    tower_credential:
-      name: RHV Credential
-      description: RHV Credentials DevSecOps Demo
-      kind: rhv
-      tower_host: "{{ tower_host }}"
-      organization: "{{ tower_organization }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      host: "{{ rhv_auth_url }}"
-      username: "{{ rhv_cred_user }}"
-      password: "{{ rhv_cred_password }}"
-      user: admin
-      state: present
-      validate_certs: false
-    tags:
-      - tower-config
-      - rhv-credential
+  # - name: Create RHV credential
+  #   tower_credential:
+  #     name: RHV Credential
+  #     description: RHV Credentials DevSecOps Demo
+  #     kind: rhv
+  #     tower_host: "{{ tower_host }}"
+  #     organization: "{{ tower_organization }}"
+  #     tower_username: "{{ tower_username }}"
+  #     tower_password: "{{ tower_password }}"
+  #     host: "{{ rhv_auth_url }}"
+  #     username: "{{ rhv_cred_user }}"
+  #     password: "{{ rhv_cred_password }}"
+  #     user: admin
+  #     state: present
+  #     validate_certs: false
+  #   tags:
+  #     - tower-config
+  #     - rhv-credential
 
   - name: Create AWS credential
     tower_credential:
