@@ -1,6 +1,5 @@
 ---
 collections:
-# With just the collection name
-# - my_namespace.my_collection
-
 # With the collection name, version, and source options
+  - name: ansible.tower
+    source: https://cloud.redhat.com/api/automation-hub/
