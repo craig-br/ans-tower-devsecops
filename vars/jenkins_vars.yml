@@ -6,15 +6,15 @@ java_packages:
 # - role: geerlingguy.jenkins
 jenkins_hostname: jenkins.vagrant.local
 jenkins_java_options: "-Djenkins.install.runSetupWizard=false -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+jenkins_plugin_timeout: 120
 jenkins_plugins:
+  - blueocean
   - ansicolor
   - pipeline
   - git
   - ansible
   - ansible-tower
   - pipeline-multibranch-defaults
-  - blueocean
-  - blueocean-display-url
   - pipeline-utility-steps
-  - sonarqube-scanner
+  - sonar
   - checkstyle
