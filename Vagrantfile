@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
 
   # Define SonarQube Node
   config.vm.define "sonar" do |s|
-    s.vm.box = "generic/rhel8"
+    s.vm.box = "generic/rhel7"
     s.vm.network "private_network", ip: "192.168.20.12", nic_type: "virtio"
     s.vm.hostname = "sonar.vagrant.local"
     s.vm.synced_folder ".", "/vagrant", disabled: true
@@ -51,16 +51,16 @@ Vagrant.configure("2") do |config|
       v.name = "sonar"
     end
     # SonarQube Node Ansible
-    # j.vm.provision "ansible" do |ansible|
+    # s.vm.provision "ansible" do |ansible|
     #   ansible.config_file = "./ansible.cfg"
-    #   ansible.playbook = "./jenkins_deploy.yml" 
+    #   ansible.playbook = "./sonar_deploy.yml" 
     #   ansible.galaxy_role_file = "./roles/requirements.yml"
     #   ansible.galaxy_roles_path = "./roles"
     #   ansible.verbose = "vvv"
     #   ansible.groups = {
-      # "ciservers" => ["jenkins"],
-      # "adminservers" => ["tower"],
-      # "qcservers" => ["sonar"]
+    #   "ciservers" => ["jenkins"],
+    #   "adminservers" => ["tower"],
+    #   "qcservers" => ["sonar"]
     #   }
     # end
   end
