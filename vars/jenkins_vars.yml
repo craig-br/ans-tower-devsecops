@@ -2,7 +2,8 @@
 # - role: geerlingguy.java
 java_packages: 
   - java-11-openjdk-devel
-
+# geerlingguy.nodejs
+nodejs_version: "10.x"
 # - role: geerlingguy.jenkins
 jenkins_hostname: jenkins.vagrant.local
 jenkins_java_options: "-Djenkins.install.runSetupWizard=false -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"

@@ -11,6 +11,7 @@
   - role: geerlingguy.java
     when: "ansible_os_family == 'RedHat'"
   - role: geerlingguy.jenkins
+  - role: geerlingguy.nodejs
 
   tasks:
   - name: Enable Jenkins http 8080
