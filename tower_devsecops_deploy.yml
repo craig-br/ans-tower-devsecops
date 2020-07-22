@@ -5,6 +5,7 @@
 ---
 - name: Configure Tower for DevSecOps Demo
   hosts: localhost
+  connection: local
   become: false
   gather_facts: true
   vars_files:
@@ -184,24 +185,6 @@
     tags:
       - tower-config
       - rhv-inventory
-
-  - name: Create RHV Inventory Source
-    tower_inventory_source:
-      name: RHV MBU Inventory Source
-      description: RHV MBU Inventory Source
-      state: present
-      tower_host: "{{ tower_host }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      credential: RHV Credential
-      source: rhv
-      inventory: RHV MBU Inventory
-      overwrite: true
-      validate_certs: false
-    tags:
-      - tower-config
-      - rhv-inventory-source
-
 
         #- name: Create Insights Project
         #tower_project:
