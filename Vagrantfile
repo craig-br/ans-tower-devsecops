@@ -23,18 +23,18 @@ Vagrant.configure("2") do |config|
       v.name = "jenkins"
     end
     # Jenkins Node Ansible
-    # j.vm.provision "ansible" do |ansible|
-    #   ansible.config_file = "./ansible.cfg"
-    #   ansible.playbook = "./jenkins_deploy.yml" 
-    #   ansible.galaxy_role_file = "./roles/requirements.yml"
-    #   ansible.galaxy_roles_path = "./roles"
-    #   ansible.verbose = "vvv"
-    #   ansible.groups = {
-    #     "ciservers" => ["jenkins"],
-    #     "adminservers" => ["tower"],
-    #     "qcservers" => ["sonar"]
-    # # }
-    # end
+    j.vm.provision "ansible" do |ansible|
+      ansible.config_file = "./ansible.cfg"
+      ansible.playbook = "./jenkins_deploy.yml" 
+      ansible.galaxy_role_file = "./roles/requirements.yml"
+      ansible.galaxy_roles_path = "./roles"
+      ansible.verbose = "vvv"
+      ansible.groups = {
+        "ciservers" => ["jenkins"],
+        "adminservers" => ["tower"],
+        "qcservers" => ["sonar"]
+    }
+    end
   end
 
   # Define SonarQube Node
