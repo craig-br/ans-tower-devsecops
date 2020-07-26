@@ -2,20 +2,32 @@
 # - role: geerlingguy.java
 java_packages: 
   - java-11-openjdk-devel
+
 # geerlingguy.nodejs
 nodejs_version: "10.x"
+
 # - role: geerlingguy.jenkins
 jenkins_hostname: jenkins.vagrant.local
 jenkins_java_options: "-Djenkins.install.runSetupWizard=false -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
-jenkins_plugin_timeout: 120
+
+#Packages dependencies
+packages:
+  - git
+  - nodejs
+
+#npm dependencies
+npm_packages:
+  - name: typescript
+    version: 3.8.2
+    path: /var/lib/jenkins/workspace/JuiceShop
+
+jenkins_plugin_timeout: 180
 jenkins_plugins:
   - blueocean
-  - ansicolor
   - pipeline
   - git
   - ansible
   - ansible-tower
-  - pipeline-multibranch-defaults
-  - pipeline-utility-steps
   - sonar
-  - checkstyle
+  - configuration-as-code
+  - configuration-as-code-groovy

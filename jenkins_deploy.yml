@@ -8,12 +8,31 @@
 
   roles:
   - role: openstack.redhat-subscription
+    tags:
+      - jenkins_rhsm
   - role: geerlingguy.java
     when: "ansible_os_family == 'RedHat'"
   - role: geerlingguy.jenkins
   - role: geerlingguy.nodejs
 
   tasks:
+  - name: Install package dependencies
+    package:
+      name: "{{ item }}"
+      state: present
+    loop: "{{ packages }}"
+    tags:
+      - jenkins_pkg_dependencies
+
+  - name: Install npm dependences
+    npm:
+      name: "{{ item.name }}"
+      version: "{{ item.version }}"
+      path: "{{ item.path }}"
+    loop: "{{ npm_packages }}"
+    tags:
+      - jenkins_npm_packages
+
   - name: Enable Jenkins http 8080
     firewalld:
       state: enabled
