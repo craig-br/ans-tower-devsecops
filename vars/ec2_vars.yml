@@ -10,7 +10,6 @@ password: "F5 password"
 ec2_state: "ec2 default state"
 ec2_keyname: "ec2 ssh keyname"
 base_packages:
-  - podman
   - gcc
   - make
 ec2_instance_type: m5.large
