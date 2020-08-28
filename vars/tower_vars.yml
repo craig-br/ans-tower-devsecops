@@ -10,3 +10,14 @@ aw_group: awx
 reset_playbook_dir: '/etc/tower/reset'
 admin_password_file: '{{reset_playbook_dir}}/.admin_password'
 reconfigured_file: '{{reset_playbook_dir}}/.reconfigured'
+
+#F5 Password
+f5_user: "Your F5 username"
+f5_password: "Your F5 Password"
+
+#AWS Crednentials
+aws_pvt_key: '$HOME/.ssh/"Your AWS Private Key"'
+
+#GitHub 
+github_pvt_key: '$HOME/.ssh/"Your GitHub Private Key"'
+github_scm_url: https://github.com/craig-br/ans-tower-devsecops.git
