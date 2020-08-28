@@ -7,6 +7,8 @@
     ./vars/tower_vars.yml
   
   tasks:
+  - import_playbook: rhel_subscribe.yml
+    when: ansible_distribution == "RedHat"
   - name: Configure the Tower admin password
     shell:  >
       echo "from django.contrib.auth.models import User; passwd='{{ tower_password }}'; 
@@ -40,3 +42,11 @@
 
   - name: Restart ansible-tower
     command: ansible-tower-service restart
+
+  - name: Add DevSecOps Demo SSH key
+    authorized_key:
+      user: "{{ ssh_key_username }}"
+      state: present
+      key: '{{ lookup("file", "{{ ssh_key_file }}") }}'
+    
+    
