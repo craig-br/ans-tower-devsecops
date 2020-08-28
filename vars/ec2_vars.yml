@@ -16,6 +16,10 @@ ec2_instance_type: m5.large
 ec2_ami: ami-7c491f05
 ec2_count: 3
 
+# Vars for Tower configuration
+aws_pvt_key: '$HOME/Your EC2 Key'
+
+
 ## 
 # @todo check where the best place is to add pipelining for Tower.
 ##
