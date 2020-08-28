@@ -1,113 +1,163 @@
-# TODO add additional creds
-# no option for insights project type. need to use command
-# lookup ssh key from variable not working
-# insights inventory module does not allow you to add insights credentials
 ---
 - name: Configure Tower for DevSecOps Demo
+
   hosts: localhost
   connection: local
   become: false
-  gather_facts: true
+  gather_facts: false
   vars_files:
     ./vars/tower_vars.yml
+  collections:
+   - ansible.tower
 
-  tasks:
-  - debug:
-      var: ansible_eth0.ipv4.address
-    tags:
-      - tower_deploy_debug
-      
+  tasks:    
   - name: Create {{ tower_organization }} Organisation
     tower_organization:
       name: "{{ tower_organization }}"
       description: Juice Shop Ltd Organisation
       state: present
-      tower_host: "{{ tower_host }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      validate_certs: false
     tags:
       - tower-config
       - create-org
-
-  # - name: Create RHV credential
-  #   tower_credential:
-  #     name: RHV Credential
-  #     description: RHV Credentials DevSecOps Demo
-  #     kind: rhv
-  #     tower_host: "{{ tower_host }}"
-  #     organization: "{{ tower_organization }}"
-  #     tower_username: "{{ tower_username }}"
-  #     tower_password: "{{ tower_password }}"
-  #     host: "{{ rhv_auth_url }}"
-  #     username: "{{ rhv_cred_user }}"
-  #     password: "{{ rhv_cred_password }}"
-  #     user: admin
-  #     state: present
-  #     validate_certs: false
-  #   tags:
-  #     - tower-config
-  #     - rhv-credential
 
   - name: Create AWS credential
     tower_credential:
       name: AWS Credentials
       description: AWS Credentials DevSecOps Demo
       kind: aws
-      tower_host: "{{ ansible_eth0.ipv4.address }}"
       organization: "{{ tower_organization }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      username: "{{ aws_access_key_id }}"
-      password: "{{ aws_secret_access_key }}"
-      user: admin
+      username: "{{ aws_username }}"
+      password: "{{ aws_password }}"
       state: present
-      validate_certs: false
     tags:
       - tower-config
       - aws-cred
+
+  - name: Fetch EC2 private key
+    slurp:
+      src: "{{ aws_pvt_key }}"
+    register: aws_ssh_key
+
+  - name: Create EC2 Instance credential
+    tower_credential:
+      name: EC2 Instance Credential
+      description: EC2 Credentials DevSecOps Demo
+      credential_type: Machine
+      organization: "{{ tower_organization }}"
+      inputs:
+        ssh_key_data: "{{ aws_ssh_key['content'] | b64decode }}"
+    tags:
+      - tower-config
+      - ec2-cred
+
+  - name: Create Demo VM SSH Credential
+    tower_credential:
+      name: VM SSH Credential
+      description: VM Demo SSH Credential
+      credential_type: Machine
+      organization: "{{ tower_organization }}"
+      inputs:
+        ssh_key_data: "{{ aws_ssh_key['content'] | b64decode }}"
+    tags:
+      - tower-config
+      - ssh-cred
+
+  - name: Create F5 Credential Type
+    tower_credential_type:
+      name: f5
+      description: F5 BigIP Credential
+      kind: cloud
+      inputs: "{{ lookup('file', 'tower_cred_inputs_f5.json') }}"
+    tags:
+      - tower-config
+      - f5-cred-type
+
+  - name: Create F5 Credential  
+    tower_credential:
+      name: BigIP Credential
+      description: BIGIP Credential
+      credential_type: f5
+      organization: "{{ tower_organization }}"
+      inputs:
+        user: "{{ f5_user }}"
+        password: "{{ f5_password }}"
+    tags:
+      - tower-config
+      - f5-cred  
   
-  - name: Create Demo SSH Key Credential
-    tower_credential:
-      name: Demo SSH Key 
-      description: Demo SSH Key DevSecOps Demo
-      kind: ssh
-      tower_host: "{{ tower_host }}"
-      organization: "{{ tower_organization }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      username: "{{ ssh_key_username }}"
-      ssh_key_data: "{{ lookup('file', '/Users/craig/.ssh/ans_demo_key') }}"
-      #ssh_key_data: "{{ lookup('file', ssh_key_file) }}"
-      user: admin
-      state: present
-      validate_certs: false
+  - name: Fetch GitHub Key
+    slurp:
+      src: "{{ github_pvt_key }}"
+    register: github_pvt_key_out
     tags:
       - tower-config
-      - demo-ssh-key
+      - github-cred
 
-  - name: debug private key
-    debug:
-      var: ssh_key_file
-      verbosity: 2
+  - name: Create GitHub Credential
+    tower_credential:
+      organization: "{{ tower_organization }}"
+      name: GitHub Credential
+      description: GitHub Credential DevSecOps Demo
+      credential_type: Source Control
+      inputs:
+        ssh_key_data: "{{ github_pvt_key_out['content'] | b64decode }}"
+        username: craig-br
+        # ssh_key_data: "{{ lookup('file', github_pvt_key ) }}"
     tags:
       - tower-config
-      - debug-private-key
+      - github-cred
 
-  - name: Create {{ tower_insights_cred_name }}
-    tower_credential:
-      name: "{{ tower_insights_cred_name }}"
-      description: Craig Insights Credentials for Insghts Demo
-      kind: insights
-      tower_host: "{{ tower_host }}"
+  - name: Create DevSecOps Project
+    tower_project:
+      name: JuiceShop Project
       organization: "{{ tower_organization }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      username: "{{ insights_cred_user }}"
-      password: "{{ insights_cred_password }}"
-      user: admin
-      state: present
-      validate_certs: false
+      allow_override: true
+      description: JuiceShop Ops Playbooks
+      scm_branch: development
+      scm_clean: true
+      scm_credential: GitHub Credential
+      scm_type: git
+      scm_url: "{{ github_scm_url }}"
+    tags:
+      - tower-config
+      - git-project
+
+  - name: Create AWS Inventory
+    tower_inventory:
+      name: AWS Inventory
+      description: AWS Inventory
+      organization: "{{ tower_organization }}"
+    tags:
+      - tower-config
+      - aws-inv    
+
+  - name: Add AWS Inventory Source
+    tower_inventory_source:
+      name: AWS Inventory Source
+      description: AWS Inventory
+      inventory: AWS Inventory
+      credential: AWS Credentials
+      overwrite: True
+      source: ec2
+      update_on_launch: false
+    tags:
+      - tower-config
+      - aws-inv-source    
+
+
+
+  # - name: Create {{ tower_insights_cred_name }}
+  #   tower_credential:
+  #     name: "{{ tower_insights_cred_name }}"
+  #     description: Craig Insights Credentials for Insghts Demo
+  #     kind: insights
+  #     organization: "{{ tower_organization }}"
+  #     username: "{{ insights_cred_user }}"
+  #     password: "{{ insights_cred_password }}"
+  #     user: admin
+  #     state: present
+
+
  
   # - name: Create "{{ tower_insights_inv_name }}"
   #   tower_inventory:
@@ -123,68 +173,68 @@
   #     - tower-config
   #     - insights-inventory
 
-  - name: Create and Update "{{ tower_insights_inv_name }}"
-    command: >
-      tower-cli inventory create
-      --name "{{ tower_insights_inv_name }}"
-      --description "Insights Demo Inventory"
-      --insights-credential "{{ tower_insights_cred_name }}"
-      --tower-username "{{ tower_username }}" 
-      --tower-password "{{ tower_password }}" 
-      --organization "{{ tower_organization }}"
-      --tower-host "{{ tower_host }}"
-      --insecure
-    no_log: true
-    tags:
-      - tower-config
-      - insights-create-inv
+  # - name: Create and Update "{{ tower_insights_inv_name }}"
+  #   command: >
+  #     tower-cli inventory create
+  #     --name "{{ tower_insights_inv_name }}"
+  #     --description "Insights Demo Inventory"
+  #     --insights-credential "{{ tower_insights_cred_name }}"
+  #     --tower-username "{{ tower_username }}" 
+  #     --tower-password "{{ tower_password }}" 
+  #     --organization "{{ tower_organization }}"
+  #     --tower-host "{{ tower_host }}"
+  #     --insecure
+  #   no_log: true
+  #   tags:
+  #     - tower-config
+  #     - insights-create-inv
   
-  - name: Create {{ tower_insights_inv_name }} Source
-    tower_inventory_source:
-      name: Insights RHV Inventory Source
-      description: Insights RHV Inventory Source
-      state: present
-      tower_host: "{{ tower_host }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      credential: RHV Credential
-      source: rhv
-      inventory: "{{ tower_insights_inv_name }}"
-      overwrite: true
-      validate_certs: false
-    tags:
-      - tower-config
-      - insights-inv-source
+  # - name: Create {{ tower_insights_inv_name }} Source
+  #   tower_inventory_source:
+  #     name: Insights RHV Inventory Source
+  #     description: Insights RHV Inventory Source
+  #     state: present
+  #     tower_host: "{{ tower_host }}"
+  #     tower_username: "{{ tower_username }}"
+  #     tower_password: "{{ tower_password }}"
+  #     credential: RHV Credential
+  #     source: rhv
+  #     inventory: "{{ tower_insights_inv_name }}"
+  #     overwrite: true
+  #     validate_certs: false
+  #   tags:
+  #     - tower-config
+  #     - insights-inv-source
 
-  - name: Update {{ tower_insights_inv_name }}
-    command: > 
-      tower-cli inventory batch_update
-      --name "{{ tower_insights_inv_name }}"
-      --tower-username "{{ tower_username }}" 
-      --tower-password "{{ tower_password }}" 
-      --organization "{{ tower_organization }}"
-      --tower-host "{{ tower_host }}"
-      --insecure
-      --description-on
-    no_log: true
-    tags:
-      - tower-config
-      - insights-inv-update
+  # - name: Update {{ tower_insights_inv_name }}
+  #   command: > 
+  #     tower-cli inventory batch_update
+  #     --name "{{ tower_insights_inv_name }}"
+  #     --tower-username "{{ tower_username }}" 
+  #     --tower-password "{{ tower_password }}" 
+  #     --organization "{{ tower_organization }}"
+  #     --tower-host "{{ tower_host }}"
+  #     --insecure
+  #     --description-on
+  #   no_log: true
+  #   tags:
+  #     - tower-config
+  #     - insights-inv-update
 
-  - name: Create RHV Inventory
-    tower_inventory:
-      name: RHV MBU Inventory
-      description:  RHV MBU Inventory
-      state: present
-      tower_host: "{{ tower_host }}"
-      organization: "{{ tower_organization }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      validate_certs: false
-      credential: 
-    tags:
-      - tower-config
-      - rhv-inventory
+  # - name: Create RHV Inventory
+  #   tower_inventory:
+  #     name: RHV MBU Inventory
+  #     description:  RHV MBU Inventory
+  #     state: present
+  #     tower_host: "{{ tower_host }}"
+  #     organization: "{{ tower_organization }}"
+  #     tower_username: "{{ tower_username }}"
+  #     tower_password: "{{ tower_password }}"
+  #     validate_certs: false
+  #     credential: 
+  #   tags:
+  #     - tower-config
+  #     - rhv-inventory
 
         #- name: Create Insights Project
         #tower_project:
@@ -195,69 +245,4 @@
         #scm_credential: "{{ tower_insights_cred_name }}"
         #scm_type: insights
   
-  - name: Create Insights Project
-    command: >
-      tower-cli project create 
-      --name "Insights Project" 
-      --description "Insights Demo Project" 
-      --scm-type insights 
-      --scm-credential "{{ tower_insights_cred_name }}"
-      --tower-username "{{ tower_username }}" 
-      --tower-password "{{ tower_password }}" 
-      --organization "{{ tower_organization }}"
-      --tower-host "{{ tower_host }}"
-      --insecure
-    no_log: true
-    tags:
-      - tower-config
-      - insights-project
-
-  - name: Create Insights Scan Project
-    tower_project:
-      name: Insights Scan Project
-      tower_host: "{{ tower_host }}"
-      organization: "{{ tower_organization }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      state: present
-      description: Ansible Tower Insights Scan Project
-      scm_type: git
-      scm_url: https://github.com/ansible/awx-facts-playbooks
-      scm_update_cache_timeout: 120
-      validate_certs: false
-    tags:
-      - tower-config
-      - insights-scan-project
  
-  ## TODO start adding updates
-  - name: Update Insights Scan Project
-    command: >
-      tower-cli project update
-      --name "Insights Project"
-      --tower-username "{{ tower_username }}" 
-      --tower-password "{{ tower_password }}" 
-      --organization "{{ tower_organization }}"
-      --tower-host "{{ tower_host }}"
-      --insecure
-      --wait
-    no_log: true
-    tags:
-      - tower-config
-      - insights-update-project
-
-  - name: Create Insights Scan Job Template
-    tower_job_template:
-      name: Insights Scan Template
-      tower_host: "{{ tower_host }}"
-      tower_username: "{{ tower_username }}"
-      tower_password: "{{ tower_password }}"
-      playbook: scan_facts.yml
-      project: Insights Scan Project
-      fact_caching_enabled: true
-      inventory: "{{ tower_insights_inv_name }}"
-      job_type: run
-      credential: Demo SSH Key
-      validate_certs: false
-    tags:
-      - tower-config
-      - insights-job-template
