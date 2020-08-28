@@ -1,0 +1,19 @@
+{
+    "fields": [
+        {
+            "id": "user",
+            "type": "string",
+            "label": "Username"
+        },
+        {
+            "id": "password",
+            "type": "string",
+            "label": "Password",
+            "secret": true
+        }
+    ],
+    "required": [
+        "user",
+        "password"
+    ]
+}
