@@ -7,6 +7,6 @@ rhsm_username: "rhsm username. Use Vault"
 rhsm_password: "Your RHSM Password. Use Vault"
 rhsm_repos_purge: false
 rhsm_repos:
-  - rhel-7-server-rpms
-  - rhel-7-server-extras-rpms
-  - rhel-7-server-optional-rpms
+  - rhel-8-for-x86_64-baseos-rpms
+  - rhel-8-for-x86_64-appstream-rpms
+  - ansible-2.9-for-rhel-8-x86_64-rpms
