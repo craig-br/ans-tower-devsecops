@@ -40,7 +40,7 @@
         validate_certs: "{{ f5_validate_certs }}"
         transport: rest
     tags:
-      - create_pool
+      - create-pool
 
   - name: Create Pool Members
     bigip_pool_member:
@@ -58,7 +58,7 @@
     when: (item.tags.function == ec2_webserver_tag)
     loop: "{{ ec2.instances }}"
     tags:
-      - create_pool
+      - create-pool
 
   - name: Create {{ f5_vs_name }} VS
     bigip_virtual_server:
@@ -83,4 +83,4 @@
         validate_certs: "{{ f5_validate_certs }}"
         transport: rest
     tags:
-      - f5_vs
+      - f5-vs
