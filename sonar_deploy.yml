@@ -2,16 +2,12 @@
 - name: Install SonarQube
   hosts: qcservers
   become: true
-  vars_files:
-    - vars/rhsm_vars.yml
-    - vars/sonar_vars.yml
 
   roles:
   - role: openstack.redhat-subscription
     tags:
       - sonar_rhsm
   - role: geerlingguy.java
-    when: "ansible_os_family == 'RedHat'"
 
   tasks:
   - name: Install package dependencies

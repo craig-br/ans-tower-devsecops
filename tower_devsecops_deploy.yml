@@ -5,8 +5,8 @@
   connection: local
   become: false
   gather_facts: false
-  vars_files:
-    ./vars/tower_vars.yml
+  # vars_files:
+  #   ./vars/tower_vars.yml
   collections:
    - ansible.tower
 
@@ -102,7 +102,6 @@
       inputs:
         ssh_key_data: "{{ github_pvt_key_out['content'] | b64decode }}"
         username: craig-br
-        # ssh_key_data: "{{ lookup('file', github_pvt_key ) }}"
     tags:
       - tower-config
       - github-cred
@@ -122,27 +121,31 @@
       - tower-config
       - git-project
 
+
   - name: Create AWS Inventory
     tower_inventory:
-      name: AWS Inventory
-      description: AWS Inventory
+      name: JuiceShop AWS Insatances
+      description: JuiceShop AWS Insatances
       organization: "{{ tower_organization }}"
     tags:
       - tower-config
       - aws-inv    
 
-  - name: Add AWS Inventory Source
+  - name: Add AWS Web Server Inventory Source
     tower_inventory_source:
-      name: AWS Inventory Source
-      description: AWS Inventory
-      inventory: AWS Inventory
+      name: JuiceShop AWS Source
+      description: JuiceShop AWS Source
+      inventory: JuiceShop AWS Insatances
       credential: AWS Credentials
       overwrite: True
       source: ec2
       update_on_launch: false
+      # instance_filters: 
+      #   "tag:function={{ ec2_webserver_tag }}"
+
     tags:
       - tower-config
-      - aws-inv-source    
+      - aws-inv 
 
 
 
