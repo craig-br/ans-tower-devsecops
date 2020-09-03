@@ -1,0 +1,12 @@
+---
+# Package depndencies
+packages:
+  - unzip
+  
+# - role: geerlingguy.java
+java_packages: 
+  - java-11-openjdk-devel
+
+# - role: lrk.sonarqube
+sonar_version: "SonarQubbe version e.g.7.9"
+sonar_search_java_opts: "-Xmx1G -Xms256m -Xss256k -Djava.net.preferIPv4Stack=true -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
