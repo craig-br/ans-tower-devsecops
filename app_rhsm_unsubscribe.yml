@@ -1,5 +1,4 @@
 ---
-## @todo use inisghts role
 - name: Unsubscribe from RHSM and Insights
   hosts: all
   become: false

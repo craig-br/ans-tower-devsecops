@@ -15,7 +15,7 @@ reconfigured_file: '{{reset_playbook_dir}}/.reconfigured'
 f5_user: "Your F5 username"
 f5_password: "Your F5 Password"
 
-#AWS Crednentials
+#AWS Credentials
 aws_pvt_key: '$HOME/.ssh/"Your AWS Private Key"'
 
 #GitHub 

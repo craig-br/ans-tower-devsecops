@@ -18,10 +18,3 @@ ec2_count: 3
 
 # Vars for Tower configuration
 aws_pvt_key: '$HOME/Your EC2 Key'
-
-
-## 
-# @todo check where the best place is to add pipelining for Tower.
-##
-ansible_ssh_common_args: -C -o ControlMaster=auto -o ControlPersist=60s
-ansible_ssh_pipelining: true
