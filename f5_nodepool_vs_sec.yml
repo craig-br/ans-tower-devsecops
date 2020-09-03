@@ -33,13 +33,13 @@
       port: "443"
       snat: Automap
       default_persistence_profile: "source_addr"
-      security_log_profiles: "Hackazon_Logging"
+      security_log_profiles: "JuiceShop_Logging"
       all_profiles:
         - http
-        - Hackazon_Client_SSL
+        - JuiceShop_Client_SSL
         - websecurity
       all_policies:
-        - Hackazon_Policy
+        - JuiceShop_Policy
       provider:
         user: "{{ user }}"
         password: "{{ password }}"
