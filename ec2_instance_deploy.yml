@@ -1,11 +1,11 @@
 ---
-- name: Deploy EC2 WebServers
+- name: Deploy EC2 Web Servers
   hosts: localhost
   connection: local
   gather_facts: false
 
   tasks:
-  - name: Deploy WebServers
+  - name: Deploy Web Servers
     ec2:
         key_name: "{{ ec2_keyname }}"
         group: "{{ ec2_sg_name }}"
@@ -18,7 +18,7 @@
         exact_count: "{{ ec2_count }}"
         instance_tags:
           Name: ec2_devsecops
-          function: webserver
+          function: "{{ ec2_webserver_tag }}"
         wait_timeout: 500
     register: ec2
 
