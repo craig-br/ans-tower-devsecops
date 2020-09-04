@@ -1,16 +1,26 @@
 ---
-- name: Configure Tower for DevSecOps Demo
+- name: Configure Tower for JuiceShop Demo
 
   hosts: localhost
   connection: local
   become: false
   gather_facts: false
-  # vars_files:
-  #   ./vars/tower_vars.yml
+
   collections:
    - ansible.tower
 
-  tasks:    
+  tasks:
+  - name: Configure Tower Settings
+    tower_settings:
+      settings:
+        PRIMARY_GALAXY_URL: "{{ pri_galaxy_url }}"
+        PRIMARY_GALAXY_TOKEN: "{{ pri_galaxy_token }}"
+        PRIMARY_GALAXY_AUTH_URL: "{{ pri_galaxy_auth_url }}"
+    no_log: true
+    tags:
+      - tower-config
+      - tower-settings
+
   - name: Create {{ tower_organization }} Organisation
     tower_organization:
       name: "{{ tower_organization }}"
@@ -23,7 +33,7 @@
   - name: Create AWS credential
     tower_credential:
       name: AWS Credentials
-      description: AWS Credentials DevSecOps Demo
+      description: JuiceShop AWS Credentials
       kind: aws
       organization: "{{ tower_organization }}"
       username: "{{ aws_username }}"
@@ -41,7 +51,7 @@
   - name: Create EC2 Instance credential
     tower_credential:
       name: EC2 Instance Credential
-      description: EC2 Credentials DevSecOps Demo
+      description: JuiceShop EC2 Credentials
       credential_type: Machine
       organization: "{{ tower_organization }}"
       inputs:
@@ -53,7 +63,7 @@
   - name: Create Demo VM SSH Credential
     tower_credential:
       name: VM SSH Credential
-      description: VM Demo SSH Credential
+      description: JuiceShop VM SSH Credential
       credential_type: Machine
       organization: "{{ tower_organization }}"
       inputs:
@@ -97,7 +107,7 @@
     tower_credential:
       organization: "{{ tower_organization }}"
       name: GitHub Credential
-      description: GitHub Credential DevSecOps Demo
+      description: JuiceShop GitHub Credential
       credential_type: Source Control
       inputs:
         ssh_key_data: "{{ github_pvt_key_out['content'] | b64decode }}"
@@ -106,13 +116,13 @@
       - tower-config
       - github-cred
 
-  - name: Create DevSecOps Project
+  - name: Create Project
     tower_project:
       name: JuiceShop Project
       organization: "{{ tower_organization }}"
       allow_override: true
-      description: JuiceShop Ops Playbooks
-      scm_branch: development
+      description: JuiceShop Playbooks
+      scm_branch: master
       scm_clean: true
       scm_credential: GitHub Credential
       scm_type: git
@@ -124,31 +134,106 @@
 
   - name: Create AWS Inventory
     tower_inventory:
-      name: JuiceShop AWS Insatances
-      description: JuiceShop AWS Insatances
+      name: AWS Inventory
+      description: JuiceShop AWS Instances
       organization: "{{ tower_organization }}"
     tags:
       - tower-config
       - aws-inv    
 
-  - name: Add AWS Web Server Inventory Source
+  - name: AWS Inventory Source
     tower_inventory_source:
-      name: JuiceShop AWS Source
+      name: AWS Source
       description: JuiceShop AWS Source
-      inventory: JuiceShop AWS Insatances
+      inventory: AWS Inventory
       credential: AWS Credentials
       overwrite: True
       source: ec2
       update_on_launch: false
-      # instance_filters: 
-      #   "tag:function={{ ec2_webserver_tag }}"
-
     tags:
       - tower-config
       - aws-inv 
 
+  - name: Copy Vagrant inventory to AdminServers
+    synchronize:
+      src: "{{ vagrant_inv_src }}"
+      dest: "/tmp/{{ vagrant_inv_dest }}"
+    delegate_to: "{{ item }}"
+    loop: "{{ query('inventory_hostnames', 'adminservers') }}"
+    tags:
+      - tower-config
+      - vagrant-inv
+
+  - name: Import Vagrant inventory to tower
+    command: >
+      awx-manage
+    become: true
+
+  ## Job Templates:
+  - name: Create Cloud Instances Workflow
+    tower_workflow_job_template:
+      name: Cloud Instances Workflow
+      new_name: Cloud Instances Workflow
+      description: Deploy JuiceShop Cloud Instances
+      organization: "{{ tower_organization }}"
+      inventory: AWS Inventory
+      extra_vars: "{{ ec2_vars }}"
+    tags:
+      - tower-config
+      - workflow-cloud-instances
+
+  - name: debug template vars
+    debug:
+      msg: '{{ ansible_hostname }}'
+    # loop: "{{ job_template_vars }}"
+    delegate_to: adminservers
+    delegate_facts: true
+    # loop: "{{ groups['adminservers'] }}"
+    tags:
+      - copy-inv
 
 
+  - name: Create Job Templates
+    tower_job_template:
+      name: "{{ item.name }}"
+      job_type: "{{ item.job_type| default ('run')  }}"
+      playbook: "{{ item.playbook }}"
+      project: "{{ item.project | default ('JuiceShop Project') }}"
+      credentials:  "{{ item.credentials | default ('AWS Credentials') }}"
+      description: "{{ item.description }}"
+      inventory: "{{ item.inventory | default ('AWS Inventory') }}"
+      concurrent_jobs_enabled: "{{ item.concurrent_jobs_enabled | default('false') }}"
+      become_enabled: "{{ item.become_enabled | default('false') }}"
+    loop: "{{ job_template_vars }}"
+    tags:
+      - tower-config
+      - job-templates
+  
+  - name: Add Job Templates to Cloud Instance Workflow
+    tower_workflow_job_template_node:
+      identifier: "{{ item.identifier }}"
+      workflow: "{{ item.workflow | default('Cloud Instances Workflow')}}"
+      organization: "{{ tower_organization }}"
+      unified_job_template: "{{ item.name }}"
+      success_nodes: "{{ item.success_nodes | default([])}}"
+    loop: "{{ workflow_cloud_inst_vars }}"
+    tags:
+      - tower-config
+      - workflow-cloud-templates
+
+# - hosts: adminservers
+#   gather_facts: false
+#   become: false
+
+#   tasks:
+#   - name: Copy Vagrant inventory to AdminServers
+#     copy:
+#       # mode: pull
+#       src: "{{ vagrant_inv }}"
+#       dest: "/tmp/vagrant_ansible_inventory"
+#     tags:
+#       - tower-config
+      - vagrant-inv-admin
   # - name: Create {{ tower_insights_cred_name }}
   #   tower_credential:
   #     name: "{{ tower_insights_cred_name }}"
@@ -224,20 +309,6 @@
   #     - tower-config
   #     - insights-inv-update
 
-  # - name: Create RHV Inventory
-  #   tower_inventory:
-  #     name: RHV MBU Inventory
-  #     description:  RHV MBU Inventory
-  #     state: present
-  #     tower_host: "{{ tower_host }}"
-  #     organization: "{{ tower_organization }}"
-  #     tower_username: "{{ tower_username }}"
-  #     tower_password: "{{ tower_password }}"
-  #     validate_certs: false
-  #     credential: 
-  #   tags:
-  #     - tower-config
-  #     - rhv-inventory
 
         #- name: Create Insights Project
         #tower_project:
