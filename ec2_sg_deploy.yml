@@ -13,7 +13,7 @@
         "tag:function": "{{ ec2_f5_tag }}"
     register: ec2
     tags:
-     - ec2_sg_deploy
+     - ec2-sg-deploy
      - ec2_f5_facts
 
   - name: Create Facts for F5 configuration
@@ -28,7 +28,7 @@
   - name: Create security group
     ec2_group:
       name: "{{ ec2_sg_name }}"
-      description: "DevSecOps Demo Security Group"
+      description: "JuiceShop Security Group"
       region: "{{ ec2_region }}"
       rules:
         - proto: tcp
