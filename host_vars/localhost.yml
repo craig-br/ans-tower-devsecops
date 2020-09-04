@@ -32,6 +32,11 @@ github_scm_url: https://github.com/craig-br/ans-tower-devsecops.git
 ssh_key_username: "Your key username"
 ssh_key_file: "Location of your public key file"
 
+#Tower Settings
+pri_galaxy_token: "Your Automation Hub Token"
+pri_galaxy_url: https://cloud.redhat.com/api/automation-hub/
+pri_galaxy_auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+
 ##
 # RHSM Vars
 # https://github.com/openstack/ansible-role-redhat-subscription
@@ -49,19 +54,21 @@ rhsm_repos:
 ##
 # ec2 vars
 ##
-ec2_sg_name: "Security group name"
-ec2_region: "EC2 Region"
-ec2_f5_tag: "Firewall tag"
-ec2_webserver_tag: "EC2 Web Server tag"
-ec2_f5_state: "Is F5 present on EC2?"
-f5_validate_certs: false
-user: "F5 user"
-password: "F5 password"
-ec2_state: "ec2 default state"
-ec2_keyname: "ec2 ssh keyname"
+ec2_vars:
+  ec2_sg_name: "Security group name"
+  ec2_region: "EC2 Region"
+  ec2_f5_tag: "Firewall tag"
+  ec2_webserver_tag: "EC2 Web Server tag"
+  ec2_f5_state: "Is F5 present on EC2?"
+  f5_validate_certs: false
+  f5_user: "F5 user"
+  f5_password: "F5 password"
+  ec2_state: "ec2 default state"
+  ec2_keyname: "ec2 ssh keyname"
+  ec2_instance_type: m5.large
+  ec2_ami: ami-7c491f05
+  ec2_count: 3
+
 base_packages:
-  - gcc
-  - make
-ec2_instance_type: m5.large
-ec2_ami: ami-7c491f05
-ec2_count: 3
+- gcc
+- make
