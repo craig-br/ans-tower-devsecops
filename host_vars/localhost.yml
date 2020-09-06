@@ -2,9 +2,9 @@
 ##
 # Tower Vars
 ##
-tower_host: "Your Tower Host"
-tower_username: "Your Tower Username"
-tower_password: "Your Tower Password. Use Vault"
+tower_host: vagrant.tower.local
+tower_username: admin
+tower_password: admin
 tower_organization: JuiceShop
 
 # Vars to reset password
@@ -46,10 +46,14 @@ rhsm_vars:
   rhsm_username: "rhsm username. Use Vault"
   rhsm_password: "Your RHSM Password. Use Vault"
   rhsm_repos_purge: false
-  rhsm_repos:
-    - rhel-8-for-x86_64-baseos-rpms
-    - rhel-8-for-x86_64-appstream-rpms
-    - ansible-2.9-for-rhel-8-x86_64-rpms
+  # rhsm_repos:
+  #   - rhel-8-for-x86_64-baseos-rpms
+  #   - rhel-8-for-x86_64-appstream-rpms
+  #   - ansible-2.9-for-rhel-8-x86_64-rpms
+rhsm_repos:
+  - rhel-7-server-rpms
+  - rhel-7-server-extras-rpms
+  - rhel-7-server-ansible-2.9-rpms
 
 ##
 # ec2 vars
