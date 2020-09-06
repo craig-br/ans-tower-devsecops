@@ -3,8 +3,6 @@
   become: true
   gather_facts: true
   hosts: adminservers
-  vars_files:
-    ./vars/tower_vars.yml
   
   tasks:
   - import_playbook: rhel_subscribe.yml
