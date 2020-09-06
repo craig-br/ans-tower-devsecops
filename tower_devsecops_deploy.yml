@@ -55,6 +55,7 @@
       credential_type: Machine
       organization: "{{ tower_organization }}"
       inputs:
+        username: "{{ aws_ssh_user }}"
         ssh_key_data: "{{ aws_ssh_key['content'] | b64decode }}"
     tags:
       - tower-config
@@ -116,6 +117,30 @@
       - tower-config
       - github-cred
 
+  - name: Create RHSM Credential Type
+    tower_credential_type:
+      name: rhsm
+      description: RHSM Credentials
+      kind: cloud
+      inputs: "{{ lookup('file', 'tower_cred_inputs_rhsm.json') }}"
+      injectors: "{{ lookup('file', 'tower_cred_inputs_rhsm_injectors.json') }}"
+    tags:
+      - tower-config
+      - rhsm-cred
+
+  - name: Create RHSM Credential
+    tower_credential:
+      organization: "{{ tower_organization }}"
+      name: RHSM
+      description: JuiceShop RHSM Credentials
+      credential_type: rhsm
+      inputs:
+        rhsm_username: "{{ rhsm_username }}"
+        rhsm_password: "{{ rhsm_password }}"
+    tags:
+      - tower-config
+      - rhsm-cred
+
   - name: Create Project
     tower_project:
       name: JuiceShop Project
@@ -154,20 +179,65 @@
       - tower-config
       - aws-inv 
 
-  - name: Copy Vagrant inventory to AdminServers
-    synchronize:
-      src: "{{ vagrant_inv_src }}"
-      dest: "/tmp/{{ vagrant_inv_dest }}"
-    delegate_to: "{{ item }}"
-    loop: "{{ query('inventory_hostnames', 'adminservers') }}"
+  - name: Create Tower Vagrant Inventory
+    tower_inventory:
+      name: "On Prem Inventory"
+      description: JuiceShop On-Prem Instances
+      organization: "{{ tower_organization }}"
     tags:
       - tower-config
       - vagrant-inv
 
-  - name: Import Vagrant inventory to tower
-    command: >
-      awx-manage
-    become: true
+  ## Users
+  - name: Create Jenkins user
+    tower_user:
+      username: "{{ jenkins_user }}"
+      password: "{{ jenkins_pwd }}"
+      email: jenkins@vagrant.local
+    tags:
+      - tower-config
+      - user-jenkins
+
+  - name: Give Jenkins user access to SSH key
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: read
+      credential: "VM SSH Credential"
+      organization: "{{ tower_organization }}"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
+
+  - name: Give Jenkins user access to JuiceShop Org
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: member
+      organization: "{{ tower_organization }}"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
+
+  - name: Give Jenkins user access to Job Templates
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: execute
+      workflow: "Cloud Instances Workflow"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
+
+  - name: Give Jenkins user access to Inventories
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: use
+      inventory: "AWS Inventory"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
 
   ## Job Templates:
   - name: Create Cloud Instances Workflow
@@ -177,21 +247,11 @@
       description: Deploy JuiceShop Cloud Instances
       organization: "{{ tower_organization }}"
       inventory: AWS Inventory
-      extra_vars: "{{ ec2_vars }}"
+      # extra_vars: "{{ [ec2_vars] + [rhsm_vars] }}"
+      # extra_vars: "{{ rhsm_vars | combine(ec2_vars) }}"
     tags:
       - tower-config
       - workflow-cloud-instances
-
-  - name: debug template vars
-    debug:
-      msg: '{{ ansible_hostname }}'
-    # loop: "{{ job_template_vars }}"
-    delegate_to: adminservers
-    delegate_facts: true
-    # loop: "{{ groups['adminservers'] }}"
-    tags:
-      - copy-inv
-
 
   - name: Create Job Templates
     tower_job_template:
@@ -204,6 +264,9 @@
       inventory: "{{ item.inventory | default ('AWS Inventory') }}"
       concurrent_jobs_enabled: "{{ item.concurrent_jobs_enabled | default('false') }}"
       become_enabled: "{{ item.become_enabled | default('false') }}"
+      ask_limit_on_launch: "{{ item.ask_limit_on_launch | default('false') }}"
+      extra_vars: "{{ item.extra_vars | default('')}}"
+      limit: "{{ item.limit | default([]) }}"
     loop: "{{ job_template_vars }}"
     tags:
       - tower-config
@@ -215,108 +278,31 @@
       workflow: "{{ item.workflow | default('Cloud Instances Workflow')}}"
       organization: "{{ tower_organization }}"
       unified_job_template: "{{ item.name }}"
-      success_nodes: "{{ item.success_nodes | default([])}}"
+      success_nodes: "{{ item.success_nodes | default('[]') }}"
     loop: "{{ workflow_cloud_inst_vars }}"
     tags:
       - tower-config
       - workflow-cloud-templates
 
-# - hosts: adminservers
-#   gather_facts: false
-#   become: false
+# Perform actions on adminservers
+- name: Perform commands on Admin Servers
+  hosts: adminservers
+  gather_facts: false
+  become: false
 
-#   tasks:
-#   - name: Copy Vagrant inventory to AdminServers
-#     copy:
-#       # mode: pull
-#       src: "{{ vagrant_inv }}"
-#       dest: "/tmp/vagrant_ansible_inventory"
-#     tags:
-#       - tower-config
-      - vagrant-inv-admin
-  # - name: Create {{ tower_insights_cred_name }}
-  #   tower_credential:
-  #     name: "{{ tower_insights_cred_name }}"
-  #     description: Craig Insights Credentials for Insghts Demo
-  #     kind: insights
-  #     organization: "{{ tower_organization }}"
-  #     username: "{{ insights_cred_user }}"
-  #     password: "{{ insights_cred_password }}"
-  #     user: admin
-  #     state: present
+  tasks:
+  - name: Copy Vagrant inventory to AdminServers
+    copy:
+      src: "{{ vagrant_inv_src }}"
+      dest: "/tmp/{{ vagrant_inv_dest }}"
+    tags:
+      - tower-config
+      - vagrant-inv
 
-
- 
-  # - name: Create "{{ tower_insights_inv_name }}"
-  #   tower_inventory:
-  #     name: "{{ tower_insights_inv_name }}"
-  #     description: Craig Insights Inventory
-  #     state: present
-  #     tower_host: "{{ tower_host }}"
-  #     organization: "{{ tower_organization }}"
-  #     tower_username: "{{ tower_username }}"
-  #     tower_password: "{{ tower_password }}"
-  #     validate_certs: false
-  #   tags:
-  #     - tower-config
-  #     - insights-inventory
-
-  # - name: Create and Update "{{ tower_insights_inv_name }}"
-  #   command: >
-  #     tower-cli inventory create
-  #     --name "{{ tower_insights_inv_name }}"
-  #     --description "Insights Demo Inventory"
-  #     --insights-credential "{{ tower_insights_cred_name }}"
-  #     --tower-username "{{ tower_username }}" 
-  #     --tower-password "{{ tower_password }}" 
-  #     --organization "{{ tower_organization }}"
-  #     --tower-host "{{ tower_host }}"
-  #     --insecure
-  #   no_log: true
-  #   tags:
-  #     - tower-config
-  #     - insights-create-inv
-  
-  # - name: Create {{ tower_insights_inv_name }} Source
-  #   tower_inventory_source:
-  #     name: Insights RHV Inventory Source
-  #     description: Insights RHV Inventory Source
-  #     state: present
-  #     tower_host: "{{ tower_host }}"
-  #     tower_username: "{{ tower_username }}"
-  #     tower_password: "{{ tower_password }}"
-  #     credential: RHV Credential
-  #     source: rhv
-  #     inventory: "{{ tower_insights_inv_name }}"
-  #     overwrite: true
-  #     validate_certs: false
-  #   tags:
-  #     - tower-config
-  #     - insights-inv-source
-
-  # - name: Update {{ tower_insights_inv_name }}
-  #   command: > 
-  #     tower-cli inventory batch_update
-  #     --name "{{ tower_insights_inv_name }}"
-  #     --tower-username "{{ tower_username }}" 
-  #     --tower-password "{{ tower_password }}" 
-  #     --organization "{{ tower_organization }}"
-  #     --tower-host "{{ tower_host }}"
-  #     --insecure
-  #     --description-on
-  #   no_log: true
-  #   tags:
-  #     - tower-config
-  #     - insights-inv-update
-
-
-        #- name: Create Insights Project
-        #tower_project:
-        # name: "Insights Project"
-        #state: present
-        #description: Ansible Tower Insights Integration Project
-        #organization: "{{ tower_organization }}"
-        #scm_credential: "{{ tower_insights_cred_name }}"
-        #scm_type: insights
-  
- 
+  - name: Import Vagrant inventory to AdminServers
+    command: > 
+      awx-manage inventory_import --source=/tmp/vagrant_ansible_inventory --inventory-name="On Prem Inventory"
+    become: true
+    tags:
+      - tower-config
+      - vagrant-inv
