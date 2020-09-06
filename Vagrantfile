@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
 
   # Define Jenkins Node
   config.vm.define "jenkins" do |j|
-    j.vm.box = "generic/rhel8"
+    j.vm.box = "generic/rhel7"
     j.vm.network "private_network", ip: "192.168.20.11", nic_type: "virtio"
     j.vm.hostname = "jenkins.vagrant.local"
     j.vm.synced_folder ".", "/vagrant", disabled: true
