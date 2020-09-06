@@ -265,8 +265,8 @@
       concurrent_jobs_enabled: "{{ item.concurrent_jobs_enabled | default('false') }}"
       become_enabled: "{{ item.become_enabled | default('false') }}"
       ask_limit_on_launch: "{{ item.ask_limit_on_launch | default('false') }}"
-      extra_vars: "{{ item.extra_vars | default('')}}"
-      limit: "{{ item.limit | default([]) }}"
+      extra_vars: "{{ item.extra_vars | default({}) }}"
+      limit: "{{ item.limit | default('') }}"
     loop: "{{ job_template_vars }}"
     tags:
       - tower-config
@@ -278,7 +278,7 @@
       workflow: "{{ item.workflow | default('Cloud Instances Workflow')}}"
       organization: "{{ tower_organization }}"
       unified_job_template: "{{ item.name }}"
-      success_nodes: "{{ item.success_nodes | default('[]') }}"
+      success_nodes: "{{ item.success_nodes | default({}) }}"
     loop: "{{ workflow_cloud_inst_vars }}"
     tags:
       - tower-config
