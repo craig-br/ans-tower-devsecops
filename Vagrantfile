@@ -73,8 +73,8 @@ Vagrant.configure("2") do |config|
     tower.vm.synced_folder ".", "/vagrant", disabled: true
     # Tower Node VirtualBox Customisations
     tower.vm.provider "virtualbox" do |v|
-      v.memory = 2048
-      v.cpus = 2
+      v.memory = 4096
+      v.cpus = 4
       v.customize ["modifyvm", :id, "--ioapic", "on"]
       v.name = "tower"
     end
