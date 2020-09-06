@@ -1,7 +1,7 @@
 ---
-- name: geerlingguy.jenkins
-  src: https://github.com/geerlingguy/ansible-role-jenkins.git
-  scm: git
+# - name: geerlingguy.jenkins
+#   src: https://github.com/geerlingguy/ansible-role-jenkins.git
+#   scm: git
 - name: geerlingguy.git
   src: https://github.com/geerlingguy/ansible-role-git.git
   scm: git
