@@ -1,0 +1,19 @@
+{
+    "fields": [
+        {
+            "id": "rhsm_username",
+            "type": "string",
+            "label": "RHSM Username"
+        },
+        {
+            "id": "rhsm_password",
+            "type": "string",
+            "label": "RHSM Password",
+            "secret": true
+        }
+    ],
+    "required": [
+        "rhsm_username",
+        "rhsm_password"
+    ]
+}
