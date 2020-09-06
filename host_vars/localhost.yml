@@ -5,7 +5,7 @@
 tower_host: "Your Tower Host"
 tower_username: "Your Tower Username"
 tower_password: "Your Tower Password. Use Vault"
-tower_organization: Default
+tower_organization: JuiceShop
 
 # Vars to reset password
 aw_home: /var/lib/awx
@@ -41,15 +41,15 @@ pri_galaxy_auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol
 # RHSM Vars
 # https://github.com/openstack/ansible-role-redhat-subscription
 ##
-
-rhsm_pool_ids: "rhsm poolid. Use Vault"
-rhsm_username: "rhsm username. Use Vault"
-rhsm_password: "Your RHSM Password. Use Vault"
-rhsm_repos_purge: false
-rhsm_repos:
-  - rhel-8-for-x86_64-baseos-rpms
-  - rhel-8-for-x86_64-appstream-rpms
-  - ansible-2.9-for-rhel-8-x86_64-rpms
+rhsm_vars:
+  rhsm_pool_ids: "rhsm poolid. Use Vault"
+  rhsm_username: "rhsm username. Use Vault"
+  rhsm_password: "Your RHSM Password. Use Vault"
+  rhsm_repos_purge: false
+  rhsm_repos:
+    - rhel-8-for-x86_64-baseos-rpms
+    - rhel-8-for-x86_64-appstream-rpms
+    - ansible-2.9-for-rhel-8-x86_64-rpms
 
 ##
 # ec2 vars
@@ -67,8 +67,7 @@ ec2_vars:
   ec2_keyname: "ec2 ssh keyname"
   ec2_instance_type: m5.large
   ec2_ami: ami-7c491f05
-  ec2_count: 3
-
-base_packages:
-- gcc
-- make
+  ec2_count: 3  
+  base_packages:
+    - gcc
+    - make
