@@ -1,6 +1,7 @@
 - name: Setup RHSM on servers
   hosts: all
   gather_facts: true
+  become: true
   vars_files:
     - vars/rhsm_vars.yml
   roles:
