@@ -1,0 +1,6 @@
+{
+    "extra_vars": {
+        "f5_user": "{{ f5_user }}",
+        "f5_password": "{{ f5_password }}"
+    }
+}

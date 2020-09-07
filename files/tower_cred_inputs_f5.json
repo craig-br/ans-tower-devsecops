@@ -1,12 +1,12 @@
 {
     "fields": [
         {
-            "id": "user",
+            "id": "f5_user",
             "type": "string",
             "label": "Username"
         },
         {
-            "id": "password",
+            "id": "f5_password",
             "type": "string",
             "label": "Password",
             "secret": true
