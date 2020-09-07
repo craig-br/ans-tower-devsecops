@@ -10,7 +10,7 @@
   tasks:
   - name: Extract download
     unarchive:
-      src: https://github.com/bkimminich/juice-shop/releases/download/v8.6.2/juice-shop-8.6.2_node10_linux_x64.tgz
+      src: "{{ app_rel_uri }}"
       remote_src: true
       dest: /usr/local/
     register: app_download
@@ -19,7 +19,7 @@
   
   - name: Download DevSecOps JuiceShop config file
     get_url: 
-      url: https://raw.githubusercontent.com/craig-br/ans-tower-devsecops/master/files/devsecops.yml
+      url: "{{ app_custom_config }}"
       dest: "{{ node_app_dir }}config/devsecops.yml"
     tags:
       - get_config
@@ -43,7 +43,7 @@
     become: true
     command: 
       cmd: "forever start app.js"
-      chdir: "{{node_app_dir}}"
+      chdir: "{{ node_app_dir }}"
     environment: 
       NODE_ENV: "devsecops"
     when: "forever_list.stdout.find('app.js') == -1"
