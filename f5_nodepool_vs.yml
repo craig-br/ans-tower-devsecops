@@ -71,7 +71,7 @@
       default_persistence_profile: "source_addr"
       all_profiles:
         - http
-        - Hackazon_Client_SSL
+        - JuiceShop_Client_SSL
         - websecurity
       all_policies:
         - redhat_disable_waf

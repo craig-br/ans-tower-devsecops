@@ -1,6 +1,6 @@
 ---
 - name: Terminate instances that were previously launched
-  hosts: tower
+  hosts: localhost
   connection: local
   gather_facts: false
   become: false

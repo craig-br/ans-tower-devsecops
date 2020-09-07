@@ -7,7 +7,7 @@
 
   tasks:
   - name: Gather EC2 facts
-    ec2_instance_facts:
+    ec2_instance_info:
       region: "{{ ec2_region }}"
       filters:
         "tag:function": "{{ ec2_f5_tag }}"

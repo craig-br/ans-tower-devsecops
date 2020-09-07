@@ -1,12 +1,12 @@
 ---
 - name: Configure F5 WAF
-  hosts: tower
+  hosts: localhost
   connection: local
   gather_facts: false
 
   tasks:
   - name: Gather EC2 facts
-    ec2_instance_facts:
+    ec2_instance_info:
       region: "{{ ec2_region }}"
       filters:
         instance-state-name: ["running","shutting-down", "stopping", "stopped"]
