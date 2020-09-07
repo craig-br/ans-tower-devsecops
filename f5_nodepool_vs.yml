@@ -1,19 +1,19 @@
 ---
 - name: Configure F5 Nodepool
-  hosts: tower
+  hosts: localhost
   connection: local
   gather_facts: false
   become: false
 
   tasks:
   - name: Gather EC2 facts
-    ec2_instance_facts:
+    ec2_instance_info:
       region: "{{ ec2_region }}"
       filters:
         instance-state-name: ["running"]
     register: ec2
     tags:
-     - ec2_facts
+     - ec2-facts
 
   - name: Create Facts for F5 configuration
     set_fact:
@@ -33,9 +33,9 @@
       monitors: ['/Common/http']
       monitor_type: and_list
       provider:
-        user: "{{ user }}"
-        password: "{{ password }}"
-        server: "{{ hostvars.localhost.f5_public_ip }}"
+        user: "{{ f5_user }}"
+        password: "{{ f5_password }}"
+        server: "{{ f5_public_ip }}"
         server_port: 8443
         validate_certs: "{{ f5_validate_certs }}"
         transport: rest
@@ -50,9 +50,9 @@
       state: "{{ ec2_f5_state }}"
       provider:
         server_port: 8443
-        user: "{{ user }}"
-        password: "{{ password }}"
-        server: "{{ hostvars.localhost.f5_public_ip }}"
+        user: "{{ f5_user }}"
+        password: "{{ f5_password }}"
+        server: "{{ f5_public_ip }}"
         validate_certs: "{{ f5_validate_certs }}"
         transport: rest
     when: (item.tags.function == ec2_webserver_tag)
@@ -63,7 +63,7 @@
   - name: Create {{ f5_vs_name }} VS
     bigip_virtual_server:
       description: "{{ f5_vs_name }}"
-      destination: "{{ hostvars.localhost.f5_private_ip }}"
+      destination: "{{ f5_private_ip }}"
       name: "{{ f5_vs_name }}"
       pool: "{{ f5_pool_name }}"
       port: "443"
@@ -76,9 +76,9 @@
       all_policies:
         - redhat_disable_waf
       provider:
-        user: "{{ user }}"
-        password: "{{ password }}"
-        server: "{{ hostvars.localhost.f5_public_ip }}"
+        user: "{{ f5_user }}"
+        password: "{{ f5_password }}"
+        server: "{{ f5_public_ip }}"
         server_port: 8443
         validate_certs: "{{ f5_validate_certs }}"
         transport: rest
