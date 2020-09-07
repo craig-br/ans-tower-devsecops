@@ -1,5 +1,5 @@
 ---
-- name: configure F5 Nodepool
+- name: Configure F5 Nodepool
   hosts: localhost
   connection: local
   gather_facts: false
