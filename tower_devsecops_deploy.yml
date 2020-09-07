@@ -46,6 +46,9 @@
     slurp:
       src: "{{ aws_pvt_key }}"
     register: aws_ssh_key
+    tags:
+      - tower-config
+      - ec2-cred
 
   - name: Create EC2 Instance credential
     tower_credential:
@@ -60,6 +63,14 @@
       - tower-config
       - ec2-cred
 
+  - name: Fetch Demo VM SSH Key
+    slurp:
+      src: "{{ demo_ssh_pvt_key_file }}"
+    register: demo_ssh_pvt_key
+    tags:
+      - tower-config
+      - ssh-cred
+
   - name: Create Demo VM SSH Credential
     tower_credential:
       name: VM SSH Credential
@@ -67,7 +78,8 @@
       credential_type: Machine
       organization: "{{ tower_organization }}"
       inputs:
-        ssh_key_data: "{{ aws_ssh_key['content'] | b64decode }}"
+        username: "{{ demo_ssh_key_username }}"
+        ssh_key_data: "{{ demo_ssh_pvt_key['content'] | b64decode }}"
     tags:
       - tower-config
       - ssh-cred
@@ -78,9 +90,10 @@
       description: F5 BigIP Credential
       kind: cloud
       inputs: "{{ lookup('file', 'tower_cred_inputs_f5.json') }}"
+      injectors: "{{ lookup('file', 'tower_cred_inputs_f5_injectors.json') }}"
     tags:
       - tower-config
-      - f5-cred-type
+      - f5-cred
 
   - name: Create F5 Credential  
     tower_credential:
@@ -173,6 +186,7 @@
       credential: AWS Credentials
       overwrite: True
       overwrite_vars: true
+      instance_filters: "tag:function=webserver"
       source: ec2
       update_on_launch: false
     tags:
@@ -188,6 +202,16 @@
       - tower-config
       - vagrant-inv
 
+  - tower_host:
+      inventory: On Prem Inventory
+      name: "{{ item.name }}"
+      new_name: "{{ item.name }}"
+      description: "{{ item.description }}"
+      variables: "{{ item.variables }}"
+    loop: "{{ vagrant_inv_vars }}"
+    tags:
+      - tower-config
+      - vagrant-inv
   ## Users
   - name: Create Jenkins user
     tower_user:
@@ -232,6 +256,14 @@
       user: "{{ jenkins_user }}"
       role: execute
       job_template: "Deploy JuiceShop App"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
+  - tower_role:
+      user: "{{ jenkins_user }}"
+      role: execute
+      job_template: "Create JuiceShop App VS"
       state: present
     tags:
       - tower-config
@@ -307,12 +339,12 @@
       dest: "/tmp/{{ vagrant_inv_dest }}"
     tags:
       - tower-config
-      - vagrant-inv
+      # - vagrant-inv
 
   - name: Import Vagrant inventory to AdminServers
     command: > 
-      awx-manage inventory_import --source=/tmp/vagrant_ansible_inventory --inventory-name="On Prem Inventory"
+      awx-manage inventory_import --source=/tmp/vagrant_ansible_inventory --inventory-name="On Prem Inventory" --keep-vars
     become: true
     tags:
       - tower-config
-      - vagrant-inv
+      # - vagrant-inv
