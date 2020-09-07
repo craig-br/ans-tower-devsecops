@@ -13,7 +13,7 @@
         }
     ],
     "required": [
-        "user",
-        "password"
+        "f5_user",
+        "f5_password"
     ]
 }
