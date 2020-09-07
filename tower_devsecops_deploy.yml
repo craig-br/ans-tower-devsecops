@@ -1,6 +1,5 @@
 ---
 - name: Configure Tower for JuiceShop Demo
-
   hosts: localhost
   connection: local
   become: false
@@ -173,6 +172,7 @@
       inventory: AWS Inventory
       credential: AWS Credentials
       overwrite: True
+      overwrite_vars: true
       source: ec2
       update_on_launch: false
     tags:
@@ -198,6 +198,16 @@
       - tower-config
       - user-jenkins
 
+  - name: Give Jenkins user access to JuiceShop Org
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: member
+      organization: "{{ tower_organization }}"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
+
   - name: Give Jenkins user access to SSH key
     tower_role:
       user: "{{ jenkins_user }}"
@@ -209,21 +219,19 @@
       - tower-config
       - user-jenkins
 
-  - name: Give Jenkins user access to JuiceShop Org
-    tower_role:
-      user: "{{ jenkins_user }}"
-      role: member
-      organization: "{{ tower_organization }}"
-      state: present
-    tags:
-      - tower-config
-      - user-jenkins
-
   - name: Give Jenkins user access to Job Templates
     tower_role:
       user: "{{ jenkins_user }}"
       role: execute
       workflow: "Cloud Instances Workflow"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
+  - tower_role:
+      user: "{{ jenkins_user }}"
+      role: execute
+      job_template: "Deploy JuiceShop App"
       state: present
     tags:
       - tower-config
@@ -267,6 +275,8 @@
       ask_limit_on_launch: "{{ item.ask_limit_on_launch | default('false') }}"
       extra_vars: "{{ item.extra_vars | default({}) }}"
       limit: "{{ item.limit | default('') }}"
+      use_fact_cache: "{{ item.use_fact_cache | default('false') }}"
+      verbosity: "{{ item.verbosity | default('0') }}"
     loop: "{{ job_template_vars }}"
     tags:
       - tower-config
