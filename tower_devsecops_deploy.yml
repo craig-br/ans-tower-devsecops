@@ -102,8 +102,8 @@
       credential_type: f5
       organization: "{{ tower_organization }}"
       inputs:
-        user: "{{ f5_user }}"
-        password: "{{ f5_password }}"
+        f5_user: "{{ f5_user }}"
+        f5_password: "{{ f5_password }}"
     tags:
       - tower-config
       - f5-cred  
