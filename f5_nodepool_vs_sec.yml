@@ -1,6 +1,6 @@
 ---
 - name: Configure F5 WAF
-  hosts: localhost
+  hosts: tower
   connection: local
   gather_facts: false
 

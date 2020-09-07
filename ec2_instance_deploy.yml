@@ -1,6 +1,6 @@
 ---
 - name: Deploy EC2 Web Servers
-  hosts: localhost
+  hosts: tower
   connection: local
   gather_facts: false
 
