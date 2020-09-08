@@ -24,6 +24,7 @@
     get_url: 
       url: "{{ app_custom_config }}"
       dest: "{{ node_app_dir }}config/devsecops.yml"
+      force: true
     tags:
       - get_config
 
@@ -49,24 +50,24 @@
     register: forever_list
     changed_when: false
     tags:
-      - run_app
+      - run-app
 
   - name: Run application
     # become: true
-    shell: 
+    shell:
       cmd: forever start app.js
       chdir: "{{ node_app_dir }}"
     environment: 
       NODE_ENV: devsecops
+    vars:
+      ansible_ssh_pipelining: no
     when: "forever_list.stdout.find('app.js') == -1"
     tags:
-      - run_app
-  - shell:
-      cmd: >
-        forever stop app.js && forever start app.js
-      chdir: "{{ node_app_dir }}"
-    environment: 
-      NODE_ENV: devsecops
+      - run-app
+  # - shell: "forever stop app.js && forever start app.js"
+  #     chdir: "{{ node_app_dir }}"
+  #   environment: 
+  #     NODE_ENV: devsecops
   tags:
     - app_deploy
     - webservers
