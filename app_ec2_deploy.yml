@@ -3,7 +3,7 @@
   hosts: all
   gather_facts: true
   environment: 
-    NODE_ENV: "devsecops"
+    NODE_ENV: devsecops
   roles:
   - role: geerlingguy.nodejs
     vars:
@@ -52,12 +52,12 @@
       - run_app
 
   - name: Run application
-    become: true
+    # become: true
     shell: 
-      cmd: "NODE_ENV=devsecops && forever start app.js"
+      cmd: forever start app.js
       chdir: "{{ node_app_dir }}"
     environment: 
-      NODE_ENV: "devsecops"
+      NODE_ENV: devsecops
     when: "forever_list.stdout.find('app.js') == -1"
     tags:
       - run_app
