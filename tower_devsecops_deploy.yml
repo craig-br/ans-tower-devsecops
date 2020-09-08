@@ -160,7 +160,7 @@
       allow_override: true
       description: JuiceShop Playbooks
       scm_branch: master
-      scm_clean: true
+      scm_clean: false
       scm_credential: GitHub Credential
       scm_type: git
       scm_url: "{{ github_scm_url }}"
