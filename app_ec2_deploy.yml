@@ -32,6 +32,15 @@
     tags:
       - run_app
 
+  - name: Force NodeJS to bind to IPV4
+    replace:
+      path: "{{ node_app_dir }}server.js"
+      regexp: '^.*\bserver\.listen\b.*$'
+      replace:  server.listen(process.env.PORT || config.get('server.port'), "0.0.0.0", () => {
+    tags:
+      - deploy-app
+      - ipv4
+
   - name: Check list of running Node.js apps.
     command: forever list
     register: forever_list
