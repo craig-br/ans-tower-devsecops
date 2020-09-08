@@ -42,8 +42,6 @@ challenges:
   overwriteUrlForProductTamperingChallenge: 'https://owasp.slack.com'
   showSolvedNotifications: false
   showHints: false
-  showChallengeSolvedNotifications: false
-  showChallengeHints: false
 products:
   -
     name: 'Apple Juice (1000ml)'
