@@ -54,7 +54,7 @@
   - name: Run application
     become: true
     command: 
-      cmd: "forever start app.js"
+      cmd: "NODE_ENV=devsecops && forever start app.js"
       chdir: "{{ node_app_dir }}"
     environment: 
       NODE_ENV: "devsecops"
