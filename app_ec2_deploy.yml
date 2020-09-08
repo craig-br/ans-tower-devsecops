@@ -2,10 +2,13 @@
 - name: Deploy Application to EC2 Instances
   hosts: all
   gather_facts: true
+  environment: 
+    NODE_ENV: "devsecops"
   roles:
   - role: geerlingguy.nodejs
     vars:
       nodejs_version: "10.x"
+    
   
   tasks:
   - name: Extract download
