@@ -1,7 +1,6 @@
 ---
-## @todo add bigip_node remove play at the end
-- name: F5 Virtual Switch Uninstall
-  hosts: localhost
+- name: F5 Virtual Server Remove
+  hosts: tower
   connection: local
   gather_facts: false
   become: false
@@ -70,11 +69,7 @@
     - name: Delete F5 nodes
       bigip_node:
         name: "{{ item['private_ip_address'] }}"
-        # pool: "{{ f5_pool_name }}"
-        # port: 80
         server: "{{ hostvars['localhost']['f5_public_ip'] }}"
-        # host: "{{ item['private_ip_address'] }}"
-        # preserve_node: yes
         state: absent
         provider:
           user: "{{ user }}"

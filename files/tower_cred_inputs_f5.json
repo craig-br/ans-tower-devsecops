@@ -1,0 +1,19 @@
+{
+    "fields": [
+        {
+            "id": "f5_user",
+            "type": "string",
+            "label": "Username"
+        },
+        {
+            "id": "f5_password",
+            "type": "string",
+            "label": "Password",
+            "secret": true
+        }
+    ],
+    "required": [
+        "f5_user",
+        "f5_password"
+    ]
+}

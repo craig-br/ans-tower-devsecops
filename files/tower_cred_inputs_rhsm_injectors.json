@@ -1,0 +1,6 @@
+{
+    "extra_vars": {
+        "rhsm_username": "{{ rhsm_username }}",
+        "rhsm_password": "{{ rhsm_password }}"
+    }
+}

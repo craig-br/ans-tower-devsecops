@@ -1,0 +1,50 @@
+---
+- name: Add custom configurations to Tower Vagrant Node
+  become: true
+  gather_facts: true
+  hosts: adminservers
+  
+  tasks:
+  - import_playbook: rhel_subscribe.yml
+    when: ansible_distribution == "RedHat"
+  - name: Configure the Tower admin password
+    shell:  >
+      echo "from django.contrib.auth.models import User; passwd='{{ tower_password }}'; 
+      usr=User.objects.get(username='admin'); usr.set_password(passwd); 
+      usr.save(); open('{{admin_password_file}}', 'w').write(passwd); 
+      import os; os.chmod('{{admin_password_file}}', 0o0640);" | awx-manage shell
+
+  - name: Slurp the admin password
+    slurp:
+      src: '{{ admin_password_file }}'
+    register: admin_password
+
+  - name: Update the motd
+    template:
+      src: 51-tower-welcome.j2
+      dest: /etc/profile.d/ansible-tower.sh
+      mode: 0744
+
+  - name: Remove temporary admin password file
+    file:
+      path: '{{ admin_password_file }}'
+      state: absent
+
+  - name: Leave a configuration breadcrumb
+    file:
+      path: '{{ reconfigured_file }}'
+      state: touch
+      owner: root
+      group: awx
+      mode: 0640
+
+  - name: Restart ansible-tower
+    command: ansible-tower-service restart
+
+  - name: Add DevSecOps Demo SSH key
+    authorized_key:
+      user: "{{ ssh_key_username }}"
+      state: present
+      key: '{{ lookup("file", "{{ ssh_key_file }}") }}'
+    
+    

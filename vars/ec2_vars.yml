@@ -10,23 +10,8 @@ password: "F5 password"
 ec2_state: "ec2 default state"
 ec2_keyname: "ec2 ssh keyname"
 base_packages:
-  - podman
   - gcc
   - make
 ec2_instance_type: m5.large
 ec2_ami: ami-7c491f05
 ec2_count: 3
-
-#RHSM Vars 
-rhsm_pool_ids: "rhsm poolid"
-rhsm_username: "rhsm username"
-rhsm_repos_purge: false
-rhsm_repos:
-  - rhel-7-server-rpms
-  - rhel-7-server-extras-rpms
-  - rhel-7-server-optional-rpms
-## 
-# @todo check where the best place is to add pipelining for Tower.
-##
-ansible_ssh_common_args: -C -o ControlMaster=auto -o ControlPersist=60s
-ansible_ssh_pipelining: true

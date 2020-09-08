@@ -1,0 +1,77 @@
+--- 
+##
+# Tower Vars
+##
+tower_host: vagrant.tower.local
+tower_username: admin
+tower_password: admin
+tower_organization: JuiceShop
+
+# Vars to reset password
+aw_home: /var/lib/awx
+aw_user: awx
+aw_group: awx
+reset_playbook_dir: '/etc/tower/reset'
+admin_password_file: '{{reset_playbook_dir}}/.admin_password'
+reconfigured_file: '{{reset_playbook_dir}}/.reconfigured'
+
+#F5 Credentials
+f5_user: "Your F5 username"
+f5_password: "Your F5 Password"
+
+#AWS Credentials
+aws_pvt_key: '$HOME/.ssh/"Your AWS Private Key"'
+aws_username: "Your AWS Username"
+aws_password: "Your AWS Password"
+
+#GitHub Credentials
+github_pvt_key: '$HOME/.ssh/"Your GitHub Private Key"'
+github_scm_url: https://github.com/craig-br/ans-tower-devsecops.git
+
+#Local SSH Credentials
+ssh_key_username: "Your key username"
+ssh_key_file: "Location of your public key file"
+
+#Tower Settings
+pri_galaxy_token: "Your Automation Hub Token"
+pri_galaxy_url: https://cloud.redhat.com/api/automation-hub/
+pri_galaxy_auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+
+##
+# RHSM Vars
+# https://github.com/openstack/ansible-role-redhat-subscription
+##
+rhsm_vars:
+  rhsm_pool_ids: "rhsm poolid. Use Vault"
+  rhsm_username: "rhsm username. Use Vault"
+  rhsm_password: "Your RHSM Password. Use Vault"
+  rhsm_repos_purge: false
+  # rhsm_repos:
+  #   - rhel-8-for-x86_64-baseos-rpms
+  #   - rhel-8-for-x86_64-appstream-rpms
+  #   - ansible-2.9-for-rhel-8-x86_64-rpms
+rhsm_repos:
+  - rhel-7-server-rpms
+  - rhel-7-server-extras-rpms
+  - rhel-7-server-ansible-2.9-rpms
+
+##
+# ec2 vars
+##
+ec2_vars:
+  ec2_sg_name: "Security group name"
+  ec2_region: "EC2 Region"
+  ec2_f5_tag: "Firewall tag"
+  ec2_webserver_tag: "EC2 Web Server tag"
+  ec2_f5_state: "Is F5 present on EC2?"
+  f5_validate_certs: false
+  f5_user: "F5 user"
+  f5_password: "F5 password"
+  ec2_state: "ec2 default state"
+  ec2_keyname: "ec2 ssh keyname"
+  ec2_instance_type: m5.large
+  ec2_ami: ami-7c491f05
+  ec2_count: 3  
+  base_packages:
+    - gcc
+    - make

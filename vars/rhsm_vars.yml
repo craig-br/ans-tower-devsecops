@@ -1,0 +1,12 @@
+---
+# https://github.com/openstack/ansible-role-redhat-subscription
+
+#RHSM Vars 
+rhsm_pool_ids: "rhsm poolid. Use Vault"
+rhsm_username: "rhsm username. Use Vault"
+rhsm_password: "Your RHSM Password. Use Vault"
+rhsm_repos_purge: false
+rhsm_repos:
+  - rhel-8-for-x86_64-baseos-rpms
+  - rhel-8-for-x86_64-appstream-rpms
+  - ansible-2.9-for-rhel-8-x86_64-rpms

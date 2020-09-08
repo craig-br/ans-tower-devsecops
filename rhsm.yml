@@ -1,0 +1,6 @@
+- name: Setup RHSM on servers
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: openstack.redhat-subscription
+      when: ansible_distribution == "RedHat"

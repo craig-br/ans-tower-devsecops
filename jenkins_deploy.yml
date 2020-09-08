@@ -1,21 +1,53 @@
 ---
 - name: Deploy Jenkins Server
-  hosts: all
+  hosts: ciservers
+  become: true
+  vars_files:
+    - vars/rhsm_vars.yml
+    - vars/jenkins_vars.yml
+
   roles:
+  - role: openstack.redhat-subscription
+    tags:
+      - jenkins_rhsm
   - role: geerlingguy.java
     when: "ansible_os_family == 'RedHat'"
-    vars:
-      - java_packages: 
-        - java-1.8.0-openjdk-devel
+  - role: geerlingguy.jenkins
   - role: geerlingguy.nodejs
-    vars:
-      nodejs_version: "10.x"
-      
-  - geerlingguy.repo-epel
-  - geerlingguy.jenkins
-  - geerlingguy.git
-  - tecris.maven
-  - geerlingguy.ansible
+
+  tasks:
+  - name: Install package dependencies
+    package:
+      name: "{{ item }}"
+      state: present
+    loop: "{{ packages }}"
+    tags:
+      - jenkins_pkg_dependencies
+
+  - name: Install npm dependences
+    npm:
+      name: "{{ item.name }}"
+      version: "{{ item.version }}"
+      path: "{{ item.path }}"
+    loop: "{{ npm_packages }}"
+    tags:
+      - jenkins_npm_packages
+
+  - name: Enable Jenkins http 8080
+    firewalld:
+      state: enabled
+      permanent: true
+      port: 8080/tcp
+    tags:
+      - jenkins_firewall
+  - name: Reload firewalld service
+    service:
+      name: firewalld
+      state: reloaded
+      enabled: true
+    tags:
+      - jenkins_restart
+
   tags:
     - jenkins
     - devsecops
