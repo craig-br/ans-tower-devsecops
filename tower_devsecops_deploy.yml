@@ -268,6 +268,14 @@
     tags:
       - tower-config
       - user-jenkins
+  - tower_role:
+      user: "{{ jenkins_user }}"
+      role: execute
+      job_template: "Secure JuiceShop App"
+      state: present
+    tags:
+      - tower-config
+      - user-jenkins
 
   - name: Give Jenkins user access to Inventories
     tower_role:
@@ -327,24 +335,24 @@
       - workflow-cloud-templates
 
 # Perform actions on adminservers
-- name: Perform commands on Admin Servers
-  hosts: adminservers
-  gather_facts: false
-  become: false
+# - name: Perform commands on Admin Servers
+#   hosts: adminservers
+#   gather_facts: false
+#   become: false
 
-  tasks:
-  - name: Copy Vagrant inventory to AdminServers
-    copy:
-      src: "{{ vagrant_inv_src }}"
-      dest: "/tmp/{{ vagrant_inv_dest }}"
-    tags:
-      - tower-config
-      # - vagrant-inv
+#   tasks:
+#   - name: Copy Vagrant inventory to AdminServers
+#     copy:
+#       src: "{{ vagrant_inv_src }}"
+#       dest: "/tmp/{{ vagrant_inv_dest }}"
+#     tags:
+#       - tower-config
+#       # - vagrant-inv
 
-  - name: Import Vagrant inventory to AdminServers
-    command: > 
-      awx-manage inventory_import --source=/tmp/vagrant_ansible_inventory --inventory-name="On Prem Inventory" --keep-vars
-    become: true
-    tags:
-      - tower-config
-      # - vagrant-inv
+#   - name: Import Vagrant inventory to AdminServers
+#     command: > 
+#       awx-manage inventory_import --source=/tmp/vagrant_ansible_inventory --inventory-name="On Prem Inventory" --keep-vars
+#     become: true
+#     tags:
+#       - tower-config
+#       # - vagrant-inv
