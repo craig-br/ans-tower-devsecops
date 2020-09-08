@@ -64,10 +64,6 @@
     when: "forever_list.stdout.find('app.js') == -1"
     tags:
       - run-app
-  # - shell: "forever stop app.js && forever start app.js"
-  #     chdir: "{{ node_app_dir }}"
-  #   environment: 
-  #     NODE_ENV: devsecops
   tags:
     - app_deploy
     - webservers

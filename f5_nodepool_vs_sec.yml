@@ -41,8 +41,8 @@
       all_policies:
         - JuiceShop_Policy
       provider:
-        user: "{{ user }}"
-        password: "{{ password }}"
+        user: "{{ f5_user }}"
+        password: "{{ f5_password }}"
         server: "{{ hostvars['localhost']['f5_public_ip'] }}"
         server_port: 8443
         validate_certs: "{{ f5_validate_certs }}"
