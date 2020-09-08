@@ -28,4 +28,5 @@ virtualenv/
 roles/*
 .DS_Store
 settings.json
+.vagrant/
 
