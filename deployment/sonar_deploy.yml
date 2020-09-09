@@ -6,7 +6,7 @@
   roles:
   - role: openstack.redhat-subscription
     tags:
-      - sonar_rhsm
+      - sonar-rhsm
   - role: geerlingguy.java
 
   tasks:
@@ -14,7 +14,7 @@
     package:
       name: "{{ item }}"
       state: present
-    loop: "{{ packages }}"
+    loop: "{{ sonar_packages }}"
     tags:
       - sonar_pkg_dependencies
   

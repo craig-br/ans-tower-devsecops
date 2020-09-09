@@ -30,9 +30,9 @@
         name: "{{ f5_vs_name }}"
         state: absent
         provider:
-          user: "{{ user }}"
-          password: "{{ password }}"
-          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
           server_port: 8443
           validate_certs:  "{{ f5_validate_certs }}"
           transport: rest
@@ -45,9 +45,9 @@
         preserve_node: yes
         state: absent
         provider:
-          user: "{{ user }}"
-          password: "{{ password }}"
-          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
           server_port: 8443
           validate_certs: "{{ f5_validate_certs }}"
           transport: rest
@@ -59,9 +59,9 @@
         name: "{{ f5_pool_name }}"
         state: absent
         provider:
-          user: "{{ user }}"
-          password: "{{ password }}"
-          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
           server_port: 8443
           validate_certs: "{{ f5_validate_certs }}"
           transport: rest
@@ -69,12 +69,12 @@
     - name: Delete F5 nodes
       bigip_node:
         name: "{{ item['private_ip_address'] }}"
-        server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+        # server: "{{ f5_public_ip }}"
         state: absent
         provider:
-          user: "{{ user }}"
-          password: "{{ password }}"
-          server: "{{ hostvars['localhost']['f5_public_ip'] }}"
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
           server_port: 8443
           validate_certs: "{{ f5_validate_certs }}"
           transport: rest
