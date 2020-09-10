@@ -1,7 +1,4 @@
 ---
-# - name: geerlingguy.jenkins
-#   src: https://github.com/geerlingguy/ansible-role-jenkins.git
-#   scm: git
 - name: geerlingguy.git
   src: https://github.com/geerlingguy/ansible-role-git.git
   scm: git
@@ -16,9 +13,6 @@
   scm: git
 - name: geerlingguy.repo-epel
   src: https://github.com/geerlingguy/ansible-role-repo-epel.git
-  scm: git
-- name: lrk.sonarqube
-  src: https://github.com/lrk/ansible-role-sonarqube.git
   scm: git
 - name: geerlingguy.nodejs
   src: https://github.com/geerlingguy/ansible-role-nodejs.git

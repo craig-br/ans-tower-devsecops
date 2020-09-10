@@ -69,7 +69,6 @@
     - name: Delete F5 nodes
       bigip_node:
         name: "{{ item['private_ip_address'] }}"
-        # server: "{{ f5_public_ip }}"
         state: absent
         provider:
           user: "{{ f5_user }}"
