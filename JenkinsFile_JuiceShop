@@ -1,26 +1,25 @@
 #!/usr/bin/env groovy
-final NEXUS_URL = '10.9.61.229:8081'
 
 stage('Get code from SCM') {
     node {
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'nexus_cred', url: 'https://github.com/craig-br/juice-shop.git']]])
-    }
-} 
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/craig-br/juice-shop.git']]])
+    } 
+}
 stage('Code Analysis') {
     node {
-        def scannerHome = tool 'sonar'
-        withSonarQubeEnv('sonar'){
-            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=."
+        def scannerHome = tool 'sonarqube'
+            withSonarQubeEnv('sonarqube'){
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=. -Dsonar.language=js -Dsonar.exclusions=test/**/*,frontend/src/assets/**/*"
         }
     }
 }
 
-stage('Deploy Cloud Servers with Tower') {
+stage('Deploy Cloud Instances with Tower') {
     node {
         ansibleTower(
-            towerServer: 'devsecops_tower',
+            towerServer: 'JuiceShop Tower',
             templateType: 'workflow',
-            jobTemplate: 'DevSecOps EC2 Environment',
+            jobTemplate: 'Cloud Instances Workflow',
             importTowerLogs: true,
             jobTags: '',
             skipJobTags: '',
@@ -31,13 +30,14 @@ stage('Deploy Cloud Servers with Tower') {
         )
     }
 }
+
 stage('Deploy') {
     parallel('Deploy App with Tower': { 
         node {
             ansibleTower(
-                towerServer: 'devsecops_tower',
+                towerServer: 'JuiceShop Tower',
                 templateType: 'job',
-                jobTemplate: 'DevSecOps EC2 Deploy App',
+                jobTemplate: 'Deploy JuiceShop App',
                 importTowerLogs: true,
                 jobTags: '',
                 skipJobTags: '',
@@ -51,9 +51,9 @@ stage('Deploy') {
         }, 'Configure Load Balancer': {
             node {
                 ansibleTower(
-                    towerServer: 'devsecops_tower',
-                    templateType: 'workflow',
-                    jobTemplate: 'DevSecOps Configure Firewall',
+                    towerServer: 'JuiceShop Tower',
+                    templateType: 'job',
+                    jobTemplate: 'Create JuiceShop App VS',
                     importTowerLogs: true,
                     jobTags: '',
                     skipJobTags: '',
