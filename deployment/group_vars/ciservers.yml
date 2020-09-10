@@ -1,0 +1,16 @@
+#npm dependencies
+npm_packages:
+  - name: typescript
+    version: 3.8.2
+    path: /var/lib/jenkins/workspace/JuiceShop
+
+jenkins_plugin_timeout: 180
+jenkins_plugins:
+  - blueocean
+  - pipeline
+  - git
+  - ansible
+  - ansible-tower
+  - sonar
+  - configuration-as-code
+  - configuration-as-code-groovy

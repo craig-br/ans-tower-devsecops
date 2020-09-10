@@ -3,8 +3,8 @@
 rhsm_repos_purge: false
 rhsm_username: "rhsm name"
 rhsm_password: "rhsm password"
-rhsm_pool_ids: "RHSM_poolids"
+rhsm_pool_ids: "rhsm pool ids"
 rhsm_repos:
   - rhel-7-server-rpms
   - rhel-7-server-extras-rpms
-  - rhel-7-server-optional-rpms  
+  - rhel-7-server-optional-rpms 
