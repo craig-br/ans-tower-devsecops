@@ -5,8 +5,6 @@
   hosts: adminservers
   
   tasks:
-  - import_playbook: rhel_subscribe.yml
-    when: ansible_distribution == "RedHat"
   - name: Configure the Tower admin password
     shell:  >
       echo "from django.contrib.auth.models import User; passwd='{{ tower_password }}'; 
