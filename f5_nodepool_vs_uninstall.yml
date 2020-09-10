@@ -1,6 +1,6 @@
 ---
 - name: F5 Virtual Server Remove
-  hosts: tower
+  hosts: localhost
   connection: local
   gather_facts: false
   become: false
