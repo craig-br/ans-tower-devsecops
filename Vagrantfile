@@ -74,7 +74,7 @@ Vagrant.configure("2") do |config|
     # Tower Node VirtualBox Customisations
     tower.vm.provider "virtualbox" do |v|
       v.memory = 4096
-      v.cpus = 4
+      v.cpus = 2
       v.customize ["modifyvm", :id, "--ioapic", "on"]
       v.name = "tower"
     end
