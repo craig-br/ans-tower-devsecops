@@ -1,69 +1,82 @@
 #!/usr/bin/env groovy
-
 stage('Get code from SCM') {
     node {
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/craig-br/juice-shop.git']]])
     } 
 }
+// stage('Code Analysis') {
+//     node {
+//         def scannerHome = tool 'sonarqube'
+//             withSonarQubeEnv('sonarqube'){
+//                 // sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop2 -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/* -Dsonar.tests=test"
+//                 sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/*,frontend/node_modules/*/**"
+//         }
+//     }
+// }
 stage('Code Analysis') {
     node {
-        def scannerHome = tool 'sonarqube'
-            withSonarQubeEnv('sonarqube'){
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=. -Dsonar.language=js -Dsonar.exclusions=test/**/*,frontend/src/assets/**/*"
-        }
+        nodejs(nodeJSInstallationName: 'nodejs') {
+                    // sh 'npm config ls'
+                    // sh "npm install"
+                    sh "npm run lint"
+                    // sh "export CHROME_BIN='/usr/bin/chromium' &&  cd frontend && ./node_modules/@angular/cli/bin/ng test --watch=false --source-map=false && cd .. && nyc --report-dir=./build/reports/"
+                    sh "npm test"
+                }
+
     }
 }
 
-stage('Deploy Cloud Instances with Tower') {
-    node {
-        ansibleTower(
-            towerServer: 'JuiceShop Tower',
-            templateType: 'workflow',
-            jobTemplate: 'Cloud Instances Workflow',
-            importTowerLogs: true,
-            jobTags: '',
-            skipJobTags: '',
-            limit: '',
-            removeColor: false,
-            verbose: true,
-            credential: '',
-        )
-    }
-}
+// stage('Deploy Cloud Instances with Tower') {
+//     node {
+//         ansibleTower(
+//             towerServer: 'JuiceShop Tower',
+//             templateType: 'workflow',
+//             jobTemplate: 'Cloud Instances Workflow',
+//             importTowerLogs: true,
+//             jobTags: '',
+//             skipJobTags: '',
+//             limit: '',
+//             removeColor: false,
+//             verbose: true,
+//             credential: '',
+//         )
+//     }
+// }
 
-stage('Deploy') {
-    parallel('Deploy App with Tower': { 
-        node {
-            ansibleTower(
-                towerServer: 'JuiceShop Tower',
-                templateType: 'job',
-                jobTemplate: 'Deploy JuiceShop App',
-                importTowerLogs: true,
-                jobTags: '',
-                skipJobTags: '',
-                limit: '',
-                removeColor: false,
-                verbose: true,
-                credential: '',
-            )
-        }
+// stage('Deploy') {
+//     parallel('Deploy App with Tower': { 
+//         node {
+//             ansibleTower(
+//                 towerServer: 'JuiceShop Tower',
+//                 templateType: 'job',
+//                 jobTemplate: 'Deploy JuiceShop App',
+//                 importTowerLogs: true,
+//                 jobTags: '',
+//                 skipJobTags: '',
+//                 limit: '',
+//                 removeColor: false,
+//                 verbose: true,
+//                 credential: '',
+//             )
+//         }
         
-        }, 'Configure Load Balancer': {
-            node {
-                ansibleTower(
-                    towerServer: 'JuiceShop Tower',
-                    templateType: 'job',
-                    jobTemplate: 'Create JuiceShop App VS',
-                    importTowerLogs: true,
-                    jobTags: '',
-                    skipJobTags: '',
-                    limit: '',
-                    removeColor: false,
-                    verbose: true,
-                    credential: '',
-                )
-            }
-        }
+//         }, 'Configure Load Balancer': {
+//             node {
+//                 ansibleTower(
+//                     towerServer: 'JuiceShop Tower',
+//                     templateType: 'job',
+//                     jobTemplate: 'Create JuiceShop App VS',
+//                     importTowerLogs: true,
+//                     jobTags: '',
+//                     skipJobTags: '',
+//                     limit: '',
+//                     removeColor: false,
+//                     verbose: true,
+//                     credential: '',
+//                 )
+//             }
+//         }
     
-    )
-}
+//     )
+// }
+
