@@ -75,3 +75,13 @@ ec2_vars:
   base_packages:
     - gcc
     - make
+
+github_vars:
+  tag_name: v8.6.2
+  target_commitish: master
+  name: JuiceShop Demo
+  body: Description
+  draft: false
+  prerelease: false
+  accept: application/vnd.github.v3+json is recommended
+  github_token: "Your Github Token"
