@@ -12,25 +12,25 @@
   #     user: craig-br
   #     repo: juice-shop
   #     action: create_release
-  #     tag: v8.6.2
+  #     tag: v8.7.1
   #     target: master
-  #     name: v8.6.2
+  #     name: JuiceShop Demo
   #     body: Some description
   #     draft: false
-  #     prerelease: true
+  #     prerelease: false
 
-  - name: debug jenkisn vars
+  - name: debug jenkins vars
     debug:
-      msg: "{{ my_var }}"
+      msg: "{{ js_release | default ('v0.0.1') }}"
 
-  - name: Get Current JuiceShop Releases
-    uri:
-      url: https://api.github.com/repos/craig-br/juice-shop/releases
-      method: GET
-      headers:
-        Accept: application/vnd.github.inertia-preview+json
-      status_code: 200
-    register: juiceshop_releases
+  # - name: Get Current JuiceShop Releases
+  #   uri:
+  #     url: https://api.github.com/repos/craig-br/juice-shop/releases
+  #     method: GET
+  #     headers:
+  #       Accept: application/vnd.github.inertia-preview+json
+  #     status_code: 200
+  #   register: juiceshop_releases
 
   
   # - name: debug json
@@ -46,20 +46,20 @@
   #   loop: "{{ juiceshop_releases.json }}"
   #   when: item.tag_name == "v8.6.2"
 
-  # - name: Create new GitHub Release
-  #   uri:
-  #     url: "https://api.github.com/repos/craig-br/juice-shop/releases}"
-  #     url: "https://api.github.com/repos/craig-br/juice-shop/releases/{{ release_id }}"
-  #     method: POST
-  #     headers:
-  #       Authorization: "token {{ github_token }}"
-        # Accept: application/vnd.github.inertia-preview+json
-  #     body_format: json
-  #     body:
-  #       "{{ github_release_vars | to_json }}"
-  #     status_code: 201
-  #   register: github_rel_response
-  #   ignore_errors: true
+  - name: Create new GitHub Release
+    uri:
+      url: "https://api.github.com/repos/craig-br/juice-shop/releases"
+      # url: "https://api.github.com/repos/craig-br/juice-shop/releases/{{ release_id }}"
+      method: POST
+      headers:
+        Authorization: "token {{ github_token }}"
+        Accept: application/vnd.github.inertia-preview+json
+      body_format: json
+      body:
+        "{{ github_release_vars | to_json }}"
+      status_code: 201
+    register: github_rel_response
+    ignore_errors: true
 
   
   # - name: debug json
@@ -78,7 +78,7 @@
   #     # body_format: json
   #     body:
   #       "{{ github_release_vars | to_json }}"
-  #       # '{"tag_name": "latest", "target_commitish": "master", "name": "test-name", "body": "test descriptiojn", "draft": false, "prerelease": true}'
+  #       # '{"tag_name": "latest", "target_commitish": "master", "name": "test-name", "body": "test descriptiojn", "draft": false, "prerelease": false}'
   #     status_code: 201
   #   register: github_rel_response
   #   ignore_errors: true
