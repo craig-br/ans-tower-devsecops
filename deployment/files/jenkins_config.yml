@@ -218,6 +218,16 @@ tool:
     installations:
     - home: "git"
       name: "git"
+  nodejs:
+    installations:
+    - name: "nodejs"
+      properties:
+      - installSource:
+          installers:
+          - nodeJSInstaller:
+              id: "10.22.1"
+              npmPackages: "@angular/cli@7.3.8"
+              npmPackagesRefreshHours: 72
   sonarRunnerInstallation:
     installations:
     - name: "sonarqube"
