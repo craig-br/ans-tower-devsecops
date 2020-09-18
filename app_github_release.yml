@@ -1,8 +1,8 @@
 ---
 - name: Push Build to GitHub
-  # hosts: localhost
-  hosts: ciservers
-  # connection: local
+  hosts: localhost
+  # hosts: ciservers
+  connection: local
   gather_facts: false
 
   tasks:
