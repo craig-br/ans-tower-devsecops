@@ -1,4 +1,8 @@
 #!/usr/bin/env groovy
+environment {
+    CHROME_BIN='/usr/bin/chromium'
+}
+
 stage('Get code from SCM') {
     node {
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/craig-br/juice-shop.git']]])
@@ -13,19 +17,26 @@ stage('Get code from SCM') {
 //         }
 //     }
 // }
-stage('Code Analysis') {
+
+// stage('Code Analysis') {
+//     node {
+//         nodejs(nodeJSInstallationName: 'nodejs') {
+//                     sh "npm run lint"
+//                     sh "npm test"
+//                 }
+
+//     }
+// }
+
+stage('Build App') {
     node {
         nodejs(nodeJSInstallationName: 'nodejs') {
-                    // sh 'npm config ls'
-                    // sh "npm install"
-                    sh "npm run lint"
-                    // sh "export CHROME_BIN='/usr/bin/chromium' &&  cd frontend && ./node_modules/@angular/cli/bin/ng test --watch=false --source-map=false && cd .. && nyc --report-dir=./build/reports/"
-                    sh "npm test"
+                        LS = "${sh(script:'node -p -e "require('./package.json').version"', returnStdout: true) }"//, returnStdout: true).trim()}"
+                    sh "npm install --production && grunt package"
                 }
 
     }
 }
-
 // stage('Deploy Cloud Instances with Tower') {
 //     node {
 //         ansibleTower(
