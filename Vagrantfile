@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
     j.vm.synced_folder ".", "/vagrant", disabled: true
     # Jenkins Node VirtualBox Customisations
     j.vm.provider :virtualbox do |v|
-      v.memory = 2048
+      v.memory = 4096
       v.cpus = 2
       v.customize ["modifyvm", :id, "--ioapic", "on"]
       v.name = "jenkins"
@@ -91,4 +91,31 @@ Vagrant.configure("2") do |config|
       }
     end
   end
+
+    # # Define Tower Node
+    # config.vm.define "test-tower" do |tower|
+    #   tower.vm.box = "ansible/tower"
+    #   tower.vm.network "private_network", ip: "192.168.20.250", nic_type: "virtio"
+    #   tower.vm.hostname = "test-tower.vagrant.local"
+    #   tower.vm.synced_folder ".", "/vagrant", disabled: true
+    #   # Tower Node VirtualBox Customisations
+    #   tower.vm.provider "virtualbox" do |v|
+    #     v.memory = 2048
+    #     v.cpus = 2
+    #     v.customize ["modifyvm", :id, "--ioapic", "on"]
+    #     v.name = "tower"
+    #   end
+    #   # Tower Node Ansible
+    #   tower.vm.provision "ansible" do |ansible|
+    #     ansible.playbook = "./deployment/tower_deploy.yml" 
+    #     # ansible.galaxy_role_file = "./roles/requirements.yml"
+    #     # ansible.galaxy_roles_path = "./roles"
+    #     ansible.verbose = "vvv"
+    #     ansible.groups = {
+    #       "ciservers" => ["jenkins"],
+    #       "adminservers" => ["tower", "test-tower"],
+    #       "qcservers" => ["sonar"]
+    #     }
+    #   end
+    # end
 end
