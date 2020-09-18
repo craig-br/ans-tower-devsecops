@@ -37,6 +37,7 @@
       port: 8080/tcp
     tags:
       - jenkins_firewall
+
   - name: Reload firewalld service
     service:
       name: firewalld
@@ -45,6 +46,13 @@
     tags:
       - jenkins_restart
 
+  - name: Add DevSecOps Demo SSH key
+    authorized_key:
+      user: "{{ demo_ssh_key_username }}"
+      state: present
+      key: '{{ lookup("file", "{{ demo_ssh_key_file }}") }}'
+    tags:
+      - jenkins-ssh
   tags:
     - jenkins
     - devsecops
