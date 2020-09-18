@@ -19,9 +19,9 @@
   #     draft: false
   #     prerelease: true
 
-  # - name: debug json
-  #   debug:
-  #     msg: "{{ github_token }}"
+  - name: debug jenkisn vars
+    debug:
+      msg: "{{ my_var }}"
 
   - name: Get Current JuiceShop Releases
     uri:
