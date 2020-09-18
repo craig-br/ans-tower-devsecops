@@ -193,25 +193,36 @@
       - tower-config
       - aws-inv 
 
-  - name: Create Tower Vagrant Inventory
+  - name: Create On-Prem Inventory
     tower_inventory:
       name: "On Prem Inventory"
       description: JuiceShop On-Prem Instances
       organization: "{{ tower_organization }}"
     tags:
       - tower-config
-      - vagrant-inv
+      - onprem-inv
 
   - tower_host:
       inventory: On Prem Inventory
       name: "{{ item.name }}"
-      new_name: "{{ item.name }}"
       description: "{{ item.description }}"
       variables: "{{ item.variables }}"
-    loop: "{{ vagrant_inv_vars }}"
+    loop: "{{ onprem_inv_vars }}"
     tags:
       - tower-config
-      - vagrant-inv
+      - onprem-inv
+
+  - tower_group:
+      name: "{{ item.name }}"
+      description: "{{ item.description }}"
+      variables: "{{ item.variables | default({})}}"
+      hosts: "{{ item.hosts }}"
+      inventory: On Prem Inventory
+    loop: "{{ onprem_inv_group_vars }}"
+    tags:
+      - tower-config
+      - onprem-inv
+
   ## Users
   - name: Create Jenkins user
     tower_user:
@@ -243,7 +254,7 @@
       - tower-config
       - user-jenkins
 
-  - name: Give Jenkins user access to Job Templates
+  - name: Give Jenkins user access to Workflows
     tower_role:
       user: "{{ jenkins_user }}"
       role: execute
@@ -252,40 +263,18 @@
     tags:
       - tower-config
       - user-jenkins
-  - tower_role:
-      user: "{{ jenkins_user }}"
-      role: execute
-      job_template: "Deploy JuiceShop App"
-      state: present
-    tags:
-      - tower-config
-      - user-jenkins
-  - tower_role:
-      user: "{{ jenkins_user }}"
-      role: execute
-      job_template: "Create JuiceShop App VS"
-      state: present
-    tags:
-      - tower-config
-      - user-jenkins
-  - tower_role:
-      user: "{{ jenkins_user }}"
-      role: execute
-      job_template: "Secure JuiceShop App"
-      state: present
-    tags:
-      - tower-config
-      - user-jenkins
-
-  - name: Give Jenkins user access to Inventories
+  
+  - name: Give users access to job templates
     tower_role:
-      user: "{{ jenkins_user }}"
-      role: use
-      inventory: "AWS Inventory"
-      state: present
+      user: "{{ item.user }}"
+      role: "{{ item.role }}"
+      job_template: "{{ item.job_template }}"
+      state: "{{ item.state }}"
+    loop: "{{ tower_user_vars }}"
     tags:
       - tower-config
-      - user-jenkins
+      - tower-users
+ 
 
   ## Job Templates:
   - name: Create Cloud Instances Workflow
@@ -295,8 +284,6 @@
       description: Deploy JuiceShop Cloud Instances
       organization: "{{ tower_organization }}"
       inventory: AWS Inventory
-      # extra_vars: "{{ [ec2_vars] + [rhsm_vars] }}"
-      # extra_vars: "{{ rhsm_vars | combine(ec2_vars) }}"
     tags:
       - tower-config
       - workflow-cloud-instances
@@ -313,6 +300,7 @@
       concurrent_jobs_enabled: "{{ item.concurrent_jobs_enabled | default('false') }}"
       become_enabled: "{{ item.become_enabled | default('false') }}"
       ask_limit_on_launch: "{{ item.ask_limit_on_launch | default('false') }}"
+      ask_variables_on_launch: "{{ item.ask_variables_on_launch | default('false') }}"
       extra_vars: "{{ item.extra_vars | default({}) }}"
       limit: "{{ item.limit | default('') }}"
       use_fact_cache: "{{ item.use_fact_cache | default('false') }}"
