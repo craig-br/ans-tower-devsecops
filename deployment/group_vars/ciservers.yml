@@ -11,15 +11,19 @@ npm_packages:
     version: 7.3.10
 
 base_packages:
-  - chromium
+  - firefox
+  - python3
+  - python3-pip
 
 jenkins_plugin_timeout: 180
 jenkins_plugins:
   - blueocean
   - pipeline
   - git
+  - github
   - ansible
   - ansible-tower
   - sonar
   - configuration-as-code
   - configuration-as-code-groovy
+  - nodejs
