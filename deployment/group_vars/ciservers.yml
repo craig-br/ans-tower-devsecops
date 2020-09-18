@@ -3,6 +3,15 @@ npm_packages:
   - name: typescript
     version: 3.8.2
     path: /var/lib/jenkins/workspace/JuiceShop
+  - name: standard
+    version: 14
+    global: true
+  - name: angular/cli
+    global: true
+    version: 7.3.10
+
+base_packages:
+  - chromium
 
 jenkins_plugin_timeout: 180
 jenkins_plugins:

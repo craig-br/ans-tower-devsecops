@@ -2,32 +2,29 @@
 - name: Deploy Jenkins Server
   hosts: ciservers
   become: true
-  vars_files:
-    - vars/rhsm_vars.yml
-    - vars/jenkins_vars.yml
 
   roles:
   - role: openstack.redhat-subscription
-    tags:
-      - jenkins_rhsm
+    when: "ansible_os_family == 'RedHat'"
   - role: geerlingguy.java
     when: "ansible_os_family == 'RedHat'"
   - role: geerlingguy.jenkins
   - role: geerlingguy.nodejs
 
   tasks:
-  - name: Install package dependencies
+  - name: Install base packages
     package:
       name: "{{ item }}"
       state: present
-    loop: "{{ packages }}"
+    loop: "{{ base_packages }}"
     tags:
       - jenkins_pkg_dependencies
 
   - name: Install npm dependences
     npm:
       name: "{{ item.name }}"
-      version: "{{ item.version }}"
+      version: "{{ item.version | default('latest') }}"
+      global: "{{ item.global | default('false') }}"
       path: "{{ item.path }}"
     loop: "{{ npm_packages }}"
     tags:
