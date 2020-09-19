@@ -32,11 +32,11 @@
       # test_fact: HERE
       cacheable: true
 
-  - name: debug json
-    debug:
-      msg: "{{ github_release_vars | to_json }}"
-    tags:
-      - debug-json
+  # - name: debug json
+  #   debug:
+  #     msg: "{{ github_release_vars | to_json }}"
+  #   tags:
+  #     - debug-json
 
 
 
