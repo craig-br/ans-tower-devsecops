@@ -3,9 +3,9 @@
   hosts: tower
   # hosts: ciservers
   # connection: 
-  gather_facts: false
+  gather_facts: true
   become: true
-  become_user: jenkins
+  # become_user: jenkins
 
   tasks:
   # - name: Create a new release
@@ -21,15 +21,20 @@
   #     draft: false
   #     prerelease: false
 
-  - name: debug jenkins vars
-    debug:
-      msg: "{{ new_pkg_version }}"
+  # - name: debug jenkins vars
+  #   debug:
+  #     # msg: "{{ new_pkg_version }}"
 
   - name: Create Facts Release Version
     set_fact:
-      pkg_version: "{{ pkg_version }}"
-      new_pkg_version: "{{ new_pkg_version }}"
-      cacheable: true
+      # pkg_version: "{{ pkg_version }}"
+      # new_pkg_version: "{{ new_pkg_version }}"
+      test_fact: HERE
+      # cacheable: true
+
+  # - name: debug facts
+  #   debug:
+
 
 
   # - name: Get Current JuiceShop Releases

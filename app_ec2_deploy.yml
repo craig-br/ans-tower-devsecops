@@ -11,6 +11,13 @@
     
   
   tasks:
+  - name: debug facts stored from tower host
+    debug:
+      var: "{{ hostvars['tower'] }}"
+    tags:
+      - app-deploy
+      - debug-version
+
   - name: Extract download
     unarchive:
       src: "{{ app_rel_uri }}"
