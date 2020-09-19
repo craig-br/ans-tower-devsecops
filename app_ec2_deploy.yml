@@ -13,7 +13,7 @@
   tasks:
   - name: debug facts stored from tower host
     debug:
-      var: hostvars['tower']['test_fact']
+      var: hostvars['tower']['new_pkg_version']
     tags:
       - app-deploy
       - debug-version

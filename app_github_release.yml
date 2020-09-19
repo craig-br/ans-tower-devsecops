@@ -3,8 +3,8 @@
   hosts: tower
   # hosts: ciservers
   # connection: 
-  gather_facts: true
-  become: true
+  gather_facts: false
+  # become: true
   # become_user: jenkins
 
   tasks:
@@ -47,19 +47,20 @@
   #   register: juiceshop_releases
 
   - name: Create new JuiceShop Release
-    url: https://api.github.com/repos/craig-br/juice-shop/releases
-    method: POST
-    headers:
-      Authorization: "token {{ github_token }}"
-    body_format: json
-    body: > 
-      '{"tag_name": "{{ pkg_new_release }}, 
-      "target_commitish": "{{ target_commitish }}", 
-      "name": "{{ release_name }}", 
-      "body": "{{ body }}", 
-      "draft": {{ draft }}, 
-      "prerelease": {{ prerelease }}}'
-    status_code: 201
+    uri:
+      url: https://api.github.com/repos/craig-br/juice-shop/releases
+      method: POST
+      headers:
+        Authorization: "token {{ github_token }}"
+      body_format: json
+      body: > 
+        '{"tag_name": "{{ new_pkg_version }}, 
+        "target_commitish": "{{ target_commitish }}", 
+        "name": "{{ release_name }}", 
+        "body": "{{ body }}", 
+        "draft": {{ draft }}, 
+        "prerelease": {{ prerelease }}}'
+      status_code: 201
 
      # "{{ github_release_vars | to_json }}"
       # "tag_name": "{{ new_pkg_version }}"
