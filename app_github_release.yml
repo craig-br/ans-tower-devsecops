@@ -27,9 +27,9 @@
 
   - name: Create Facts Release Version
     set_fact:
-      # pkg_version: "{{ pkg_version }}"
-      # new_pkg_version: "{{ new_pkg_version }}"
-      test_fact: HERE
+      pkg_version: "{{ pkg_version }}"
+      new_pkg_version: "{{ new_pkg_version }}"
+      # test_fact: HERE
       cacheable: true
 
   # - name: debug facts
@@ -46,7 +46,23 @@
   #     status_code: 200
   #   register: juiceshop_releases
 
-  
+  - name: Create new JuiceShop Release
+    url: https://api.github.com/repos/craig-br/juice-shop/releases
+    method: POST
+    headers:
+      Authorization: "token {{ github_token }}"
+    body_format: json
+    body: > 
+      '{"tag_name": "{{ pkg_new_release }}, 
+      "target_commitish": "{{ target_commitish }}", 
+      "name": "{{ release_name }}", 
+      "body": "{{ body }}", 
+      "draft": {{ draft }}, 
+      "prerelease": {{ prerelease }}}'
+    status_code: 201
+
+     # "{{ github_release_vars | to_json }}"
+      # "tag_name": "{{ new_pkg_version }}"
   # - name: debug json
   #   debug:
   #     msg: "{{ item.id }}"
