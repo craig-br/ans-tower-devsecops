@@ -32,8 +32,11 @@
       # test_fact: HERE
       cacheable: true
 
-  # - name: debug facts
-  #   debug:
+  - name: debug json
+    debug:
+      msg: "{{ github_release_vars | to_json }}"
+    tags:
+      - debug-json
 
 
 
@@ -53,14 +56,10 @@
       headers:
         Authorization: "token {{ github_token }}"
       body_format: json
-      body: > 
-        '{"tag_name": "{{ new_pkg_version }}, 
-        "target_commitish": "{{ target_commitish }}", 
-        "name": "{{ release_name }}", 
-        "draft": {{ draft }}, 
-        "prerelease": {{ prerelease }}}'
+      body:
+        '{"target_commitish": "{{ target_commitish }}",  "name": "{{ release_name }}", "draft": {{ draft }}, "prerelease": {{ prerelease }}, "accept": "{{ accept }}"}'
       status_code: 201
-
+        # "{{ github_release_vars | to_json }}"
      # "{{ github_release_vars | to_json }}"
       # "tag_name": "{{ new_pkg_version }}"
   # - name: debug json
