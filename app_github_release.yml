@@ -28,7 +28,7 @@
   - name: Create Facts Release Version
     set_fact:
       pkg_version: "{{ pkg_version }}"
-      new_pkg_version: "{{ new_pkg_version }}"
+      new_pkg_version: "{{ tag_name }}"
       # test_fact: HERE
       cacheable: true
 
