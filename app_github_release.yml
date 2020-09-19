@@ -1,9 +1,11 @@
 ---
 - name: Push Build to GitHub
-  hosts: localhost
-  # hosts: ciservers
-  connection: local
+  # hosts: localhost
+  hosts: ciservers
+  # connection: local
   gather_facts: false
+  become: true
+  become_user: jenkins
 
   tasks:
   # - name: Create a new release
@@ -21,7 +23,7 @@
 
   - name: debug jenkins vars
     debug:
-      msg: "{{ js_release | default ('v0.0.1') }}"
+      msg: "{{ jshop_release | default ('v0.0.1') }}"
 
   # - name: Get Current JuiceShop Releases
   #   uri:
@@ -46,6 +48,22 @@
   #   loop: "{{ juiceshop_releases.json }}"
   #   when: item.tag_name == "v8.6.2"
 
+  # - name: Bump JuiceShop Version
+  #   shell: npm version patch
+  #   args: 
+  #     chdir: /var/lib/jenkins/workspace/JuiceShop
+  #   register: js_latest_version
+
+  # - name: debug jshop version
+  #   debug:
+  #     var: js_latest_version.stdout
+
+  # - name: Bump JuiceShop Version
+  #   shell: git push origin master
+  #   args: 
+  #     chdir: /var/lib/jenkins/workspace/JuiceShop
+  #   # register: js_latest_version
+
   - name: Create new GitHub Release
     uri:
       url: "https://api.github.com/repos/craig-br/juice-shop/releases"
@@ -61,7 +79,23 @@
     register: github_rel_response
     ignore_errors: true
 
-  
+# - name: Perform SCM plays on Jenkins
+#   hosts: ciservers
+#   remote_user: jenkins
+#   tasks:
+#   - name: Git Add, Commit, Push
+#     shell: > 
+#       git commit -am "Latest JuiceShop Release" &&
+#       git push origin 
+#       git 
+#     args: 
+#       chdir: /var/lib/jenkins/workspace/JuiceShop
+#     delegate_to: jenkins
+#     become: true
+#     tags:
+#       - git-publish
+#       - git-add
+    
   # - name: debug json
   #   debug:
   #     msg: "{{ github_rel_response.json }}"
