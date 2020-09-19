@@ -13,7 +13,7 @@
   tasks:
   - name: debug facts stored from tower host
     debug:
-      var: "{{ hostvars['tower'] }}"
+      var: "{{ ansible_facts }}"
     tags:
       - app-deploy
       - debug-version
