@@ -30,7 +30,7 @@
       # pkg_version: "{{ pkg_version }}"
       # new_pkg_version: "{{ new_pkg_version }}"
       test_fact: HERE
-      # cacheable: true
+      cacheable: true
 
   # - name: debug facts
   #   debug:
