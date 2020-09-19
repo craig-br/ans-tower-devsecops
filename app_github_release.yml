@@ -6,24 +6,12 @@
   gather_facts: false
   # become: true
   # become_user: jenkins
+  tags:
+    - github-release
 
   tasks:
-  # - name: Create a new release
-  #   github_release:
-  #     token: "{{ github_token }}"
-  #     user: craig-br
-  #     repo: juice-shop
-  #     action: create_release
-  #     tag: v8.7.1
-  #     target: master
-  #     name: JuiceShop Demo
-  #     body: Some description
-  #     draft: false
-  #     prerelease: false
 
-  # - name: debug jenkins vars
-  #   debug:
-  #     # msg: "{{ new_pkg_version }}"
+
 
   - name: Create Facts Release Version
     set_fact:
@@ -31,14 +19,6 @@
       new_pkg_version: "{{ tag_name }}"
       # test_fact: HERE
       cacheable: true
-
-  # - name: debug json
-  #   debug:
-  #     msg: "{{ github_release_vars | to_json }}"
-  #   tags:
-  #     - debug-json
-
-
 
   # - name: Get Current JuiceShop Releases
   #   uri:
@@ -48,6 +28,14 @@
   #       Accept: application/vnd.github.inertia-preview+json
   #     status_code: 200
   #   register: juiceshop_releases
+  #   tags:
+  #     - active-releases
+
+  # - name: debug jenkins vars
+  #   debug:
+  #     msg: "{{ juiceshop_releases }}"
+  #   tags:
+      # - active-releases
 
   - name: Create new JuiceShop Release
     uri:
@@ -59,6 +47,45 @@
       body:
         '{"target_commitish": "{{ target_commitish }}",  "name": "{{ release_name }}", "draft": {{ draft }}, "prerelease": {{ prerelease }}, "accept": "{{ accept }}", "tag_name": "{{ tag_name }}"}'
       status_code: 201
+    tags:
+      - create-release
+
+## Jenkins tasks
+- name: Tasks to run on CIServer
+  hosts: ciservers
+  become: true
+  # become_user: jenkins
+  tags:
+    - github-release
+  
+
+  tasks:
+  - name: Upload binary to new GitHub Release
+    uri:
+      url: https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ new_pkg_version }}/assets?name=juice-shop-10.8.35
+      method: POST
+      headers:
+        Content-Type: application/octet-stream
+        Authorization: "token {{ github_token }}"
+      remote_src: true
+      src: /var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
+      # body_format: raw
+      # body:
+        # --data-binary @/var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
+      status_code: 201
+    tags:
+      - upload-release
+
+
+      # body:
+      #   https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ new_pkg_version }}/assets?name=juice-shop-10.8.35
+
+   # https://uploads.github.com/repos/octocat/Hello-World/releases/1/assets?name=foo.zip
+        # '{"tag_name": "latest", "target_commitish": "master", "name": "test-name", "body": "test descriptiojn", "draft": false, "prerelease": false}'
+    # register: github_rel_response
+    # ignore_errors: true
+
+
         # "{{ github_release_vars | to_json }}"
      # "{{ github_release_vars | to_json }}"
       # "tag_name": "{{ new_pkg_version }}"
