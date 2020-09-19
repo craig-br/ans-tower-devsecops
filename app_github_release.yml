@@ -57,7 +57,7 @@
         Authorization: "token {{ github_token }}"
       body_format: json
       body:
-        '{"target_commitish": "{{ target_commitish }}",  "name": "{{ release_name }}", "draft": {{ draft }}, "prerelease": {{ prerelease }}, "accept": "{{ accept }}"}'
+        '{"target_commitish": "{{ target_commitish }}",  "name": "{{ release_name }}", "draft": {{ draft }}, "prerelease": {{ prerelease }}, "accept": "{{ accept }}", "tag_name": "{{ tag_name }}"}'
       status_code: 201
         # "{{ github_release_vars | to_json }}"
      # "{{ github_release_vars | to_json }}"
