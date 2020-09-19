@@ -1,8 +1,8 @@
 ---
 - name: Push Build to GitHub
-  hosts: localhost
+  hosts: tower
   # hosts: ciservers
-  connection: local
+  # connection: 
   gather_facts: false
   become: true
   become_user: jenkins
