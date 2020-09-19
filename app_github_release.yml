@@ -57,7 +57,6 @@
         '{"tag_name": "{{ new_pkg_version }}, 
         "target_commitish": "{{ target_commitish }}", 
         "name": "{{ release_name }}", 
-        "body": "{{ body }}", 
         "draft": {{ draft }}, 
         "prerelease": {{ prerelease }}}'
       status_code: 201
