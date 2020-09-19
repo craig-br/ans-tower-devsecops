@@ -1,8 +1,8 @@
 ---
 - name: Push Build to GitHub
-  # hosts: localhost
-  hosts: ciservers
-  # connection: local
+  hosts: localhost
+  # hosts: ciservers
+  connection: local
   gather_facts: false
   become: true
   become_user: jenkins
@@ -23,7 +23,7 @@
 
   - name: debug jenkins vars
     debug:
-      msg: "{{ jshop_release | default ('v0.0.1') }}"
+      msg: "{{ new_pkg_version }}"
 
   # - name: Get Current JuiceShop Releases
   #   uri:
@@ -64,6 +64,22 @@
   #     chdir: /var/lib/jenkins/workspace/JuiceShop
   #   # register: js_latest_version
 
+  - name: Create Facts Release Version
+    set_fact:
+      pkg_version: "{{ pkg_version | default('empty') }}"
+      new_pkg_version: "{{ new_pkg_version ('empty') }}"
+      cacheable: true
+
+  - name: Get Current JuiceShop Releases
+    uri:
+      url: https://api.github.com/repos/craig-br/juice-shop/releases
+      method: GET
+      headers:
+        Accept: application/vnd.github.inertia-preview+json
+      status_code: 200
+    register: juiceshop_releases
+    # failed_when: new_pkg_version in 
+
   - name: Create new GitHub Release
     uri:
       url: "https://api.github.com/repos/craig-br/juice-shop/releases"
@@ -78,6 +94,7 @@
       status_code: 201
     register: github_rel_response
     ignore_errors: true
+    loop: "{{ github_release_vars }}"
 
 # - name: Perform SCM plays on Jenkins
 #   hosts: ciservers
