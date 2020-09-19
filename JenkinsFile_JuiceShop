@@ -1,93 +1,411 @@
 #!/usr/bin/env groovy
-environment {
-    CHROME_BIN='/usr/bin/chromium'
-}
 
-stage('Get code from SCM') {
-    node {
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/craig-br/juice-shop.git']]])
-    } 
-}
-// stage('Code Analysis') {
-//     node {
-//         def scannerHome = tool 'sonarqube'
-//             withSonarQubeEnv('sonarqube'){
-//                 // sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop2 -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/* -Dsonar.tests=test"
-//                 sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/*,frontend/node_modules/*/**"
-//         }
-//     }
-// }
+pipeline {
+    agent any
+    stages {
+        stage('SCM - Pull Code') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/craig-br/juice-shop.git']]])
+            }
+        }
+        // stage('Code Analysis') {
+        //     node {
+        //         def scannerHome = tool 'sonarqube'
+        //             withSonarQubeEnv('sonarqube'){
+        //                 // sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop2 -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/* -Dsonar.tests=test"
+        //                 sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/*,frontend/node_modules/*/**"
+        //         }
+        //     }
+        // }
 
-// stage('Code Analysis') {
-//     node {
-//         nodejs(nodeJSInstallationName: 'nodejs') {
-//                     sh "npm run lint"
-//                     sh "npm test"
-//                 }
+        // stage('Code Analysis') {
+        //     steps {
+        //         nodejs(nodeJSInstallationName: 'nodejs') {
+        //             sh "npm run lint"
+        //         }
+        //     }
+        // }
+        #!/usr/bin/env groovy
 
-//     }
-// }
-
-stage('Build App') {
-    node {
-        nodejs(nodeJSInstallationName: 'nodejs') {
-                        LS = "${sh(script:'node -p -e "require('./package.json').version"', returnStdout: true) }"//, returnStdout: true).trim()}"
-                    sh "npm install --production && grunt package"
+pipeline {
+    agent any
+    stages {
+        stage('Pull Code and Install') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/craig-br/juice-shop.git']]])
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    sh "npm install"
                 }
+            }
+        }
+        // stage('Code Analysis') {
+        //     node {
+        //         def scannerHome = tool 'sonarqube'
+        //             withSonarQubeEnv('sonarqube'){
+        //                 // sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop2 -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/* -Dsonar.tests=test"
+        //                 sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=. -Dsonar.exclusions=node_modules/*/**,test/**/*,frontend/node_modules/*/**"
+        //         }
+        //     }
+        // }
 
+        stage('Code Analysis') {
+            steps {
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    // sh "npm install"
+                    sh "npm run lint"
+                }
+            }
+        }
+        // Takes too long. need more power captain
+        // stage('Unit Tests') {
+        //     steps {
+        //         nodejs(nodeJSInstallationName: 'nodejs') {
+        //             sh "npm test"
+        //         }
+        //     }
+        // }
+        
+        stage('Build and Tag') {
+            steps {
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    withCredentials([
+                        usernamePassword(credentialsId: 'juiceshop', 
+                            passwordVariable: 'GITHUB_TOKEN',
+                            usernameVariable: 'GITHUB_USERNAME')]) {
+                        script {
+
+                            
+                            // Determine version number for next release.
+                            env.pkgVersion = sh (
+                              script: 'git tag --list | sort --version-sort --reverse | head -n1 | cut -d "-" -f1',
+                              returnStdout: true
+                            ).trim()
+                            echo "Current package version: ${pkgVersion}"
+                            env.newPkgVersion = bumpPatchVersion(pkgVersion)
+                            echo "New package version: ${newPkgVersion}"
+                        }
+                        
+                        // Configure author for tag and auth credentials for pushing tag to GitHub.
+                        // See https://git-scm.com/docs/git-credential-store.
+                        sh """
+                            git config --replace-all user.name ${env.GITHUB_USERNAME}
+                            git config --replace-all user.email ${env.GITHUB_USERNAME}
+                            git config credential.helper store
+                            echo https://${env.GITHUB_USERNAME}:${env.GITHUB_TOKEN}@github.com >> \$HOME/.git-credentials
+    
+                        """
+
+                        // Create and push a git tag.
+                        sh "git tag ${newPkgVersion}"
+                        
+                        // Bump the package version and create the GitHub release.
+                        sh "npm --no-git-tag-version version ${newPkgVersion}"
+                        sh "git checkout master"
+                        sh "git add ."
+                        sh "git commit -m ${newPkgVersion}" 
+                        sh "git push origin master"
+                        sh "git push https://github.com/craig-br/juice-shop.git ${newPkgVersion}"
+                        sh "sleep 2" // Give GitHub a moment to realize the tag exists.
+                        
+                        // Install and Create the Dist Package. No time in demo
+                        sh "npm install --production && grunt package"
+                    }
+                }
+            }
+        }
+        
+        //Create a release with ansible
+        stage('Tower - Create Release') {
+            steps {
+                ansibleTower(
+                    towerServer: 'JuiceShop Tower',
+                    templateType: 'job',
+                    jobTemplate: 'GitHub Release',
+                    importTowerLogs: true,
+                    removeColor: false,
+                    verbose: true,
+                    extraVars: '''---
+                    pkg_version: $pkgVersion
+                    tag_name: $newPkgVersion
+                    '''
+                )                         
+            }
+        }
+        // stage ('Create Env') {
+        //     parallel {
+        //         stage('Publish App') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'job',
+        //                     jobTemplate: 'GitHub Release',
+        //                     importTowerLogs: true,
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                         extraVars: '''---
+        //                         pkg_version: $pkgVersion
+        //                         tag_name: $newPkgVersion
+        //                         '''
+        //                 )                         
+        //             }
+        //         }
+        //         stage('Tower - Instances') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'workflow',
+        //                     jobTemplate: 'Cloud Instances Workflow',
+        //                     importTowerLogs: true,
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                     credential: '',
+        //                 )   
+        //             }
+        //         }
+        //     }
+        // }      
+        // stage ('App and Network') {
+        //     parallel {
+        //         stage('Tower - Deploy App') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'job',
+        //                     jobTemplate: 'Deploy JuiceShop App',
+        //                     importTowerLogs: true,
+        //                     jobTags: '',
+        //                     skipJobTags: '',
+        //                     limit: '',
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                     credential: '',
+        //                 )                       
+        //             }
+        //         }
+        //         stage('Tower - Networking') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'job',
+        //                     jobTemplate: 'Create JuiceShop App VS',
+        //                     importTowerLogs: true,
+        //                     jobTags: '',
+        //                     skipJobTags: '',
+        //                     limit: '',
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                     credential: '',
+        //                 )
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
-// stage('Deploy Cloud Instances with Tower') {
-//     node {
-//         ansibleTower(
-//             towerServer: 'JuiceShop Tower',
-//             templateType: 'workflow',
-//             jobTemplate: 'Cloud Instances Workflow',
-//             importTowerLogs: true,
-//             jobTags: '',
-//             skipJobTags: '',
-//             limit: '',
-//             removeColor: false,
-//             verbose: true,
-//             credential: '',
-//         )
-//     }
-// }
 
-// stage('Deploy') {
-//     parallel('Deploy App with Tower': { 
-//         node {
-//             ansibleTower(
-//                 towerServer: 'JuiceShop Tower',
-//                 templateType: 'job',
-//                 jobTemplate: 'Deploy JuiceShop App',
-//                 importTowerLogs: true,
-//                 jobTags: '',
-//                 skipJobTags: '',
-//                 limit: '',
-//                 removeColor: false,
-//                 verbose: true,
-//                 credential: '',
-//             )
-//         }
+
+// Increment the minor part of a `MAJOR.MINOR.PATCH` semver version.
+String bumpMinorVersion(String version) {
+    def parts = version.tokenize('.')
+    if (parts.size() != 3) {
+        error "${version} is not a valid MAJOR.MINOR.PATCH version"
+    }
+    def newMinorVersion = parts[1].toInteger() + 1
+
+    return "${parts[0]}.${newMinorVersion}.${parts[2]}"
+}
+
+// Increment the patch part of a `MAJOR.MINOR.PATCH` semver version.
+String bumpPatchVersion(String version) {
+    def parts = version.tokenize('.')
+    if (parts.size() != 3) {
+        error "${version} is not a valid MAJOR.MINOR.PATCH version"
+    }
+    def newPatchVersion = parts[2].toInteger() + 1
+
+    return "${parts[0]}.${parts[1]}.${newPatchVersion}"
+}
+
+                        //     def packageJSON = readJSON file: 'package.json'
+                        //     def packageJSONVersion = packageJSON.version
+                        //     env.PACKAGE_VERSION = packageJSONVersion
+// Takes too long. need more power captain
+        // stage('Unit Tests') {
+        //     steps {
+        //         nodejs(nodeJSInstallationName: 'nodejs') {
+        //             sh "npm test"
+        //         }
+        //     }
+        // }
         
-//         }, 'Configure Load Balancer': {
-//             node {
-//                 ansibleTower(
-//                     towerServer: 'JuiceShop Tower',
-//                     templateType: 'job',
-//                     jobTemplate: 'Create JuiceShop App VS',
-//                     importTowerLogs: true,
-//                     jobTags: '',
-//                     skipJobTags: '',
-//                     limit: '',
-//                     removeColor: false,
-//                     verbose: true,
-//                     credential: '',
-//                 )
-//             }
-//         }
-    
-//     )
-// }
+        stage('Build') {
+            steps {
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    withCredentials([
+                        usernamePassword(credentialsId: 'juiceshop', 
+                            passwordVariable: 'GITHUB_TOKEN',
+                            usernameVariable: 'GITHUB_USERNAME')]) {
+                        script {
 
+                            
+                            // Determine version number for next release.
+                            env.pkgVersion = sh (
+                              script: 'git tag --list | sort --version-sort --reverse | head -n1 | cut -d "-" -f1',
+                              returnStdout: true
+                            ).trim()
+                            echo "Current package version: ${pkgVersion}"
+                            env.newPkgVersion = bumpPatchVersion(pkgVersion)
+                            echo "New package version: ${newPkgVersion}"
+                        }
+                        
+                        // Configure author for tag and auth credentials for pushing tag to GitHub.
+                        // See https://git-scm.com/docs/git-credential-store.
+                        sh """
+                            git config --replace-all user.name ${env.GITHUB_USERNAME}
+                            git config --replace-all user.email ${env.GITHUB_USERNAME}
+                            git config credential.helper store
+                            echo https://${env.GITHUB_USERNAME}:${env.GITHUB_TOKEN}@github.com >> \$HOME/.git-credentials
+    
+                        """
+
+                        // Create and push a git tag.
+                        sh "git tag ${newPkgVersion}"
+                        
+                        // Bump the package version and create the GitHub release.
+                        sh "npm --no-git-tag-version version ${newPkgVersion}"
+                        sh "git checkout master"
+                        sh "git add ."
+                        sh "git commit -m ${newPkgVersion}" 
+                        sh "git push origin master"
+                        sh "git push https://github.com/craig-br/juice-shop.git ${newPkgVersion}"
+                        sh "sleep 2" // Give GitHub a moment to realize the tag exists.
+                        
+
+                        // Install and Create the Dist Package. No time in demo
+                        // sh "npm install --production && grunt package"
+                    }
+                }
+            }
+        }
+        
+        //Create a release with ansible
+        stage('Tower - Create Release') {
+            steps {
+                ansibleTower(
+                    towerServer: 'JuiceShop Tower',
+                    templateType: 'job',
+                    jobTemplate: 'GitHub Release',
+                    importTowerLogs: true,
+                    removeColor: false,
+                    verbose: true,
+                    extraVars: '''---
+                    pkg_version: $pkgVersion
+                    tag_name: $newPkgVersion
+                    '''
+                )                         
+            }
+        }
+        // stage ('Create Env') {
+        //     parallel {
+        //         stage('Publish App') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'job',
+        //                     jobTemplate: 'GitHub Release',
+        //                     importTowerLogs: true,
+        //                     jobTags: '',
+        //                     skipJobTags: '',
+        //                     limit: '',
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                     credential: '',
+        //                     extraVars: '''---
+        //                     js_release: $PACKAGE_VERSION
+        //                     '''
+        //                 )                         
+        //             }
+        //         }
+        //         stage('Tower - Instances') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'workflow',
+        //                     jobTemplate: 'Cloud Instances Workflow',
+        //                     importTowerLogs: true,
+        //                     jobTags: '',
+        //                     skipJobTags: '',
+        //                     limit: '',
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                     credential: '',
+        //                 )   
+        //             }
+        //         }
+        //     }
+        // }      
+        // stage ('App and Network') {
+        //     parallel {
+        //         stage('Tower - Deploy App') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'job',
+        //                     jobTemplate: 'Deploy JuiceShop App',
+        //                     importTowerLogs: true,
+        //                     jobTags: '',
+        //                     skipJobTags: '',
+        //                     limit: '',
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                     credential: '',
+        //                 )                       
+        //             }
+        //         }
+        //         stage('Tower - Networking') {
+        //             steps {
+        //                 ansibleTower(
+        //                     towerServer: 'JuiceShop Tower',
+        //                     templateType: 'job',
+        //                     jobTemplate: 'Create JuiceShop App VS',
+        //                     importTowerLogs: true,
+        //                     jobTags: '',
+        //                     skipJobTags: '',
+        //                     limit: '',
+        //                     removeColor: false,
+        //                     verbose: true,
+        //                     credential: '',
+        //                 )
+        //             }
+        //         }
+        //     }
+        // }
+    }
+}
+
+
+// Increment the minor part of a `MAJOR.MINOR.PATCH` semver version.
+String bumpMinorVersion(String version) {
+    def parts = version.tokenize('.')
+    if (parts.size() != 3) {
+        error "${version} is not a valid MAJOR.MINOR.PATCH version"
+    }
+    def newMinorVersion = parts[1].toInteger() + 1
+
+    return "${parts[0]}.${newMinorVersion}.${parts[2]}"
+}
+
+// Increment the patch part of a `MAJOR.MINOR.PATCH` semver version.
+String bumpPatchVersion(String version) {
+    def parts = version.tokenize('.')
+    if (parts.size() != 3) {
+        error "${version} is not a valid MAJOR.MINOR.PATCH version"
+    }
+    def newPatchVersion = parts[2].toInteger() + 1
+
+    return "${parts[0]}.${parts[1]}.${newPatchVersion}"
+}
+
+                        //     def packageJSON = readJSON file: 'package.json'
+                        //     def packageJSONVersion = packageJSON.version
+                        //     env.PACKAGE_VERSION = packageJSONVersion
