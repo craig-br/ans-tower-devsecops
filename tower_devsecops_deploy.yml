@@ -157,7 +157,7 @@
     tower_project:
       name: JuiceShop Project
       organization: "{{ tower_organization }}"
-      allow_override: true
+      allow_override: false
       description: JuiceShop Playbooks
       scm_branch: master
       scm_clean: false
