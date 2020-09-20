@@ -119,7 +119,7 @@ pipeline {
         }
         
         // Deploy app and create VS
-        stage ('Tower Deploy App and LB') {
+        stage ('Tower - aDeploy App and LB') {
             parallel {
                 stage('Tower - Deploy App') {
                     steps {
