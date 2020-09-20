@@ -12,6 +12,6 @@ ec2_keyname: "ec2 ssh keyname"
 base_packages:
   - gcc
   - make
-ec2_instance_type: m5.large
+ec2_instance_type: t3.medium
 ec2_ami: ami-7c491f05
 ec2_count: 3
