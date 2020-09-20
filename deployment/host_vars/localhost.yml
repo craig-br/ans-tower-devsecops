@@ -47,4 +47,4 @@ reconfigured_file: '{{reset_playbook_dir}}/.reconfigured'
 # Vars for initial config of vagrant hosts
 demo_ssh_key_username: vagrant
 demo_ssh_key_file: '/$HOME/.ssh/"additional ssh pub key"'
-demo_ssh_pvt_key_file: '/$HOME/.ssh/"additional ssh pvt key"'
+demo_ssh_pvt_key_file: '/$HOME/.ssh/"ssh pvt key"'
