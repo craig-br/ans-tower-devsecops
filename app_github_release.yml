@@ -51,30 +51,30 @@
       - create-release
 
 ## Jenkins tasks
-- name: Tasks to run on CIServer
-  hosts: ciservers
-  become: true
-  # become_user: jenkins
-  tags:
-    - github-release
+# - name: Tasks to run on CIServer
+#   hosts: ciservers
+#   become: true
+#   # become_user: jenkins
+#   tags:
+#     - github-release
   
 
-  tasks:
-  - name: Upload binary to new GitHub Release
-    uri:
-      url: https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ tag_name }}/assets?name=juice-shop-10.8.35
-      method: POST
-      headers:
-        Content-Type: application/octet-stream
-        Authorization: "token {{ github_token }}"
-      remote_src: true
-      src: /var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
-      # body_format: raw
-      # body:
-        # --data-binary @/var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
-      status_code: 201
-    tags:
-      - upload-release
+#   tasks:
+#   - name: Upload binary to new GitHub Release
+#     uri:
+#       url: https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ tag_name }}/assets?name=juice-shop-10.8.35
+#       method: POST
+#       headers:
+#         Content-Type: application/octet-stream
+#         Authorization: "token {{ github_token }}"
+#       remote_src: true
+#       src: /var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
+#       # body_format: raw
+#       # body:
+#         # --data-binary @/var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
+#       status_code: 201
+#     tags:
+#       - upload-release
 
 
       # body:
