@@ -20,8 +20,8 @@
       filters:
         "tag:function": "{{ ec2_f5_tag }}"
 
-  - name: Remove {{ ec2_sg_name }} security group
-    ec2_group:
-      name: "{{ ec2_sg_name }}"
-      region: "{{ ec2_region }}"
-      state: absent
+        #  - name: Remove {{ ec2_sg_name }} security group
+        #ec2_group:
+        #name: "{{ ec2_sg_name }}"
+        #region: "{{ ec2_region }}"
+        #state: absent

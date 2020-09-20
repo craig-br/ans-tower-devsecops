@@ -1,0 +1,173 @@
+---
+- name: Push Build to GitHub
+  hosts: tower
+  # hosts: ciservers
+  # connection: 
+  gather_facts: false
+  # become: true
+  # become_user: jenkins
+  tags:
+    - github-release
+
+  tasks:
+
+
+
+  - name: Create Facts Release Version
+    set_fact:
+      pkg_version: "{{ pkg_version }}"
+      new_pkg_version: "{{ tag_name }}"
+      # test_fact: HERE
+      cacheable: true
+
+  # - name: Get Current JuiceShop Releases
+  #   uri:
+  #     url: https://api.github.com/repos/craig-br/juice-shop/releases
+  #     method: GET
+  #     headers:
+  #       Accept: application/vnd.github.inertia-preview+json
+  #     status_code: 200
+  #   register: juiceshop_releases
+  #   tags:
+  #     - active-releases
+
+  # - name: debug jenkins vars
+  #   debug:
+  #     msg: "{{ juiceshop_releases }}"
+  #   tags:
+      # - active-releases
+
+  - name: Create new JuiceShop Release
+    uri:
+      url: https://api.github.com/repos/craig-br/juice-shop/releases
+      method: POST
+      headers:
+        Authorization: "token {{ github_token }}"
+      body_format: json
+      body:
+        '{"target_commitish": "{{ target_commitish }}",  "name": "{{ release_name }}", "draft": {{ draft }}, "prerelease": {{ prerelease }}, "accept": "{{ accept }}", "tag_name": "{{ tag_name }}"}'
+      status_code: 201
+    tags:
+      - create-release
+
+## Jenkins tasks
+# - name: Tasks to run on CIServer
+#   hosts: ciservers
+#   become: true
+#   # become_user: jenkins
+#   tags:
+#     - github-release
+  
+
+#   tasks:
+#   - name: Upload binary to new GitHub Release
+#     uri:
+#       url: https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ tag_name }}/assets?name=juice-shop-10.8.35
+#       method: POST
+#       headers:
+#         Content-Type: application/octet-stream
+#         Authorization: "token {{ github_token }}"
+#       remote_src: true
+#       src: /var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
+#       # body_format: raw
+#       # body:
+#         # --data-binary @/var/lib/jenkins/workspace/JuiceShop/dist/juice-shop-10.8.35.zip
+#       status_code: 201
+#     tags:
+#       - upload-release
+
+
+      # body:
+      #   https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ new_pkg_version }}/assets?name=juice-shop-10.8.35
+
+   # https://uploads.github.com/repos/octocat/Hello-World/releases/1/assets?name=foo.zip
+        # '{"tag_name": "latest", "target_commitish": "master", "name": "test-name", "body": "test descriptiojn", "draft": false, "prerelease": false}'
+    # register: github_rel_response
+    # ignore_errors: true
+
+
+        # "{{ github_release_vars | to_json }}"
+     # "{{ github_release_vars | to_json }}"
+      # "tag_name": "{{ new_pkg_version }}"
+  # - name: debug json
+  #   debug:
+  #     msg: "{{ item.id }}"
+  #   loop: "{{ juiceshop_releases.json }}"
+  #   when: item.tag_name == "v8.6.2"
+
+  # - name: Get ID for Dmeo version of JuiceShop
+  #   set_fact:
+  #       release_id: "{{ item.id }}"
+  #       cacheable: yes
+  #   loop: "{{ juiceshop_releases.json }}"
+  #   when: item.tag_name == "v8.6.2"
+
+  # - name: Bump JuiceShop Version
+  #   shell: npm version patch
+  #   args: 
+  #     chdir: /var/lib/jenkins/workspace/JuiceShop
+  #   register: js_latest_version
+
+  # - name: debug jshop version
+  #   debug:
+  #     var: js_latest_version.stdout
+
+  # - name: Bump JuiceShop Version
+  #   shell: git push origin master
+  #   args: 
+  #     chdir: /var/lib/jenkins/workspace/JuiceShop
+  #   # register: js_latest_version
+
+
+# - name: Perform SCM plays on Jenkins
+#   hosts: ciservers
+#   remote_user: jenkins
+#   tasks:
+#   - name: Git Add, Commit, Push
+#     shell: > 
+#       git commit -am "Latest JuiceShop Release" &&
+#       git push origin 
+#       git 
+#     args: 
+#       chdir: /var/lib/jenkins/workspace/JuiceShop
+#     delegate_to: jenkins
+#     become: true
+#     tags:
+#       - git-publish
+#       - git-add
+    
+  # - name: debug json
+  #   debug:
+  #     msg: "{{ github_rel_response.json }}"
+    # status_code: 200
+
+  # - name: Upload binary to new GitHub Release
+  #   uri:
+  #     url: https://uploads.github.com/repos/craig-br/juice-shop/releases/$id/assets?name=artifact.zip
+  #     method: POST
+  #     headers:
+  #       Content-Type: application/octet-stream
+  #       Authorization: "token {{ github_token }}"
+  #       Accept: application/vnd.github.inertia-preview+json
+  #     # body_format: json
+  #     body:
+  #       "{{ github_release_vars | to_json }}"
+  #       # '{"tag_name": "latest", "target_commitish": "master", "name": "test-name", "body": "test descriptiojn", "draft": false, "prerelease": false}'
+  #     status_code: 201
+  #   register: github_rel_response
+  #   ignore_errors: true
+
+  # - name: Get latest release of testuseer/testrepo
+  #   github_release:
+  #     token: 6e814356bd4d032d0494c8039c53234040de5c8c
+  #     user: craig-br
+  #     repo: juice-shop
+  #     action: latest_release
+
+
+  # Create a release
+# release=$(curl -XPOST -H "Authorization:token $token" --data "{\"tag_name\": \"$tag\", \"target_commitish\": \"master\", \"name\": \"$name\", \"body\": \"$description\", \"draft\": false, \"prerelease\": true}" https://api.github.com/repos/<USERNAME>/<REPOSITORY>/releases)# Extract the id of the release from the creation response
+# id=$(echo "$release" | sed -n -e 's/"id":\ \([0-9]\+\),/\1/p' | head -n 1 | sed 's/[[:blank:]]//g')
+
+# Upload the artifact
+# curl -XPOST -H "Authorization:token $token" -H "Content-Type:application/octet-stream" --data-binary @artifact.zip https://uploads.github.com/repos/<USERNAME>/<REPOSITORY>/releases/$id/assets?name=artifact.zip

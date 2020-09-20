@@ -1,69 +1,118 @@
 #!/usr/bin/env groovy
-final NEXUS_URL = '10.9.61.229:8081'
 
-stage('Get code from SCM') {
-    node {
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'nexus_cred', url: 'https://github.com/craig-br/juice-shop.git']]])
-    }
-} 
-stage('Code Analysis') {
-    node {
-        def scannerHome = tool 'sonar'
-        withSonarQubeEnv('sonar'){
-            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=craig-br_juice-shop -Dsonar.sources=."
-        }
-    }
-}
-
-stage('Deploy Cloud Servers with Tower') {
-    node {
-        ansibleTower(
-            towerServer: 'devsecops_tower',
-            templateType: 'workflow',
-            jobTemplate: 'DevSecOps EC2 Environment Deploy',
-            importTowerLogs: true,
-            jobTags: '',
-            skipJobTags: '',
-            limit: '',
-            removeColor: false,
-            verbose: true,
-            credential: '',
-        )
-    }
-}
-stage('Deploy') {
-    parallel('Deploy App with Tower': { 
-        node {
-            ansibleTower(
-                towerServer: 'devsecops_tower',
-                templateType: 'job',
-                jobTemplate: 'DevSecOps EC2 Deploy App',
-                importTowerLogs: true,
-                jobTags: '',
-                skipJobTags: '',
-                limit: '',
-                removeColor: false,
-                verbose: true,
-                credential: '',
-            )
-        }
-        
-        }, 'Configure Load Balancer': {
-            node {
-                ansibleTower(
-                    towerServer: 'devsecops_tower',
-                    templateType: 'workflow',
-                    jobTemplate: 'DevSecOps Configure Firewall',
-                    importTowerLogs: true,
-                    jobTags: '',
-                    skipJobTags: '',
-                    limit: '',
-                    removeColor: false,
-                    verbose: true,
-                    credential: '',
-                )
+pipeline {
+    agent any
+    stages {
+        stage('SCM - Pull Code') {
+            steps {
+            // node {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/craig-br/juice-shop.git']]])
+            // }
             }
         }
-    
-    )
+
+        stage('Code Analysis') {
+            steps {
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    sh "npm run lint"
+                }
+            }
+        }
+        // Takes too long. need more power captain
+        // stage('Unit Tests') {
+        //     steps {
+        //         nodejs(nodeJSInstallationName: 'nodejs') {
+        //             sh "npm test"
+        //         }
+        //     }
+        // }
+        stage('Build App') {
+            steps {
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    sh "npm version patch"
+                    script {
+                        def packageJSON = readJSON file: 'package.json'
+                        def packageJSONVersion = packageJSON.version
+                        env.PACKAGE_VERSION = packageJSONVersion
+                    }
+                    sh "npm install --production && grunt package"
+                }
+            }
+        }
+        stage ('Release and Infra') {
+            parallel {
+                stage('Publish App') {
+                    steps {
+                        ansibleTower(
+                            towerServer: 'JuiceShop Tower',
+                            templateType: 'job',
+                            jobTemplate: 'GitHub Release',
+                            importTowerLogs: true,
+                            jobTags: '',
+                            skipJobTags: '',
+                            limit: '',
+                            removeColor: false,
+                            verbose: true,
+                            credential: '',
+                            extraVars: '''---
+                            js_release: $PACKAGE_VERSION
+                            '''
+                        )                         
+                    }
+                }
+                stage('Tower - Instances') {
+                    steps {
+                        ansibleTower(
+                            towerServer: 'JuiceShop Tower',
+                            templateType: 'workflow',
+                            jobTemplate: 'Cloud Instances Workflow',
+                            importTowerLogs: true,
+                            jobTags: '',
+                            skipJobTags: '',
+                            limit: '',
+                            removeColor: false,
+                            verbose: true,
+                            credential: '',
+                        )   
+                    }
+                }
+            }
+        }      
+        stage ('App and Network') {
+            parallel {
+                stage('Tower - Deploy App') {
+                    steps {
+                        ansibleTower(
+                            towerServer: 'JuiceShop Tower',
+                            templateType: 'job',
+                            jobTemplate: 'Deploy JuiceShop App',
+                            importTowerLogs: true,
+                            jobTags: '',
+                            skipJobTags: '',
+                            limit: '',
+                            removeColor: false,
+                            verbose: true,
+                            credential: '',
+                        )                       
+                    }
+                }
+                stage('Tower - Networking') {
+                    steps {
+                        ansibleTower(
+                            towerServer: 'JuiceShop Tower',
+                            templateType: 'job',
+                            jobTemplate: 'Create JuiceShop App VS',
+                            importTowerLogs: true,
+                            jobTags: '',
+                            skipJobTags: '',
+                            limit: '',
+                            removeColor: false,
+                            verbose: true,
+                            credential: '',
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
