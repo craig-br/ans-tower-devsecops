@@ -65,7 +65,9 @@
       cmd: forever start app.js
       chdir: "{{ node_app_dir }}"
     environment: 
-      NODE_ENV: devsecops
+      # NODE_ENV: devsecops
+      NODE_ENV: quiet
+
     vars:
       ansible_ssh_pipelining: no
     when: "forever_list.stdout.find('app.js') == -1"
