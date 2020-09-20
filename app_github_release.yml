@@ -62,7 +62,7 @@
   tasks:
   - name: Upload binary to new GitHub Release
     uri:
-      url: https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ new_pkg_version }}/assets?name=juice-shop-10.8.35
+      url: https://uploads.github.com/repos/craig-br/juice-shop/releases/{{ tag_name }}/assets?name=juice-shop-10.8.35
       method: POST
       headers:
         Content-Type: application/octet-stream
