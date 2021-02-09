@@ -17,6 +17,3 @@
 - name: geerlingguy.nodejs
   src: https://github.com/geerlingguy/ansible-role-nodejs.git
   scm: git
-- name: openstack.redhat-subscription
-  src: https://github.com/openstack/ansible-role-redhat-subscription
-  scm: git
