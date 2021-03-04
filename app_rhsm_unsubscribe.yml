@@ -8,5 +8,4 @@
   - name: Remove from RHSM
     redhat_subscription:
       state: absent
-      pool_ids:
-        - "{{ rhsm_pool_ids }}"
+      # pool_ids: "{{ rhsm_pool_ids }}"
