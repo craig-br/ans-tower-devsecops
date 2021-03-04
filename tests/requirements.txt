@@ -1,5 +1,2 @@
 ## Python requirements for running ansible tests
-##
-## pip install --requirement=test-requirements.txt
-##
 ansible-lint
