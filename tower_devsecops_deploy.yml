@@ -156,10 +156,11 @@
       description: BIGIP Credential
       credential_type: f5
       tower_config_file: "{{ tower_config_file }}"
+      organization: "{{ tower_organization }}"
       inputs:
         f5_user: "{{ f5_user }}"
         f5_password: "{{ f5_password }}"
-    no_log: true
+    # no_log: true
     tags:
       - tower-f5-cred
 
