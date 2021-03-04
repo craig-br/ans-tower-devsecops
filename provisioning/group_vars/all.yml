@@ -1,0 +1,14 @@
+---
+#RHSM Vars
+rhsm_repos_purge: "{{ lookup('env', 'RHSM_REPOS_PURGE') | default( 'your rhsm username', true ) }}"
+rhsm_username: "{{ lookup('env', 'RHSM_USERNAME') | default( 'your rhsm username', true ) }}"
+rhsm_repos_purge: "{{ lookup('env', 'RHSM_REPOS_PURGE') | default( false, true ) }}"
+rhsm_password: "{{ lookup('env', 'RHSM_PASSWORD') | default( 'your rhsm_password', true ) }}"
+rhsm_pool_ids: "{{ lookup('env', 'RHSM_POOL_IDS') | default( 'your rhsm pool ids', true ) }}"
+rhsm_repos:
+  - rhel-8-for-x86_64-baseos-rpms
+  - rhel-8-for-x86_64-appstream-rpms
+  - ansible-2.9-for-rhel-8-x86_64-rpms
+## SSH Key Vars
+demo_ssh_key_file: "{{ lookup('file', lookup('env', 'DEMO_SSH_KEY_FILE')) | default( 'Your demo pub key', true ) }}"
+demo_ssh_key_username: "{{ lookup('env', 'DEMO_SSH_KEY_USERNAME') | default( 'vagrant', true ) }}"
