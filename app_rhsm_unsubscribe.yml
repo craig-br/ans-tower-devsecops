@@ -1,7 +1,7 @@
 ---
 - name: Unsubscribe from RHSM and Insights
   hosts: all
-  become: false
+  become: true
   gather_facts: false
 
   tasks:
@@ -9,4 +9,4 @@
     redhat_subscription:
       state: absent
       pool_ids:
-        - "{{ rhsm_pool_id }}"
+        - "{{ rhsm_pool_ids }}"
