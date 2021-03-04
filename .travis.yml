@@ -1,9 +1,6 @@
 language: python
-python:
-- "3.6"
-
 install:
-- pip install -r ./tests/requirements.txt
+  - pip install -r ./tests/requirements.txt
 
 script:
-- ansible-lint -p *.yml -v
+  - ansible-lint -p *.yml -v
