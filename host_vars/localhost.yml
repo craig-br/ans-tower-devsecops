@@ -2,18 +2,12 @@
 ##
 # Tower Vars
 ##
-tower_host: vagrant.tower.local
+tower_host: vagrant.tower-rhel.local
 tower_username: admin
-tower_password: admin
+tower_admin_password: admin
 tower_organization: JuiceShop
-
-# Vars to reset password
-aw_home: /var/lib/awx
-aw_user: awx
-aw_group: awx
-reset_playbook_dir: '/etc/tower/reset'
-admin_password_file: '{{reset_playbook_dir}}/.admin_password'
-reconfigured_file: '{{reset_playbook_dir}}/.reconfigured'
+tower_license: "location of tower license file"
+tower_config_file: "location of tower config file"
 
 #F5 Credentials
 f5_user: "Your F5 username"
@@ -46,14 +40,10 @@ rhsm_vars:
   rhsm_username: "rhsm username. Use Vault"
   rhsm_password: "Your RHSM Password. Use Vault"
   rhsm_repos_purge: false
-  # rhsm_repos:
-  #   - rhel-8-for-x86_64-baseos-rpms
-  #   - rhel-8-for-x86_64-appstream-rpms
-  #   - ansible-2.9-for-rhel-8-x86_64-rpms
-rhsm_repos:
-  - rhel-7-server-rpms
-  - rhel-7-server-extras-rpms
-  - rhel-7-server-ansible-2.9-rpms
+  rhsm_repos:
+    - rhel-7-server-rpms
+    - rhel-7-server-extras-rpms
+    - rhel-7-server-ansible-2.9-rpms
 
 ##
 # ec2 vars
@@ -75,13 +65,168 @@ ec2_vars:
   base_packages:
     - gcc
     - make
+  node_app_dir: "/usr/local/juice-shop_8.6.2/"
+  app_rel_uri: https://github.com/bkimminich/juice-shop/releases/download/v8.6.2/juice-shop-8.6.2_node10_linux_x64.tgz
+  app_custom_config: https://raw.githubusercontent.com/craig-br/ans-tower-devsecops/master/files/devsecops.yml
+  
 
-github_vars:
+
+
+github_release_vars:
   tag_name: v8.6.2
   target_commitish: master
   name: JuiceShop Demo
   body: Description
   draft: false
   prerelease: false
-  accept: application/vnd.github.v3+json is recommended
-  github_token: "Your Github Token"
+  accept: application/vnd.github.v3+json
+  github_token: "your github token"
+
+##
+#Tower Deploy Vars
+##
+
+#Tower On-Prem Inventory vars
+on_prem_inv_vars:
+  - name: tower
+    description: Ansible Tower Node
+    variables:
+      ansible_host: tower-rhel.vagrant.local
+      ansible_user: vagrant
+  - name: localhost
+    description: localhost
+    variables:
+      ansible_host: localhost
+      ansible_connection: local
+
+onprem_inv_group_vars:
+  # - name: ciservers
+  #   description: Continious Integration Servers
+  #   hosts:
+  #     - jenkins
+  - name: adminservers
+    description: Tower Servers
+    hosts:
+      - tower
+
+    
+# Tower Users
+tower_user_vars:
+  - user: jenkins
+    role: execute
+    job_template: "Deploy JuiceShop App"
+    state: present
+  - user: jenkins
+    role: execute
+    job_template: "Create JuiceShop App VS"
+    state: present
+  - user: jenkins
+    role: execute
+    job_template: "Secure JuiceShop App"
+    state: present
+  - user: jenkins
+    role: execute
+    job_template: "GitHub Release"
+    state: present
+
+# Tower Job Templates:
+job_template_vars:
+  - name: RHSM Subscribe
+    playbook: rhsm.yml
+    description: Register JuiceShop RHEL Instances
+    concurrent_jobs_enabled: true
+    credentials:
+      - RHSM
+      - EC2 Instance Credential
+    limit: tag_function_webserver
+    ask_limit_on_launch: false
+    use_fact_cache: true
+    extra_vars: "{{ rhsm_vars }}"
+    verbosity: 1
+    become_enabled: true
+  - name: RHSM Unsubcribe
+    playbook: app_rhsm_unsubscribe.yml
+    description: Register JuiceShop RHEL Instances
+    concurrent_jobs_enabled: true
+    credentials:
+      - RHSM
+      - EC2 Instance Credential
+    limit: tag_function_webserver
+    ask_limit_on_launch: false
+    use_fact_cache: true
+    extra_vars: "{{ rhsm_vars }}"
+    verbosity: 1
+    become_enabled: true
+  - name: Deploy Cloud Instances
+    playbook: ec2_instance_deploy.yml
+    description: Deploy JuiceShop Cloud Instances
+    concurrent_jobs_enabled: true
+    use_fact_cache: true
+    extra_vars: "{{ ec2_vars }}"
+    verbosity: 1
+  - name: Deploy Security Group
+    playbook: ec2_sg_deploy.yml
+    description: JuiceShop Security Group
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+  - name: Create JuiceShop App VS
+    playbook: f5_nodepool_vs.yml
+    description: JuiceShop Virtual Server
+    credentials:
+      - BigIP Credential
+      - AWS Credentials
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    inventory: On Prem Inventory
+
+  - name: Deploy JuiceShop App
+    playbook: app_ec2_deploy.yml
+    description: Deploy JuiceShop App
+    ask_variables_on_launch: true
+    become_enabled: true
+    credentials:
+      - EC2 Instance Credential
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    limit: tag_function_webserver
+  - name: Secure JuiceShop App
+    playbook: f5_nodepool_vs_sec.yml
+    description: Deploy WAF for JuiceShop
+    credentials:
+      - BigIP Credential
+      - AWS Credentials
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    inventory: On Prem Inventory
+  - name: GitHub Release
+    playbook: app_github_release.yml
+    description: Create JuiceShop Release on GitHub
+    credentials:
+      - VM SSH Credential
+    extra_vars: "{{ github_release_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    inventory: On Prem Inventory
+    limit: adminservers
+    ask_variables_on_launch: true
+
+#Workflow Vars
+workflow_cloud_inst_vars:
+  # - name: RHSM Subscribe
+  #   identifier: rhsm
+  - name: AWS Source
+    identifier: inv-update
+    # success_nodes:
+    #   - rhsm
+  - name: Deploy Cloud Instances
+    identifier: instance-deploy
+    success_nodes:
+      - inv-update
+  - name: Deploy Security Group
+    identifier: sg-deploy
+    success_nodes:
+      - instance-deploy
