@@ -2,21 +2,27 @@
 - name: Deploy Application to EC2 Instances
   hosts: all
   gather_facts: true
-  environment: 
-    NODE_ENV: devsecops
+
   roles:
   - role: geerlingguy.nodejs
     vars:
       nodejs_version: "10.x"
-    
-  
+
+  environment:
+    NODE_ENV: quiet
+
+  tags:
+  - app_deploy
+  - webservers
+  - devsecops
+
   tasks:
   - name: debug facts stored from tower host
     debug:
       var: hostvars['tower']['new_pkg_version']
     tags:
-      - app-deploy
-      - debug-version
+    - app-deploy
+    - debug-version
 
   - name: Extract download
     unarchive:
@@ -25,55 +31,44 @@
       dest: /usr/local/
     register: app_download
     tags:
-      - extract
-  
-  - name: Download DevSecOps JuiceShop config file
-    get_url: 
+    - extract
+
+  - name: Download JuiceShop config file
+    get_url:
       url: "{{ app_custom_config }}"
       dest: "{{ node_app_dir }}config/devsecops.yml"
       force: true
     tags:
-      - get_config
+    - get_config
 
   - name: Install Forever
-    npm: 
-      name: forever 
-      global: yes 
+    npm:
+      name: forever
+      global: yes
       state: present
     tags:
-      - run_app
+    - run_app
 
   - name: Force NodeJS to bind to IPV4
     replace:
       path: "{{ node_app_dir }}server.js"
       regexp: '^.*\bserver\.listen\b.*$'
-      replace:  server.listen(process.env.PORT || config.get('server.port'), "0.0.0.0", () => {
+      replace: server.listen(process.env.PORT || config.get('server.port'), "0.0.0.0", () => {
     tags:
-      - deploy-app
-      - ipv4
-
+    - deploy-app
+    - ipv4
+      
   - name: Check list of running Node.js apps.
     command: forever list
     register: forever_list
     changed_when: false
     tags:
-      - run-app
+    - run-app
 
   - name: Run application
-    # become: true
-    shell:
-      cmd: forever start app.js
+    command: forever start app.js
+    args:
       chdir: "{{ node_app_dir }}"
-    environment: 
-      # NODE_ENV: devsecops
-      NODE_ENV: quiet
-
-    vars:
-      ansible_ssh_pipelining: no
     when: "forever_list.stdout.find('app.js') == -1"
     tags:
-      - run-app
-  tags:
-    - app_deploy
-    - webservers
-    - devsecops
+    - run-app
