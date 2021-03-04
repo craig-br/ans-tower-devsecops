@@ -3,7 +3,7 @@ python:
 - "3.6"
 
 install:
-- pip install -r tests/test-requirements.txt
+- pip install -r ./tests/test-requirements.txt
 
 script:
 - ansible-lint *.yml -v
