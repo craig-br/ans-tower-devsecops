@@ -1,12 +1,9 @@
 language: python
 python:
 - "3.6"
-- "3.7"
-- "3.8"
 
-# command to install dependencies
 install:
 - pip install -r tests/test-requirements.txt
-# command to run tests
+
 script:
-- ansible-lint install/*.yml -v
+- ansible-lint *.yml -v
