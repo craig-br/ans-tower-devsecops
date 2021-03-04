@@ -1,33 +1,90 @@
 ---
+- name: Install Ansible Tower
+  hosts: adminservers
+  become: true
+  gather_facts: true 
+
+  collections:
+    - redhat_cop.tower_utilities
+  tags:
+    - tower-install
+  
+  tasks:
+  - name: Install Ansible Tower
+    include_role:
+      name: install
+
 - name: Configure Tower for JuiceShop Demo
   hosts: localhost
   connection: local
   become: false
   gather_facts: false
-
+  tags:
+  - tower-config
   collections:
-   - ansible.tower
+    - ansible.tower
 
   tasks:
-  - name: Configure Tower Settings
-    tower_settings:
-      settings:
-        PRIMARY_GALAXY_URL: "{{ pri_galaxy_url }}"
-        PRIMARY_GALAXY_TOKEN: "{{ pri_galaxy_token }}"
-        PRIMARY_GALAXY_AUTH_URL: "{{ pri_galaxy_auth_url }}"
-    no_log: true
+  - name: Install Tower license
+    tower_license:
+      manifest: "{{ tower_license }}"
+      eula_accepted: true
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - tower-settings
-
+      - tower-license
+  
   - name: Create {{ tower_organization }} Organisation
     tower_organization:
       name: "{{ tower_organization }}"
       description: Juice Shop Ltd Organisation
       state: present
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - create-org
+      - tower-create-org
+
+## Credentials
+  - name: Create Automation Hub credential
+    tower_credential:
+      name: Automation Hub Credential
+      description: JuiceShop Automation Hub Credentials
+      credential_type: Ansible Galaxy/Automation Hub API Token
+      organization: "{{ tower_organization }}"
+      inputs:
+        url: "{{ tower_hub_credentials.pri_hub_url }}"
+        auth_url: "{{ tower_hub_credentials.pri_hub_auth_url }}"
+        token: "{{ tower_hub_credentials.pri_hub_token }}"
+      state: present
+      tower_config_file: "{{ tower_config_file }}"
+    no_log: true
+    tags:
+      - tower-hub-cred
+
+  - name: Create Galaxy credential
+    tower_credential:
+      name: Galaxy Credential
+      description: JuiceShop Automation Hub Credentials
+      credential_type: Ansible Galaxy/Automation Hub API Token
+      organization: "{{ tower_organization }}"
+      inputs:
+        url: "{{ tower_hub_credentials.pri_galaxy_url }}"
+        token: "{{ tower_hub_credentials.pri_galaxy_token }}"
+      state: present
+      tower_config_file: "{{ tower_config_file }}"
+    tags:
+      - tower-hub-cred
+
+  - name: Update {{ tower_organization }} with Hub Credentials
+    tower_organization:
+      name: "{{ tower_organization }}"
+      description: Juice Shop Ltd Organisation
+      state: present
+      tower_config_file: "{{ tower_config_file }}"
+      galaxy_credentials:
+        - Automation Hub Credential
+        - Galaxy Credential
+    tags:
+      - tower-org-cred
+
 
   - name: Create AWS credential
     tower_credential:
@@ -38,17 +95,16 @@
       username: "{{ aws_username }}"
       password: "{{ aws_password }}"
       state: present
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - aws-cred
+      - tower-aws-cred
 
   - name: Fetch EC2 private key
     slurp:
       src: "{{ aws_pvt_key }}"
     register: aws_ssh_key
     tags:
-      - tower-config
-      - ec2-cred
+      - tower-ec2-cred
 
   - name: Create EC2 Instance credential
     tower_credential:
@@ -59,17 +115,16 @@
       inputs:
         username: "{{ aws_ssh_user }}"
         ssh_key_data: "{{ aws_ssh_key['content'] | b64decode }}"
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - ec2-cred
+      - tower-ec2-cred
 
   - name: Fetch Demo VM SSH Key
     slurp:
       src: "{{ demo_ssh_pvt_key_file }}"
     register: demo_ssh_pvt_key
     tags:
-      - tower-config
-      - ssh-cred
+      - tower-ssh-cred
 
   - name: Create Demo VM SSH Credential
     tower_credential:
@@ -80,9 +135,9 @@
       inputs:
         username: "{{ demo_ssh_key_username }}"
         ssh_key_data: "{{ demo_ssh_pvt_key['content'] | b64decode }}"
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - ssh-cred
+      - tower-ssh-cred
 
   - name: Create F5 Credential Type
     tower_credential_type:
@@ -91,30 +146,32 @@
       kind: cloud
       inputs: "{{ lookup('file', 'tower_cred_inputs_f5.json') }}"
       injectors: "{{ lookup('file', 'tower_cred_inputs_f5_injectors.json') }}"
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - f5-cred
+      - tower-f5-cred
 
   - name: Create F5 Credential  
     tower_credential:
       name: BigIP Credential
       description: BIGIP Credential
       credential_type: f5
-      organization: "{{ tower_organization }}"
+      tower_config_file: "{{ tower_config_file }}"
       inputs:
         f5_user: "{{ f5_user }}"
         f5_password: "{{ f5_password }}"
+    no_log: true
     tags:
-      - tower-config
-      - f5-cred  
+      - tower-f5-cred
+
   
   - name: Fetch GitHub Key
     slurp:
       src: "{{ github_pvt_key }}"
     register: github_pvt_key_out
+    no_log: true
     tags:
-      - tower-config
-      - github-cred
+      - tower-github-cred
+
 
   - name: Create GitHub Credential
     tower_credential:
@@ -125,9 +182,10 @@
       inputs:
         ssh_key_data: "{{ github_pvt_key_out['content'] | b64decode }}"
         username: craig-br
+      tower_config_file: "{{ tower_config_file }}"
+    no_log: true
     tags:
-      - tower-config
-      - github-cred
+      - tower-github-cred
 
   - name: Create RHSM Credential Type
     tower_credential_type:
@@ -136,9 +194,10 @@
       kind: cloud
       inputs: "{{ lookup('file', 'tower_cred_inputs_rhsm.json') }}"
       injectors: "{{ lookup('file', 'tower_cred_inputs_rhsm_injectors.json') }}"
+      tower_config_file: "{{ tower_config_file }}"
+    no_log: true
     tags:
-      - tower-config
-      - rhsm-cred
+      - tower-rhsm-cred
 
   - name: Create RHSM Credential
     tower_credential:
@@ -149,24 +208,26 @@
       inputs:
         rhsm_username: "{{ rhsm_username }}"
         rhsm_password: "{{ rhsm_password }}"
+      tower_config_file: "{{ tower_config_file }}"
+    no_log: true
     tags:
-      - tower-config
-      - rhsm-cred
-
+      - tower-rhsm-cred
+  
+## Projects
   - name: Create Project
     tower_project:
       name: JuiceShop Project
       organization: "{{ tower_organization }}"
-      allow_override: false
+      allow_override: true
       description: JuiceShop Playbooks
       scm_branch: master
       scm_clean: false
       scm_credential: GitHub Credential
       scm_type: git
       scm_url: "{{ github_scm_url }}"
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - git-project
+      - tower-git-project
 
 
   - name: Create AWS Inventory
@@ -174,9 +235,9 @@
       name: AWS Inventory
       description: JuiceShop AWS Instances
       organization: "{{ tower_organization }}"
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - aws-inv    
+      - tower-aws-inv    
 
   - name: AWS Inventory Source
     tower_inventory_source:
@@ -184,33 +245,38 @@
       description: JuiceShop AWS Source
       inventory: AWS Inventory
       credential: AWS Credentials
-      overwrite: True
+      overwrite: true
       overwrite_vars: true
-      instance_filters: "tag:function=webserver"
       source: ec2
       update_on_launch: false
+      tower_config_file: "{{ tower_config_file }}"
+      source_vars:
+        keyed_groups:
+          - prefix: tag
+            key: tags
+        hostname:
+          - dns-name
     tags:
-      - tower-config
-      - aws-inv 
+      - tower-aws-inv 
 
   - name: Create On-Prem Inventory
     tower_inventory:
       name: "On Prem Inventory"
       description: JuiceShop On-Prem Instances
       organization: "{{ tower_organization }}"
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - onprem-inv
+      - tower-onprem-inv
 
   - tower_host:
       inventory: On Prem Inventory
       name: "{{ item.name }}"
       description: "{{ item.description }}"
       variables: "{{ item.variables }}"
-    loop: "{{ onprem_inv_vars }}"
+      tower_config_file: "{{ tower_config_file }}"
+    loop: "{{ on_prem_inv_vars }}"
     tags:
-      - tower-config
-      - onprem-inv
+      - tower-onprem-inv
 
   - tower_group:
       name: "{{ item.name }}"
@@ -218,64 +284,11 @@
       variables: "{{ item.variables | default({})}}"
       hosts: "{{ item.hosts }}"
       inventory: On Prem Inventory
+      tower_config_file: "{{ tower_config_file }}"
     loop: "{{ onprem_inv_group_vars }}"
     tags:
-      - tower-config
-      - onprem-inv
-
-  ## Users
-  - name: Create Jenkins user
-    tower_user:
-      username: "{{ jenkins_user }}"
-      password: "{{ jenkins_pwd }}"
-      email: jenkins@vagrant.local
-    tags:
-      - tower-config
-      - user-jenkins
-
-  - name: Give Jenkins user access to JuiceShop Org
-    tower_role:
-      user: "{{ jenkins_user }}"
-      role: member
-      organization: "{{ tower_organization }}"
-      state: present
-    tags:
-      - tower-config
-      - user-jenkins
-
-  - name: Give Jenkins user access to SSH key
-    tower_role:
-      user: "{{ jenkins_user }}"
-      role: read
-      credential: "VM SSH Credential"
-      organization: "{{ tower_organization }}"
-      state: present
-    tags:
-      - tower-config
-      - user-jenkins
-
-  - name: Give Jenkins user access to Workflows
-    tower_role:
-      user: "{{ jenkins_user }}"
-      role: execute
-      workflow: "Cloud Instances Workflow"
-      state: present
-    tags:
-      - tower-config
-      - user-jenkins
-  
-  - name: Give users access to job templates
-    tower_role:
-      user: "{{ item.user }}"
-      role: "{{ item.role }}"
-      job_template: "{{ item.job_template }}"
-      state: "{{ item.state }}"
-    loop: "{{ tower_user_vars }}"
-    tags:
-      - tower-config
-      - tower-users
+      - tower-onprem-inv
  
-
   ## Job Templates:
   - name: Create Cloud Instances Workflow
     tower_workflow_job_template:
@@ -284,9 +297,9 @@
       description: Deploy JuiceShop Cloud Instances
       organization: "{{ tower_organization }}"
       inventory: AWS Inventory
+      tower_config_file: "{{ tower_config_file }}"
     tags:
-      - tower-config
-      - workflow-cloud-instances
+      - tower-workflow-cloud-instances
 
   - name: Create Job Templates
     tower_job_template:
@@ -305,10 +318,10 @@
       limit: "{{ item.limit | default('') }}"
       use_fact_cache: "{{ item.use_fact_cache | default('false') }}"
       verbosity: "{{ item.verbosity | default('0') }}"
+      tower_config_file: "{{ tower_config_file }}"
     loop: "{{ job_template_vars }}"
     tags:
-      - tower-config
-      - job-templates
+      - tower-job-templates
   
   - name: Add Job Templates to Cloud Instance Workflow
     tower_workflow_job_template_node:
@@ -316,8 +329,60 @@
       workflow: "{{ item.workflow | default('Cloud Instances Workflow')}}"
       organization: "{{ tower_organization }}"
       unified_job_template: "{{ item.name }}"
-      success_nodes: "{{ item.success_nodes | default({}) }}"
+      success_nodes: "{{ item.success_nodes | default('[]') }}"
+      tower_config_file: "{{ tower_config_file }}"
     loop: "{{ workflow_cloud_inst_vars }}"
     tags:
-      - tower-config
-      - workflow-cloud-templates
+      - tower-workflow-templates
+
+  ## Users
+  - name: Create Jenkins user
+    tower_user:
+      username: "{{ jenkins_user }}"
+      password: "{{ jenkins_pwd }}"
+      email: jenkins@vagrant.local
+      tower_config_file: "{{ tower_config_file }}"
+    tags:
+      - tower-user-jenkins
+
+  - name: Give Jenkins user access to JuiceShop Org
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: member
+      organization: "{{ tower_organization }}"
+      state: present
+      tower_config_file: "{{ tower_config_file }}"
+    tags:
+      - tower-user-jenkins
+
+  - name: Give Jenkins user access to SSH key
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: read
+      credential: "VM SSH Credential"
+      organization: "{{ tower_organization }}"
+      state: present
+      tower_config_file: "{{ tower_config_file }}"
+    tags: 
+      - tower-user-jenkins
+
+  - name: Give Jenkins user access to Workflows
+    tower_role:
+      user: "{{ jenkins_user }}"
+      role: execute
+      workflow: "Cloud Instances Workflow"
+      state: present
+      tower_config_file: "{{ tower_config_file }}"
+    tags:
+      - tower-user-jenkins
+  
+  - name: Give users access to job templates
+    tower_role:
+      user: "{{ item.user }}"
+      role: "{{ item.role }}"
+      job_template: "{{ item.job_template }}"
+      state: "{{ item.state }}"
+      tower_config_file: "{{ tower_config_file }}"
+    loop: "{{ tower_user_vars }}"
+    tags:
+      - tower-users
