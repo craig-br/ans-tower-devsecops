@@ -3,4 +3,4 @@ install:
   - pip install -r ./tests/requirements.txt
 
 script:
-  - ansible-lint .
+  - ansible-lint -p *.yml -v
