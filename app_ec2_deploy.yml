@@ -9,7 +9,7 @@
       nodejs_version: "10.x"
 
   environment:
-    NODE_ENV: quiet
+    NODE_ENV: devsecops
 
   tags:
   - app_deploy
