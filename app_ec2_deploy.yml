@@ -17,9 +17,19 @@
   - devsecops
 
   tasks:
+  - name: Set NODE_ENV for config
+    lineinfile:
+      state: present
+      line: "export NODE_ENV=devsecops"
+      insertafter: EOF
+      path: /etc/profile
+    tags:
+    - node-env
+    
   - name: debug facts stored from tower host
     debug:
       var: hostvars['tower-rhel']['new_pkg_version']
+      verbosity: 2
     tags:
     - app-deploy
     - debug-version
