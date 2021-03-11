@@ -215,13 +215,14 @@
       - tower-rhsm-cred
   
 ## Projects
+# @todo chnage branch to master
   - name: Create Project
     tower_project:
       name: JuiceShop Project
       organization: "{{ tower_organization }}"
       allow_override: true
       description: JuiceShop Playbooks
-      scm_branch: master
+      scm_branch: development
       scm_clean: false
       scm_credential: GitHub Credential
       scm_type: git
