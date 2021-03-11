@@ -27,7 +27,6 @@ Vagrant.configure("2") do |config|
     # Tower Node Ansible
     tower_rhel.vm.provision "ansible" do |ansible|
       ansible.playbook = "./provisioning/tower_bootstrap.yml"
-      ansible.verbose = "vvv"
       ansible.groups = {
         "ciservers" => ["jenkins"],
         "adminservers" => ["tower-rhel"],
