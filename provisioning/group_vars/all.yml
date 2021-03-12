@@ -2,7 +2,6 @@
 #RHSM Vars
 rhsm_repos_purge: "{{ lookup('env', 'RHSM_REPOS_PURGE') | default( 'your rhsm username', true ) }}"
 rhsm_username: "{{ lookup('env', 'RHSM_USERNAME') | default( 'your rhsm username', true ) }}"
-rhsm_repos_purge: "{{ lookup('env', 'RHSM_REPOS_PURGE') | default( false, true ) }}"
 rhsm_password: "{{ lookup('env', 'RHSM_PASSWORD') | default( 'your rhsm_password', true ) }}"
 rhsm_pool_ids: "{{ lookup('env', 'RHSM_POOL_IDS') | default( 'your rhsm pool ids', true ) }}"
 rhsm_repos:
