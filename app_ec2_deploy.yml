@@ -76,7 +76,7 @@
     - run-app
 
   - name: Run application
-    command: "NODE_ENV=devsecops forever start app.js"
+    shell: "NODE_ENV=devsecops forever start app.js"
     args:
       chdir: "{{ node_app_dir }}"
     when: "forever_list.stdout.find('app.js') == -1"
