@@ -67,7 +67,7 @@ ec2_vars:
     - make
   node_app_dir: "/usr/local/juice-shop_8.6.2/"
   app_rel_uri: https://github.com/bkimminich/juice-shop/releases/download/v8.6.2/juice-shop-8.6.2_node10_linux_x64.tgz
-  app_custom_config: https://raw.githubusercontent.com/craig-br/ans-tower-devsecops/master/files/devsecops.yml
+  app_custom_config: https://raw.githubusercontent.com/craig-br/ans-tower-devsecops/development/files/devsecops.yml
   
 
 
