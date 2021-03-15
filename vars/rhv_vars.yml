@@ -1,3 +1,0 @@
-rhv_auth_url: "RHV AUTH URL"
-rhv_cred_user: "RHV User"
-rhv_cred_password: "RHV Password. Use Vault"

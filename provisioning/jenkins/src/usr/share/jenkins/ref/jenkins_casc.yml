@@ -1,0 +1,149 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - usernamePassword:
+          description: "Tower creds"
+          id: "tower"
+          password: ${TOWER_ADMIN_PASSWORD:-admin}
+          scope: GLOBAL
+          username: "admin"
+      - usernamePassword:
+          id: "Jenkins Tower User"
+          password: ${JENKINS_TOWER_PASSWORD:-admin}
+          scope: GLOBAL
+          username: "jenkins"
+      - usernamePassword:
+          id: "juiceshop"
+          password: ${JUICESHOP_GITHUB_TOKEN}
+          scope: GLOBAL
+          username: "juiceshop"
+jenkins:
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  authorizationStrategy: "loggedInUsersCanDoAnything"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  disableRememberMe: false
+  labelAtoms:
+  - name: "master"
+  markupFormatter: "plainText"
+  mode: NORMAL
+  myViewsTabBar: "standard"
+  numExecutors: 2
+  primaryView:
+    all:
+      name: "all"
+  projectNamingStrategy: "standard"
+  quietPeriod: 5
+  remotingSecurity:
+    enabled: false
+  scmCheckoutRetryCount: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+      - id: ${JENKINS_ADMIN_ID:-admin}
+        password: ${JENKINS_ADMIN_PASSWORD:-admin}
+  slaveAgentPort: 0
+  updateCenter:
+    sites:
+    - id: "default"
+      url: "https://updates.jenkins.io/update-center.json"
+  views:
+  - all:
+      name: "all"
+  viewsTabBar: "standard"
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  sSHD:
+    port: -1
+unclassified:
+  location:
+      url: http://127.0.0.1:8080
+  ansibleTowerGlobalConfig:
+    towerInstallation:
+    - enableDebugging: true
+      towerCredentialsId: "Jenkins Tower User"
+      towerDisplayName: "JuiceShop Tower"
+      towerTrustCert: true
+      towerURL: "https://192.168.20.40"
+  bitbucketEndpointConfiguration:
+    endpoints:
+    - bitbucketCloudEndpoint:
+        enableCache: false
+        manageHooks: false
+        repositoriesCacheDuration: 0
+        teamCacheDuration: 0
+  buildDiscarders:
+    configuredBuildDiscarders:
+    - "jobBuildDiscarder"
+  defaultFolderConfiguration:
+    healthMetrics:
+    - worstChildHealthMetric:
+        recursive: true
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    hookUrl: "http://127.0.0.1:8080/github-webhook/"
+  gitSCM:
+    createAccountBasedOnEmail: false
+    showEntireCommitSummaryInChanges: false
+    useExistingAccountWithSameEmail: false
+  globalDefaultFlowDurabilityLevel:
+    durabilityHint: PERFORMANCE_OPTIMIZED
+  # globalSettings:
+  #   failOnCorrupt: false
+  #   noAuthors: false
+  #   quietMode: false
+  location:
+    adminAddress: "address not configured yet <nobody@nowhere>"
+    url: "http://127.0.0.1:8080/"
+  mailer:
+    charset: "UTF-8"
+    useSsl: false
+    useTls: false
+  # mavenModuleSet:
+  #   localRepository: "default"
+  pollSCM:
+    pollingThreadCount: 10
+  sonarGlobalConfiguration:
+    buildWrapperEnabled: false
+    installations:
+    - name: "sonarqube"
+      serverUrl: "http://127.0.0.1:9000"
+      triggers:
+        skipScmCause: false
+        skipUpstreamCause: false
+tool:
+  ansibleInstallation:
+    installations:
+    - name: "Ansible"
+  git:
+    installations:
+    - home: "git"
+      name: "git"
+  nodejs:
+    installations:
+    - name: "nodejs"
+      properties:
+      - installSource:
+          installers:
+          - nodeJSInstaller:
+              id: "10.24.0"
+              npmPackages: "@angular/cli@7.3.10 typescript@3.8.2 standard@14"
+              npmPackagesRefreshHours: 72
+  sonarRunnerInstallation:
+    installations:
+    - name: "sonarqube"
+      properties:
+      - installSource:
+          installers:
+          - sonarRunnerInstaller:
+              id: "4.4.0.2170"

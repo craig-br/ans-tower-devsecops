@@ -1,0 +1,101 @@
+---
+# Tower Job Templates:
+job_template_vars:
+  - name: RHSM Registration
+    playbook: rhsm.yml
+    description: Register JuiceShop RHEL Instances
+    concurrent_jobs_enabled: true
+    credentials:
+      - RHSM
+      - EC2 Instance Credential
+    limit: tag_function_webserver
+    ask_limit_on_launch: false
+    use_fact_cache: true
+    extra_vars: "{{ rhsm_vars }}"
+    verbosity: 1
+    become_enabled: true
+  - name: RHSM Unsubcribe
+    playbook: app_rhsm_unsubscribe.yml
+    description: Register JuiceShop RHEL Instances
+    concurrent_jobs_enabled: true
+    credentials:
+      - RHSM
+      - EC2 Instance Credential
+    limit: tag_function_webserver
+    ask_limit_on_launch: false
+    use_fact_cache: true
+    extra_vars: "{{ rhsm_vars }}"
+    verbosity: 1
+    become_enabled: true
+  - name: Deploy Cloud Instances
+    playbook: ec2_instance_deploy.yml
+    description: Deploy JuiceShop Cloud Instances
+    concurrent_jobs_enabled: true
+    use_fact_cache: true
+    extra_vars: "{{ ec2_vars }}"
+    verbosity: 1
+  - name: Deploy Security Group
+    playbook: ec2_sg_deploy.yml
+    description: JuiceShop Security Group
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+  - name: Create JuiceShop App VS
+    playbook: f5_nodepool_vs.yml
+    description: JuiceShop Virtual Server
+    credentials:
+      - BigIP Credential
+      - AWS Credentials
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    inventory: On Prem Inventory
+
+  - name: Deploy JuiceShop App
+    playbook: app_ec2_deploy.yml
+    description: Deploy JuiceShop App
+    ask_variables_on_launch: true
+    credentials:
+      - EC2 Instance Credential
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    limit: tag_function_webserver
+  - name: Secure JuiceShop App
+    playbook: f5_nodepool_vs.yml
+    description: Deploy WAF for JuiceShop
+    credentials:
+      - BigIP Credential
+      - AWS Credentials
+    extra_vars: "{{ ec2_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    inventory: On Prem Inventory
+  - name: GitHub Release
+    playbook: app_github_release.yml
+    description: Create JuiceShop Release on GitHub
+    credentials:
+      - VM SSH Credential
+    extra_vars: "{{ github_vars }}"
+    use_fact_cache: true
+    verbosity: 1
+    inventory: On Prem Inventory
+    limit: adminservers
+    ask_variables_on_launch: true
+
+#Workflow Vars
+workflow_cloud_inst_vars:
+  - name: RHSM Registration
+    identifier: rhsm
+  - name: AWS Source
+    identifier: inv-update
+    success_nodes:
+      - rhsm
+  - name: Deploy Cloud Instances
+    identifier: instance-deploy
+    success_nodes:
+      - inv-update
+  - name: Deploy Security Group
+    identifier: sg-deploy
+    success_nodes:
+      - instance-deploy

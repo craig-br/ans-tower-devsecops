@@ -1,6 +1,6 @@
 tower_host: "Your Tower Host"
 tower_username: "Your Tower Username"
-tower_password: "Your Tower Password. Use Vault"
+tower_admin_password: "Your Tower Password. Use Vault"
 tower_organization: Default
 
 # Vars to reset password

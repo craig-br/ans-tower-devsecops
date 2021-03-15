@@ -1,0 +1,4 @@
+---
+tower_admin_password: "{{ lookup('env', 'TOWER_ADMIN_PASSWORD') | default( 'admin', true ) }}"
+tower_tower_releases_url: https://releases.ansible.com/ansible-tower/setup-bundle
+tower_tower_release_version: ansible-tower-setup-bundle-latest.tar.gz

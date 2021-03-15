@@ -1,8 +1,0 @@
----
-# Vars to reset password
-aw_home: /var/lib/awx
-aw_user: awx
-aw_group: awx
-reset_playbook_dir: '/etc/tower/reset'
-admin_password_file: '{{reset_playbook_dir}}/.admin_password'
-reconfigured_file: '{{reset_playbook_dir}}/.reconfigured'

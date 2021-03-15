@@ -1,0 +1,3 @@
+## Python requirements for running ansible tests
+ansible
+ansible-lint[core,yamllint]

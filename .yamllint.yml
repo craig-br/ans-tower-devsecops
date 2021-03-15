@@ -1,0 +1,28 @@
+---
+extends: default
+
+rules:
+  indentation:
+    spaces: 2
+    level: error
+    indent-sequences: consistent
+
+  line-length: disable
+
+  truthy: disable
+
+  braces:
+    level: error
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  empty-lines:
+    max: 1
+    level: error
+
+  new-line-at-end-of-file: disable
+  new-lines:
+    type: unix
+    level: error
+
+  trailing-spaces: disable

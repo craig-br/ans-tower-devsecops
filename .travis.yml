@@ -1,0 +1,6 @@
+language: python
+install:
+  - pip install -r ./tests/requirements.txt
+
+script:
+  - ansible-lint -p *.yml -v

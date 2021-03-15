@@ -1,0 +1,29 @@
+## @todo create tasks for roles. Point to vars files
+---
+- name: Bootstrap Ansible Tower box
+  hosts: adminservers
+  become: true
+  gather_facts: true
+
+  collections:
+    - ansible.community
+
+  tasks:
+    - name: Subscribe RHSM
+      redhat_subscription:
+        state: present
+        username: "{{ rhsm_username }}"
+        password: "{{ rhsm_password }}"
+        pool_ids:
+          - "{{ rhsm_pool_ids }}"
+      when: ansible_distribution == "RedHat"
+      tags:
+        - tower-rhsm
+    - name: Add DevSecOps Demo SSH key
+      authorized_key:
+        user: "{{ demo_ssh_key_username }}"
+        state: present
+        key: "{{ demo_ssh_key_file }}"
+      no_log: true
+      tags:
+        - tower-ssh-key
