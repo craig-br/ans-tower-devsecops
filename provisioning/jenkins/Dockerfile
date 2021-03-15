@@ -7,12 +7,7 @@ USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
-    # vim \
-    # make \
-    # gcc \
-    # g++ \
     build-essential \
-    # firefox-esr \
     curl && \
     curl -fsSL https://deb.nodesource.com/setup_10.x | bash - && \
     apt-get install -y nodejs && \
@@ -20,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/\* /tmp/\* /var/tmp/*
 
+COPY --chown=jenkins:jenkins src /
 
 USER jenkins
-COPY plugins.txt jenkins_casc.yml /usr/share/jenkins/ref/
 RUN jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
