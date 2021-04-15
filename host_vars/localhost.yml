@@ -230,3 +230,12 @@ workflow_cloud_inst_vars:
     identifier: sg-deploy
     success_nodes:
       - instance-deploy
+
+# # Controller Settings:
+controller_settings:
+  - setting_name: INSIGHTS_TRACKING_STATE
+    setting_value: true
+  - setting_name: REDHAT_USERNAME
+    setting_value: "{{ rhsm_username }}"
+  - setting_name: REDHAT_PASSWORD
+    setting_value: "{{ rhsm_password }}"
