@@ -32,7 +32,16 @@
       tower_config_file: "{{ tower_config_file }}"
     tags:
       - tower-license
-  
+
+  - name: Configure Controller Settings
+    tower_settings:
+      name: "{{ item.setting_name }}"
+      value: "{{ item.setting_value }}"
+      tower_config_file: "{{ tower_config_file }}"
+    loop: "{{ controller_settings }}"
+    tags:
+      - controller-settings
+
   - name: Create {{ tower_organization }} Organisation
     tower_organization:
       name: "{{ tower_organization }}"
