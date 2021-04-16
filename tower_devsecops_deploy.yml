@@ -39,6 +39,7 @@
       value: "{{ item.setting_value }}"
       tower_config_file: "{{ tower_config_file }}"
     loop: "{{ controller_settings }}"
+    no_log: true
     tags:
       - controller-settings
 
