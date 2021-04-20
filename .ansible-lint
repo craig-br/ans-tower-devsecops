@@ -1,2 +1,8 @@
 exclude_paths:
 - .travis.yml
+- .cache/
+- github/
+- ../../../.ansible/roles/
+
+mock_roles:
+- openstack.redhat-subscription
