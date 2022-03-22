@@ -10,9 +10,9 @@
     community.general.github_release:
       token: "{{ gh_password }}"
       user: "{{ gh_user }}"
-      repo: juiceshop
+      repo: juice-shop
       action: create_release
       tag: "{{ tag_name }}"
       target: master
-      name: JuiceShop Demo
-      body: "{{ tag_name}} release"
+      name: "{{ tag_name }}"
+      body: "{{ tag_name }} release"
