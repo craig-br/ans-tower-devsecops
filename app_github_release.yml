@@ -15,11 +15,10 @@
       user: "{{ gh_user }}"
       repo: juice-shop
       action: create_release
-      # password: "{{ gh_password }}"
       tag: "{{ tag_name }}"
       target: master
-      name: "{{ tag_name }}"
-      body: "{{ tag_name }} release"
+      name: "JuiceShop Demo"
+      body: "JuiceShop Demo"
     ignore_errors: true
     register: release
   
