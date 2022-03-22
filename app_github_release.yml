@@ -6,16 +6,10 @@
     - github-release
 
   tasks:
-  # - name: Create Facts Release Version
-  #   set_fact:
-  #     pkg_version: "{{ pkg_version }}"
-  #     new_pkg_version: "{{ tag_name }}"
-  #     cacheable: true
-
   - name: Create a new release
     community.general.github_release:
       token: "{{ password }}"
-      user: craig-br
+      user: "{{ username }}"
       repo: juiceshop
       action: create_release
       tag: "{{ tag_name }}"
