@@ -8,14 +8,14 @@
   tasks:
   - name: Create a new release
     community.general.github_release:
-      token: "{{ gh_password }}"
+      # token: "{{ gh_password }}"
       user: "{{ gh_user }}"
       repo: juice-shop
-      action: create_release
-      tag: "{{ tag_name }}"
-      target: master
-      name: "{{ tag_name }}"
-      body: "{{ tag_name }} release"
+      action: latest_release
+      # tag: "{{ tag_name }}"
+      # target: master
+      # name: "{{ tag_name }}"
+      # body: "{{ tag_name }} release"
     ignore_errors: true
     register: release
   
