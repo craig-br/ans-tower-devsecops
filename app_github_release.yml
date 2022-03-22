@@ -2,26 +2,21 @@
 - name: Push Build to GitHub
   hosts: all
   gather_facts: false
-  tags:
-    - github-release
 
   tasks:
-  - debug:
-      var: hostvars
-      
-  - name: Create a new release
-    community.general.github_release:
-      token: "{{ gh_password }}"
-      user: "{{ gh_user }}"
-      repo: juice-shop
-      action: create_release
-      tag: "{{ tag_name }}"
-      target: master
-      name: "JuiceShop Demo"
-      body: "JuiceShop Demo"
-    ignore_errors: true
-    register: release
-  
-  - name: debug
-    debug:
-      var: release
+    - name: Create new JuiceShop Release
+      uri:
+        url: "https://api.github.com/repos/{{ gh_user }}/juice-shop/releases"
+        method: POST
+        headers:
+          Authorization: "token {{ gh_password }}"
+        body_format: json
+        body:
+          '{"target_commitish": "{{ target_commitish | default("master") }}",  "name": "JuiceShop Demo {{ tag_name }}", "draft": {{ draft | default(false) }}, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
+        status_code: 201
+        register: release_output
+        until: release_output is not failed
+        retries: 60
+        delay: 3
+      tags:
+        - create-release
