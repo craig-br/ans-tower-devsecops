@@ -1,0 +1,661 @@
+---
+- name: Prepare for deployment
+  hosts: localhost
+  become: false
+  gather_facts: false 
+
+  tasks:
+    - name: Install collections
+      command: >
+        ansible-galaxy collection install {{ item }}
+      loop: 
+      - ansible.workshops
+      - awx.awx
+      tags:
+        - env-setup
+
+    - name: Download AAP
+      ansible.builtin.include_role:
+        name: ansible.workshops.aap_download
+      tags:
+        - env-setup
+
+- name: Install controller
+  hosts: adminservers
+  become: true
+  gather_facts: true
+  vars:
+    aap_dir: "/home/{{ ansible_user }}/aap_install"
+    username: "{{ ansible_user }}"
+    ansible_user: "vagrant"
+    # ansible_ssh_user: "rhel"
+    # ansible_ssh_pass: "ansible123!"
+    # ansible_sudo_pass: "ansible123!"
+    ansible_host_key_checking: false
+    ansible_python_interpreter: "/usr/bin/python3"
+    controller_install_command: "ANSIBLE_HOST_KEY_CHECKING=False  ./setup.sh -e create_preload_data=False -e required_ram=0 -e registry_username='{{ registry_username }}' -e registry_password='{{ registry_password }}'"
+    # controller_install_command: "ANSIBLE_BECOME_METHOD='sudo'  ANSIBLE_BECOME=True ANSIBLE_PRIVATE_KEY_FILE='/home/rhel/.ssh/instruqt_lab' ANSIBLE_HOST_KEY_CHECKING=False  ./setup.sh -e required_ram=0 -e registry_username='{{ registry_username }}' -e registry_password='{{ registry_password }}'"
+    admin_password: 'admin'
+
+  tasks:
+    - name: setup aap directory
+      ansible.builtin.include_role:
+        name: ansible.workshops.control_node
+        tasks_from: 10_aap_setup.yml
+        apply:
+          tags:
+            - install-controller
+      tags:
+        - install-controller
+  
+    - name: Create controller repo
+      ansible.builtin.include_role:
+        name: ansible.workshops.aap_repo
+        apply:
+          tags:
+            - install-controller
+      tags:
+          - install-controller
+  
+    - name: template controller inventory
+      template:
+        src: "controller_install.j2"
+        dest: "{{ aap_dir }}/inventory"
+      tags:
+      - install-controller
+
+    - name: run the controller installer
+      shell: "{{ controller_install_command }}"
+      args:
+        chdir: "{{ aap_dir }}"
+      async: 2100
+      poll: 15
+      tags:
+        - install-controller
+
+    - name: wait for Automation Controller to be up
+      uri:
+        url: https://localhost/api/v2/ping/
+        method: GET
+        user: admin
+        password: "{{ admin_password | default ('ansible123!') }}"
+        validate_certs: false
+      register: check2
+      until: check2.json is defined and check2.json.instances[0].capacity > 0 and check2.json.instance_groups[0].capacity > 0
+      retries: 60
+      delay: 10
+      tags:
+        - install-controller
+  
+    - name: Display /api/v2/ping results
+      debug:
+        msg: '{{ check2.json }}'
+      tags:
+        - install-controller
+  
+    - name: load license block
+      block:
+        - name: check for base64 variable first
+          copy:
+            dest: '{{ playbook_dir }}/manifest.zip'
+            content: '{{ base64_manifest | b64decode }}'
+          delegate_to: localhost
+      rescue:
+        - name: unable to load base64_manifest
+          debug:
+            msg: 'No base64_manifest variable found, trying to open manifest.zip'
+      always:
+        - name: Load manifest into variable
+          local_action:
+            module: slurp
+            src: "{{ playbook_dir }}/manifest.zip"
+          register: manifest_file
+      tags:
+        - install-controller
+
+    - name: Post manifest file
+      uri:
+        url: https://{{ ansible_host }}/api/v2/config/
+        method: POST
+        user: admin
+        password: "{{admin_password}}"
+        body: '{ "eula_accepted": true, "manifest": "{{ manifest_file.content }}" }'
+        body_format: json
+        validate_certs: false
+        force_basic_auth: true
+      tags:
+      - install-controller
+
+- name: Configure Controller
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Create auth token
+      awx.awx.token:
+        description: "Controller auth token"
+        scope: "write"
+        state: present
+        controller_username: "{{ controller_username }}"
+        controller_password: "{{ controller_admin_password }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      register: __auth_token
+      when: ansible_facts.controller_token.token is undefined
+      tags:
+        - configure-controller
+        - create-token
+
+    - name: create auth token fact
+      ansible.builtin.set_fact:
+        __auth_token: "{{ansible_facts.controller_token.token }}"
+        cacheable: true
+      tags:
+        - configure-controller
+        - create-token
+
+    - name: Configure Controller Settings
+      awx.awx.settings:
+        name: "{{ item.setting_name }}"
+        value: "{{ item.setting_value }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      loop: "{{ controller_settings }}"
+      no_log: true
+      tags:
+        - configure-controller
+
+    - name: Create {{ controller_organization }} Organisation
+      awx.awx.organization:
+        name: "{{ controller_organization }}"
+        description: Juice Shop Ltd Organisation
+        state: present
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - create-token
+
+  ## Execution environments
+    - name: Add additional execution environments
+      awx.awx.execution_environment:
+        name: "Workshop EE"
+        image: "quay.io/acme_corp/workshop_ee"
+        pull: missing
+        state: present
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - ee-images
+
+    - name: Pull workshop EE
+      containers.podman.podman_image:
+        name: "quay.io/acme_corp/workshop_ee"
+      become_user: awx
+      register: podman_pull
+      until: podman_pull is not failed
+      retries: 5
+      delay: 15 
+      tags:
+        - configure-controller
+        - ee-images
+
+  ## Credentials
+    - name: Create Automation Hub credential
+      awx.awx.credential:
+        name: Automation Hub Credential
+        description: JuiceShop Automation Hub Credentials
+        credential_type: Ansible Galaxy/Automation Hub API Token
+        organization: "{{ controller_organization }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+        inputs:
+          url: "{{ hub_credentials.pri_hub_url }}"
+          auth_url: "{{ hub_credentials.pri_hub_auth_url }}"
+          token: "{{ hub_credentials.pri_hub_token }}"
+        state: present
+      # no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create Galaxy credential
+      awx.awx.credential:
+        name: Galaxy Credential
+        description: JuiceShop Galaxy Credentials
+        credential_type: Ansible Galaxy/Automation Hub API Token
+        organization: "{{ controller_organization }}"
+        inputs:
+          url: "{{ hub_credentials.pri_galaxy_url }}"
+          token: "{{ hub_credentials.pri_galaxy_token }}"
+        state: present
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Update {{ controller_organization }} with Hub Credentials
+      awx.awx.organization:
+        name: "{{ controller_organization }}"
+        description: Juice Shop Ltd Organisation
+        state: present
+        galaxy_credentials:
+          - Automation Hub Credential
+          - Galaxy Credential
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create AWS credential
+      awx.awx.credential:
+        name: AWS Credentials
+        description: JuiceShop AWS Credentials
+        credential_type: "Amazon Web Services"
+        organization: "{{ controller_organization }}"
+        inputs:
+          username: "{{ aws_username }}"
+          password: "{{ aws_password }}"
+        state: present
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Fetch EC2 private key
+      ansible.builtin.slurp:
+        src: "{{ aws_pvt_key }}"
+      register: __aws_ssh_key
+      no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create EC2 Instance credential
+      awx.awx.credential:
+        name: EC2 Instance Credential
+        description: JuiceShop EC2 Credentials
+        credential_type: Machine
+        organization: "{{ controller_organization }}"
+        inputs:
+          username: "{{ aws_ssh_user }}"
+          ssh_key_data: "{{ __aws_ssh_key['content'] | b64decode }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Fetch Demo VM SSH Key
+      ansible.builtin.slurp:
+        src: "{{ demo_ssh_pvt_key_file }}"
+      register: demo_ssh_pvt_key
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create Demo VM SSH Credential
+      awx.awx.credential:
+        name: VM SSH Credential
+        description: JuiceShop VM SSH Credential
+        credential_type: Machine
+        organization: "{{ controller_organization }}"
+        inputs:
+          username: "{{ demo_ssh_key_username }}"
+          ssh_key_data: "{{ demo_ssh_pvt_key['content'] | b64decode }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create F5 Credential Type
+      awx.awx.credential_type:
+        name: f5
+        description: F5 BigIP Credential
+        kind: cloud
+        inputs: "{{ lookup('file', 'cred_inputs_f5.json') }}"
+        injectors: "{{ lookup('file', 'cred_inputs_f5_injectors.json') }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create F5 Credential  
+      awx.awx.credential:
+        name: BigIP Credential
+        description: BIGIP Credential
+        credential_type: f5
+        organization: "{{ controller_organization }}"
+        inputs:
+          f5_user: "{{ f5_user }}"
+          f5_password: "{{ f5_password }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create JuiceShop repo Credential Type
+      awx.awx.credential_type:
+        name: juiceshop_repo
+        description: JuiceShop Repo Credential Type
+        kind: cloud
+        inputs: "{{ lookup('file', 'cred_inputs_juiceshop_gh.json') }}"
+        injectors: "{{ lookup('file', 'cred_inputs_juiceshop_gh_injectors.json') }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create JuiceShop Repo Credential  
+      awx.awx.credential:
+        name: JuiceShop repo
+        description: JuiceShop Repo Credential
+        credential_type: juiceshop_repo
+        organization: "{{ controller_organization }}"
+        inputs:
+          gh_user: "{{ github_user }}"
+          gh_password: "{{ github_token }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Fetch GitHub Key
+      ansible.builtin.slurp:
+        src: "{{ github_pvt_key }}"
+      register: __github_pvt_key_out
+      no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+
+    - name: Create GitHub Credential
+      awx.awx.credential:
+        organization: "{{ controller_organization }}"
+        name: GitHub Credential
+        description: JuiceShop GitHub Credential
+        credential_type: Source Control
+        inputs:
+          ssh_key_data: "{{ __github_pvt_key_out['content'] | b64decode }}"
+          username: craig-br
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create RHSM Credential Type
+      awx.awx.credential_type:
+        name: rhsm
+        description: RHSM Credentials
+        kind: cloud
+        inputs: "{{ lookup('file', 'cred_inputs_rhsm.json') }}"
+        injectors: "{{ lookup('file', 'cred_inputs_rhsm_injectors.json') }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+    - name: Create RHSM Credential
+      awx.awx.credential:
+        organization: "{{ controller_organization }}"
+        name: RHSM
+        description: JuiceShop RHSM Credentials
+        credential_type: rhsm
+        inputs:
+          rhsm_username: "{{ rhsm_username }}"
+          rhsm_password: "{{ rhsm_password }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      no_log: true
+      tags:
+        - configure-controller
+        - controller-credentials
+
+  
+  ## Projects
+    - name: Create JuiceShop Project
+      awx.awx.project:
+        name: JuiceShop Project
+        organization: "{{ controller_organization }}"
+        allow_override: true
+        description: JuiceShop Playbooks
+        scm_branch: development
+        scm_clean: false
+        scm_credential: GitHub Credential
+        scm_type: git
+        scm_url: "{{ github_scm_url }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-projects
+
+    - name: Create AWS Inventory
+      awx.awx.inventory:
+        name: AWS Inventory
+        description: JuiceShop AWS Instances
+        organization: "{{ controller_organization }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-inventories
+
+    - name: AWS Inventory Source
+      awx.awx.inventory_source:
+        name: AWS Source
+        description: JuiceShop AWS Source
+        inventory: AWS Inventory
+        credential: AWS Credentials
+        overwrite: true
+        overwrite_vars: true
+        source: ec2
+        update_on_launch: false
+        source_vars:
+          keyed_groups:
+            - prefix: tag
+              key: tags
+          hostname:
+            - dns-name
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-inventories
+
+    - name: Create On-Prem Inventory
+      awx.awx.inventory:
+        name: "On Prem Inventory"
+        description: JuiceShop On-Prem Instances
+        organization: "{{ controller_organization }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-inventories
+
+    - awx.awx.host:
+        inventory: On Prem Inventory
+        name: "{{ item.name }}"
+        description: "{{ item.description }}"
+        variables: "{{ item.variables }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      loop: "{{ on_prem_inv_vars }}"
+      tags:
+        - configure-controller
+        - controller-inventories
+
+    - awx.awx.group:
+        name: "{{ item.name }}"
+        description: "{{ item.description }}"
+        variables: "{{ item.variables | default({})}}"
+        hosts: "{{ item.hosts }}"
+        inventory: On Prem Inventory
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      loop: "{{ onprem_inv_group_vars }}"
+      tags:
+        - configure-controller
+        - controller-inventories
+ 
+    ## Job Templates:
+    - name: Create Cloud Instances Workflow
+      awx.awx.workflow_job_template:
+        name: Cloud Instances Workflow
+        new_name: Cloud Instances Workflow
+        description: Deploy JuiceShop Cloud Instances
+        inventory: AWS Inventory
+        organization: "{{ controller_organization }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-job-templates
+
+    - name: Create Job Templates
+      awx.awx.job_template:
+        name: "{{ item.name }}"
+        job_type: "{{ item.job_type| default ('run')  }}"
+        playbook: "{{ item.playbook }}"
+        project: "{{ item.project | default ('JuiceShop Project') }}"
+        credentials:  "{{ item.credentials | default ('AWS Credentials') }}"
+        description: "{{ item.description }}"
+        inventory: "{{ item.inventory | default ('AWS Inventory') }}"
+        concurrent_jobs_enabled: "{{ item.concurrent_jobs_enabled | default('false') }}"
+        become_enabled: "{{ item.become_enabled | default('false') }}"
+        ask_limit_on_launch: "{{ item.ask_limit_on_launch | default('false') }}"
+        ask_variables_on_launch: "{{ item.ask_variables_on_launch | default('false') }}"
+        extra_vars: "{{ item.extra_vars | default({}) }}"
+        limit: "{{ item.limit | default('') }}"
+        use_fact_cache: "{{ item.use_fact_cache | default('false') }}"
+        verbosity: "{{ item.verbosity | default('0') }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      loop: "{{ job_template_vars }}"
+      tags:
+        - configure-controller
+        - controller-job-templates
+
+    - name: Add Job Templates to Cloud Instance Workflow
+      awx.awx.workflow_job_template_node:
+        identifier: "{{ item.identifier }}"
+        workflow: "{{ item.workflow | default('Cloud Instances Workflow')}}"
+        organization: "{{ controller_organization }}"
+        unified_job_template: "{{ item.name }}"
+        success_nodes: "{{ item.success_nodes | default('[]') }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      loop: "{{ workflow_cloud_inst_vars }}"
+      tags:
+        - configure-controller
+        - controller-job-templates
+
+    ## Users
+    - name: Create Jenkins user
+      awx.awx.user:
+        username: "{{ jenkins_user }}"
+        password: "{{ jenkins_pwd }}"
+        email: jenkins@vagrant.local
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-users
+
+    - name: Give Jenkins user access to JuiceShop Org
+      awx.awx.role:
+        user: "{{ jenkins_user }}"
+        role: member
+        state: present
+        organization: "{{ controller_organization }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-users
+
+    - name: Give Jenkins user access to SSH key
+      awx.awx.role:
+        user: "{{ jenkins_user }}"
+        role: read
+        credential: "VM SSH Credential"
+        state: present
+        organization: "{{ controller_organization }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-users
+
+    - name: Give Jenkins user access to Workflows
+      awx.awx.role:
+        user: "{{ jenkins_user }}"
+        role: execute
+        workflow: "Cloud Instances Workflow"
+        state: present
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      tags:
+        - configure-controller
+        - controller-users
+
+    - name: Give users access to job templates
+      tower_role:
+        user: "{{ item.user }}"
+        role: "{{ item.role }}"
+        job_template: "{{ item.job_template }}"
+        state: "{{ item.state }}"
+        controller_oauthtoken: "{{ __auth_token }}"
+        controller_host: "{{ controller_hostname }}"
+        validate_certs: "{{ controller_validate_certs }}"
+      loop: "{{ controller_user_vars }}"
+      tags:
+        - configure-controller
+        - controller-users

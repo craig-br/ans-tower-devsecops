@@ -7,7 +7,7 @@
 
   tasks:
   - name: Gather EC2 facts
-    ec2_instance_info:
+    amazon.aws.ec2_instance_info:
       region: "{{ ec2_region }}"
       filters:
         "tag:function": "{{ ec2_f5_tag }}"
@@ -26,7 +26,7 @@
      - ec2_sg_set_fact
 
   - name: Create security group
-    ec2_group:
+    amazon.aws.ec2_group:
       name: "{{ ec2_sg_name }}"
       description: "JuiceShop Security Group"
       region: "{{ ec2_region }}"
