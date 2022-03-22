@@ -8,7 +8,7 @@
   tasks:
   - name: Create a new release
     community.general.github_release:
-      password: "{{ gh_password }}"
+      token: "{{ gh_password }}"
       user: "{{ gh_user }}"
       repo: juice-shop
       action: create_release
