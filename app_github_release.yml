@@ -11,11 +11,12 @@
       # token: "{{ gh_password }}"
       user: "{{ gh_user }}"
       repo: juice-shop
-      action: latest_release
-      # tag: "{{ tag_name }}"
-      # target: master
-      # name: "{{ tag_name }}"
-      # body: "{{ tag_name }} release"
+      action: create_release
+      password: "{{ gh_password }}"
+      tag: "{{ tag_name }}"
+      target: master
+      name: "{{ tag_name }}"
+      body: "{{ tag_name }} release"
     ignore_errors: true
     register: release
   
