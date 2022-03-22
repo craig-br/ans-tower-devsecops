@@ -16,3 +16,9 @@
       target: master
       name: "{{ tag_name }}"
       body: "{{ tag_name }} release"
+    ignore_errors: true
+    register: release
+  
+  - name: debug
+    debug:
+      var: release
