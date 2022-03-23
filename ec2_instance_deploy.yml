@@ -6,7 +6,7 @@
 
   tasks:
   - name: Deploy Web Servers
-    amazon.aws.ec2:
+    amazon.aws.ec2_instance:
         key_name: "{{ ec2_keyname }}"
         group: "{{ ec2_sg_name }}"
         instance_type: "{{ ec2_instance_type }}"
