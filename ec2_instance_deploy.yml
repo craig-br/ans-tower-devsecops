@@ -7,19 +7,17 @@
   tasks:
   - name: Deploy Web Servers
     amazon.aws.ec2_instance:
-        key_name: "{{ ec2_keyname }}"
-        group: "{{ ec2_sg_name }}"
-        instance_type: "{{ ec2_instance_type }}"
-        image_id: "{{ ec2_ami }}"
-        wait: true
-        region: "{{ ec2_region }}"
-        count_tag:
-          Name: ec2_devsecops
-        exact_count: "{{ ec2_count }}"
-        instance_tags:
-          Name: ec2_devsecops
-          function: "{{ ec2_webserver_tag }}"
-        wait_timeout: 500
+      key_name: "{{ ec2_keyname }}"
+      security_group: "{{ ec2_sg_name }}"
+      instance_type: "{{ ec2_instance_type }}"
+      image_id: "{{ ec2_ami }}"
+      wait: true
+      region: "{{ ec2_region }}"
+      exact_count: "{{ ec2_count }}"
+      tags:
+        Name: ec2_devsecops
+        function: "{{ ec2_webserver_tag }}"
+      wait_timeout: 500
     register: ec2
 
   - name: Wait for SSH to come up
