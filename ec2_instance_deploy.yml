@@ -13,7 +13,7 @@
       image_id: "{{ ec2_ami }}"
       wait: true
       region: "{{ ec2_region }}"
-      exact_count: "{{ ec2_count }}"
+      count: "{{ ec2_count }}"
       tags:
         Name: ec2_devsecops
         function: "{{ ec2_webserver_tag }}"
