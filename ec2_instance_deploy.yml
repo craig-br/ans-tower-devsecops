@@ -2,22 +2,25 @@
 - name: Deploy EC2 Web Servers
   hosts: all
   become: false
+  strategy: free
   gather_facts: false
 
   tasks:
   - name: Deploy Web Servers
     amazon.aws.ec2_instance:
+      name: ec2_devsecops
       key_name: "{{ ec2_keyname }}"
       security_group: "{{ ec2_sg_name }}"
       instance_type: "{{ ec2_instance_type }}"
       image_id: "{{ ec2_ami }}"
       wait: true
+      state: running
+      exact_count: "{{ ec2_count }}"
       region: "{{ ec2_region }}"
-      count: "{{ ec2_count }}"
       tags:
-        Name: ec2_devsecops
         function: "{{ ec2_webserver_tag }}"
       wait_timeout: 500
+    # loop: "{{ query('sequence', 'start=1 end='+ec2_count | string) }}"
     register: ec2
 
   - name: Wait for SSH to come up
