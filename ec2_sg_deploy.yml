@@ -1,4 +1,5 @@
 ---
+  # @todo automate AWC VPC creation
 - name: Create EC2 Security Group
   hosts: all
   connection: local
@@ -14,7 +15,6 @@
     register: ec2
     tags:
      - ec2-sg-deploy
-     - ec2_f5_facts
 
   - name: Create Facts for F5 configuration
     set_fact:
@@ -25,17 +25,10 @@
      - ec2_sg_deploy
      - ec2_sg_set_fact
 
-  # - name: debug
-  #   debug:
-  #     var: hostvars['controller-rhel']['f5_private_ip']
-
-  # - name: debug
-  #   debug:
-  #     var: hostvars.controller-rhel.f5_private_ip
-
   - name: Create security group
     amazon.aws.ec2_group:
       name: "{{ ec2_sg_name }}"
+      vpc_id: vpc-0ae1d7baeaa323b44
       description: "JuiceShop Security Group"
       region: "{{ ec2_region }}"
       rules:
@@ -47,6 +40,3 @@
           from_port: 3000
           to_port: 3000
           cidr_ip: "{{ hostvars['controller-rhel']['f5_private_ip'] + '/32'}}"
-    tags:
-     - ec2_sg_deploy
-     - ec2_sg_create
