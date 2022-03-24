@@ -1,15 +1,15 @@
 ---
 - name: Deploy Application to EC2 Instances
   hosts: all
-  gather_facts: true
+  gather_facts: false
 
   environment:
     NODE_ENV: devsecops
 
   tasks:
   - name: Install nodejs 10
-    ansible.builtin.dnf:
-      name: @nodejs:10
+    ansible.builtin.package:
+      name: "@nodejs:10"
       state: present
 
   - name: Set NODE_ENV for config
@@ -60,4 +60,4 @@
       chdir: "{{ node_app_dir }}"
     when: "forever_list.stdout.find('app.js') == -1"
 
-    
+
