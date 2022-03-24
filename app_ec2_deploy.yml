@@ -11,14 +11,9 @@
   environment:
     NODE_ENV: devsecops
 
-  tags:
-  - app_deploy
-  - webservers
-  - devsecops
-
   tasks:
   - name: Set NODE_ENV for config
-    lineinfile:
+    ansible.builtin.lineinfile:
       state: present
       line: "export NODE_ENV=devsecops"
       insertafter: EOF
@@ -26,16 +21,16 @@
     tags:
     - node-env
 
-  - name: debug facts stored from tower host
-    debug:
-      var: hostvars['tower-rhel']['new_pkg_version']
+  - name: debug facts stored from controller host
+    ansible.builtin.debug:
+      var: hostvars['controller-rhel']['new_pkg_version']
       verbosity: 2
     tags:
     - app-deploy
     - debug-version
 
   - name: Extract download
-    unarchive:
+    ansible.builtin.unarchive:
       src: "{{ app_rel_uri }}"
       remote_src: true
       dest: /usr/local/
@@ -44,7 +39,7 @@
     - extract
 
   - name: Download JuiceShop config file
-    get_url:
+    ansible.builtin.get_url:
       url: "{{ app_custom_config }}"
       dest: "{{ node_app_dir }}config/devsecops.yml"
       force: true
@@ -52,7 +47,7 @@
     - get_config
 
   - name: Install Forever
-    npm:
+    community.general.npm:
       name: forever
       global: yes
       state: present
@@ -69,7 +64,7 @@
     - ipv4
       
   - name: Check list of running Node.js apps.
-    command: forever list
+    ansible.builtin.command: forever list
     register: forever_list
     changed_when: false
     tags:

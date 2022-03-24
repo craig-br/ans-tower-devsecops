@@ -39,4 +39,4 @@
         - proto: tcp
           from_port: 3000
           to_port: 3000
-          cidr_ip: "{{ hostvars['controller-rhel']['f5_private_ip'] + '/32'}}"
+          cidr_ip: "{{ hostvars[inventory_hostname]['f5_private_ip'] + '/32'}}"
