@@ -3,31 +3,26 @@
   hosts: all
   gather_facts: true
 
-  roles:
-  - role: geerlingguy.nodejs
-    vars:
-      nodejs_version: "10.x"
-
   environment:
     NODE_ENV: devsecops
 
   tasks:
+  - name: Install nodejs 10
+    ansible.builtin.dnf:
+      name: @nodejs:10
+      state: present
+
   - name: Set NODE_ENV for config
     ansible.builtin.lineinfile:
       state: present
       line: "export NODE_ENV=devsecops"
       insertafter: EOF
       path: /etc/profile
-    tags:
-    - node-env
 
   - name: debug facts stored from controller host
     ansible.builtin.debug:
-      var: hostvars['controller-rhel']['new_pkg_version']
+      var: hostvars[inventory_hostname]['new_pkg_version']
       verbosity: 2
-    tags:
-    - app-deploy
-    - debug-version
 
   - name: Extract download
     ansible.builtin.unarchive:
@@ -35,45 +30,34 @@
       remote_src: true
       dest: /usr/local/
     register: app_download
-    tags:
-    - extract
 
   - name: Download JuiceShop config file
     ansible.builtin.get_url:
       url: "{{ app_custom_config }}"
       dest: "{{ node_app_dir }}config/devsecops.yml"
       force: true
-    tags:
-    - get_config
 
   - name: Install Forever
     community.general.npm:
       name: forever
       global: yes
       state: present
-    tags:
-    - run_app
 
   - name: Force NodeJS to bind to IPV4
     replace:
       path: "{{ node_app_dir }}server.js"
       regexp: '^.*\bserver\.listen\b.*$'
       replace: server.listen(process.env.PORT || config.get('server.port'), "0.0.0.0", () => {
-    tags:
-    - deploy-app
-    - ipv4
       
   - name: Check list of running Node.js apps.
     ansible.builtin.command: forever list
     register: forever_list
     changed_when: false
-    tags:
-    - run-app
 
   - name: Run application
     shell: "NODE_ENV=devsecops forever start app.js"
     args:
       chdir: "{{ node_app_dir }}"
     when: "forever_list.stdout.find('app.js') == -1"
-    tags:
-    - run-app
+
+    
