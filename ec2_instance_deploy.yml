@@ -22,5 +22,6 @@
         assign_public_ip: true
       tags:
         function: "{{ ec2_webserver_tag }}"
+        project: "{{ ec2_project_tag }}"
       wait_timeout: 500
     register: ec2

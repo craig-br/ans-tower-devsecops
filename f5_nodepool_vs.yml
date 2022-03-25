@@ -1,32 +1,31 @@
 ---
 - name: Configure F5 Nodepool
-  hosts: localhost
+  hosts: all
   connection: local
   gather_facts: false
   become: false
 
   tasks:
   - name: Gather EC2 facts
-    ec2_instance_info:
+    amazon.aws.ec2_instance_info:
       region: "{{ ec2_region }}"
       filters:
         instance-state-name: ["running"]
+        "tag:project": "{{ ec2_project_tag }}"
     register: ec2
-    tags:
-     - ec2-facts
 
   - name: Create Facts for F5 configuration
-    set_fact:
+    ansible.builtin.set_fact:
       f5_public_ip: "{{ item.public_ip_address }}"
       f5_private_ip: "{{ item.private_ip_address }}"
       cacheable: true
     when: (item.tags.function == ec2_f5_tag)
     loop: "{{ ec2.instances }}"
-    tags:
-      - f5_facts
-    
+  
+  # - debug:
+  #     var: f5_private_ip
   - name: Create {{ f5_pool_name }} Pool
-    bigip_pool:
+    f5networks.f5_modules.bigip_pool:
       name: "{{ f5_pool_name }}"
       lb_method: round-robin
       state: "{{ ec2_f5_state }}"
@@ -39,11 +38,9 @@
         server_port: 8443
         validate_certs: "{{ f5_validate_certs }}"
         transport: rest
-    tags:
-      - create-pool
 
   - name: Create Pool Members
-    bigip_pool_member:
+    f5networks.f5_modules.bigip_pool_member:
       pool: "{{ f5_pool_name }}"
       host: "{{ item.private_ip_address }}"
       port: 3000
@@ -57,11 +54,10 @@
         transport: rest
     when: (item.tags.function == ec2_webserver_tag)
     loop: "{{ ec2.instances }}"
-    tags:
-      - create-pool
 
+  # Deploy with WAF
   - name: Create {{ f5_vs_name }} VS
-    bigip_virtual_server:
+    f5networks.f5_modules.bigip_virtual_server:
       description: "{{ f5_vs_name }}"
       destination: "{{ f5_private_ip }}"
       name: "{{ f5_vs_name }}"
@@ -74,7 +70,7 @@
         - JuiceShop_Client_SSL
         - websecurity
       all_policies:
-        - redhat_disable_waf
+        - JuiceShop_Policy
       provider:
         user: "{{ f5_user }}"
         password: "{{ f5_password }}"
@@ -82,5 +78,28 @@
         server_port: 8443
         validate_certs: "{{ f5_validate_certs }}"
         transport: rest
-    tags:
-      - f5-vs
+
+  # Deploy without WAF 
+  #WEB APP WILL BE HACKED
+  # - name: Create {{ f5_vs_name }} VS
+  #   f5networks.f5_modules.bigip_virtual_server:
+  #     description: "{{ f5_vs_name }}"
+  #     destination: "{{ f5_private_ip }}"
+  #     name: "{{ f5_vs_name }}"
+  #     pool: "{{ f5_pool_name }}"
+  #     port: "443"
+  #     snat: Automap
+  #     default_persistence_profile: "source_addr"
+  #     all_profiles:
+  #       - http
+  #       - JuiceShop_Client_SSL
+  #       - websecurity
+        # all_policies:
+          # - redhat_disable_waf
+  #     provider:
+  #       user: "{{ f5_user }}"
+  #       password: "{{ f5_password }}"
+  #       server: "{{ f5_public_ip }}"
+  #       server_port: 8443
+  #       validate_certs: "{{ f5_validate_certs }}"
+  #       transport: rest
