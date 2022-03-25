@@ -32,3 +32,5 @@ settings.json
 .vagrant/
 collections/*
 !./collections/requirements.yml
+manifest.zip
+aap.tar.gz
