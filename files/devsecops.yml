@@ -4,14 +4,14 @@ application:
   showGitHubLinks: false
   localBackupEnabled: true
   theme: blue-lightblue
-welcomeBanner:
+  welcomeBanner:
     showOnFirstStart: false
 challenges:
   showSolvedNotifications: false
   showHints: false
   showMitigations: false
   codingChallengesEnabled: never
-  restrictToTutorialsFirst: true
+  restrictToTutorialsFirst: false
   safetyOverride: false
 hackingInstructor:
   isEnabled: false
