@@ -4,6 +4,9 @@
   gather_facts: false
   become: true
 
+  environment:
+    NODE_ENV: devsecops
+
   tasks:
   - name: Install packages
     ansible.builtin.dnf:
@@ -20,7 +23,6 @@
     ansible.builtin.get_url:
       url: "{{ app_custom_config }}"
       dest: "{{ node_app_dir }}config/devsecops.yml"
-      force: true
 
   - name: Install Forever
     community.general.npm:
@@ -40,7 +42,8 @@
     changed_when: false
 
   - name: Run application
-    ansible.builtin.command: "NODE_ENV=devsecops /usr/local/bin/forever start app.js"
+    ansible.builtin.command: "/usr/local/bin/forever start build/app.js"
+    # ansible.builtin.shell: "NODE_ENV=devsecops /usr/local/bin/forever start build/app.js"
     args:
       chdir: "{{ node_app_dir }}"
     when: "forever_list.stdout.find('app.js') == -1"
