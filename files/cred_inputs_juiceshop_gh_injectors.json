@@ -1,0 +1,6 @@
+{
+    "extra_vars": {
+        "gh_user": "{{ gh_user }}",
+        "gh_password": "{{ gh_password }}"
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "fields": [
+        {
+            "id": "gh_user",
+            "type": "string",
+            "label": "Repo Username"
+        },
+        {
+            "id": "gh_password",
+            "type": "string",
+            "label": "Repo Password",
+            "secret": true
+        }
+    ],
+    "required": [
+        "gh_user",
+        "gh_password"
+    ]
+}
