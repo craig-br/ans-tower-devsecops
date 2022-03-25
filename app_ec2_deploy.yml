@@ -28,20 +28,19 @@
       global: yes
       state: present
 
-  # - name: Force NodeJS to bind to IPV4
-  #   replace:
-  #     path: "{{ node_app_dir }}server.js"
-  #     regexp: '^.*\bserver\.listen\b.*$'
-  #     replace: server.listen(process.env.PORT || config.get('server.port'), "0.0.0.0", () => {
+  - name: Force NodeJS to bind to IPV4
+    ansible.builtin.replace:
+      path: "{{ node_app_dir }}build/server.js"
+      regexp: '^.*\bserver\.listen\b.*$'
+      replace: server.listen(process.env.PORT || config.get('server.port'), "0.0.0.0", () => {
       
-  # - name: Check list of running Node.js apps.
-  #   ansible.builtin.command: forever list
-  #   register: forever_list
-  #   changed_when: false
+  - name: Check list of running Node.js apps.
+    ansible.builtin.command: /usr/local/bin/forever list
+    register: forever_list
+    changed_when: false
 
-  # - name: Run application
-  #   shell: "NODE_ENV=devsecops forever start app.js"
-  #   args:
-  #     chdir: "{{ node_app_dir }}"
-  #   when: "forever_list.stdout.find('app.js') == -1"
-
+  - name: Run application
+    ansible.builtin.command: "NODE_ENV=devsecops /usr/local/bin/forever start app.js"
+    args:
+      chdir: "{{ node_app_dir }}"
+    when: "forever_list.stdout.find('app.js') == -1"
