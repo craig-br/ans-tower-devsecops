@@ -25,3 +25,14 @@
         project: "{{ ec2_project_tag }}"
       wait_timeout: 500
     register: ec2
+    until: ec2 is not failed
+    retries: 15
+
+  - name: Wait for instances to boot
+    ansible.builtin.wait_for:
+      host: "{{ ec2.instances[0].public_dns_name }}" 
+      port: 22 
+      delay: 10  
+      timeout: 300
+    loop: "{{ ec2.instances }}"
+    when: ec2.instances is defined
