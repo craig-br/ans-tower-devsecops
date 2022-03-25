@@ -1,6 +1,19 @@
 application:
-  name: 'Juice Shop'
-  showChallengeSolvedNotifications: false
-  showChallengeHints: false
-  gitHubRibbon: false
+  name: 'JuiceShop'
+  showVersionNumber: false
+  showGitHubLinks: false
+  localBackupEnabled: true
   theme: blue-lightblue
+welcomeBanner:
+    showOnFirstStart: false
+challenges:
+  showSolvedNotifications: false
+  showHints: false
+  showMitigations: false
+  codingChallengesEnabled: never
+  restrictToTutorialsFirst: true
+  safetyOverride: false
+hackingInstructor:
+  isEnabled: false
+ctf:
+  showFlagsInNotifications: false
