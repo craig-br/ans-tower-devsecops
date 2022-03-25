@@ -4,9 +4,6 @@
   gather_facts: false
   become: true
 
-  environment:
-    NODE_ENV: devsecops
-
   tasks:
   - name: Install packages
     ansible.builtin.dnf:
@@ -42,8 +39,8 @@
     changed_when: false
 
   - name: Run application
-    ansible.builtin.command: "/usr/local/bin/forever start build/app.js"
-    # ansible.builtin.shell: "NODE_ENV=devsecops /usr/local/bin/forever start build/app.js"
+    # ansible.builtin.command: "/usr/local/bin/forever start build/app.js"
+    ansible.builtin.shell: "NODE_ENV=devsecops /usr/local/bin/forever start build/app.js"
     args:
       chdir: "{{ node_app_dir }}"
     when: "forever_list.stdout.find('app.js') == -1"
