@@ -54,7 +54,7 @@
 
 
     - name: Delete {{ f5_vs_name }} VS
-      f5firewall.f5_modules.bigip_virtual_server:
+      f5networks.f5_modules.bigip_virtual_server:
         name: "{{ f5_vs_name }}"
         state: absent
         provider:
@@ -66,7 +66,7 @@
           transport: rest
 
     - name: Delete Pool Members
-      f5firewall.f5_modules.bigip_pool_member:
+      f5networks.f5_modules.bigip_pool_member:
         pool: "{{ f5_pool_name }}"
         port: 80
         host: "{{ item['private_ip_address'] }}"
@@ -83,7 +83,7 @@
       loop: "{{ ec2.instances }}"
 
     - name: Delete {{ f5_pool_name }} pool
-      f5firewall.f5_modules.bigip_pool:
+      f5networks.f5_modules.bigip_pool:
         name: "{{ f5_pool_name }}"
         state: absent
         provider:

@@ -1,0 +1,1102 @@
+{
+    "version": "1.0.0",
+    "plays": [
+        {
+            "playbook": "/home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml",
+            "playbook_uuid": "5aea9e6e-1fa2-404a-8327-3ee020598320",
+            "play": "Create EC2 Security Group",
+            "play_uuid": "3223c2c3-b7a4-aa77-88a7-00000000000a",
+            "play_pattern": "all",
+            "name": "Create EC2 Security Group",
+            "pattern": "all",
+            "uuid": "3223c2c3-b7a4-aa77-88a7-00000000000a",
+            "__play_name": "Create EC2 Security Group",
+            "tasks": [
+                {
+                    "playbook": "/home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml",
+                    "playbook_uuid": "5aea9e6e-1fa2-404a-8327-3ee020598320",
+                    "play": "Create EC2 Security Group",
+                    "play_uuid": "3223c2c3-b7a4-aa77-88a7-00000000000a",
+                    "play_pattern": "all",
+                    "task": "Gather EC2 facts",
+                    "task_uuid": "3223c2c3-b7a4-aa77-88a7-00000000000c",
+                    "task_action": "amazon.aws.ec2_instance_info",
+                    "task_args": "",
+                    "task_path": "/home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml:10",
+                    "host": "controller-rhel",
+                    "uuid": "f94caa8a-8bb6-4237-9afe-8f15450fa598",
+                    "__host": "controller-rhel",
+                    "__result": "OK",
+                    "__changed": false,
+                    "__duration": "2s",
+                    "__number": 0,
+                    "__task": "Gather EC2 facts",
+                    "__task_action": "amazon.aws.ec2_instance_info",
+                    "remote_addr": "controller-rhel",
+                    "res": {
+                        "instances": [
+                            {
+                                "ami_launch_index": 0,
+                                "image_id": "ami-0a33f66cb79f64069",
+                                "instance_id": "i-0bcf7f0d7b76adcb0",
+                                "instance_type": "m5.xlarge",
+                                "key_name": "craig-f5-demo",
+                                "launch_time": "2022-03-25T13:12:12+00:00",
+                                "monitoring": {
+                                    "state": "disabled"
+                                },
+                                "placement": {
+                                    "availability_zone": "us-east-1a",
+                                    "group_name": "",
+                                    "tenancy": "default"
+                                },
+                                "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                "private_ip_address": "172.31.13.250",
+                                "product_codes": [
+                                    {
+                                        "product_code_id": "3ouya04g99e5euh4vbxtao1jz",
+                                        "product_code_type": "marketplace"
+                                    }
+                                ],
+                                "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                "public_ip_address": "52.2.160.165",
+                                "state": {
+                                    "code": 16,
+                                    "name": "running"
+                                },
+                                "state_transition_reason": "",
+                                "subnet_id": "subnet-0eec001516d14e70b",
+                                "vpc_id": "vpc-0ae1d7baeaa323b44",
+                                "architecture": "x86_64",
+                                "block_device_mappings": [
+                                    {
+                                        "device_name": "/dev/xvda",
+                                        "ebs": {
+                                            "attach_time": "2022-03-16T00:01:49+00:00",
+                                            "delete_on_termination": true,
+                                            "status": "attached",
+                                            "volume_id": "vol-0111def72870500da"
+                                        }
+                                    }
+                                ],
+                                "client_token": "47812d78-ccf5-47bb-b673-82ea516356c3",
+                                "ebs_optimized": true,
+                                "ena_support": true,
+                                "hypervisor": "xen",
+                                "network_interfaces": [
+                                    {
+                                        "association": {
+                                            "ip_owner_id": "962147768365",
+                                            "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                            "public_ip": "52.2.160.165"
+                                        },
+                                        "attachment": {
+                                            "attach_time": "2022-03-16T00:01:48+00:00",
+                                            "attachment_id": "eni-attach-046b998bd37f4fca7",
+                                            "delete_on_termination": false,
+                                            "device_index": 0,
+                                            "status": "attached",
+                                            "network_card_index": 0
+                                        },
+                                        "description": "Primary network interface",
+                                        "groups": [
+                                            {
+                                                "group_name": "launch-wizard-1",
+                                                "group_id": "sg-095c5d0feaeade32f"
+                                            }
+                                        ],
+                                        "ipv6_addresses": [],
+                                        "mac_address": "02:18:68:64:36:99",
+                                        "network_interface_id": "eni-0f6cee489f895511d",
+                                        "owner_id": "962147768365",
+                                        "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                        "private_ip_address": "172.31.13.250",
+                                        "private_ip_addresses": [
+                                            {
+                                                "association": {
+                                                    "ip_owner_id": "962147768365",
+                                                    "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                                    "public_ip": "52.2.160.165"
+                                                },
+                                                "primary": true,
+                                                "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                                "private_ip_address": "172.31.13.250"
+                                            }
+                                        ],
+                                        "source_dest_check": true,
+                                        "status": "in-use",
+                                        "subnet_id": "subnet-0eec001516d14e70b",
+                                        "vpc_id": "vpc-0ae1d7baeaa323b44",
+                                        "interface_type": "interface"
+                                    }
+                                ],
+                                "root_device_name": "/dev/xvda",
+                                "root_device_type": "ebs",
+                                "security_groups": [
+                                    {
+                                        "group_name": "launch-wizard-1",
+                                        "group_id": "sg-095c5d0feaeade32f"
+                                    }
+                                ],
+                                "source_dest_check": true,
+                                "tags": {
+                                    "Name": "craig-f5",
+                                    "function": "f5firewall",
+                                    "project": "devsecops_demo"
+                                },
+                                "virtualization_type": "hvm",
+                                "cpu_options": {
+                                    "core_count": 2,
+                                    "threads_per_core": 2
+                                },
+                                "capacity_reservation_specification": {
+                                    "capacity_reservation_preference": "open"
+                                },
+                                "hibernation_options": {
+                                    "configured": false
+                                },
+                                "metadata_options": {
+                                    "state": "applied",
+                                    "http_tokens": "optional",
+                                    "http_put_response_hop_limit": 1,
+                                    "http_endpoint": "enabled",
+                                    "http_protocol_ipv6": "disabled",
+                                    "instance_metadata_tags": "disabled"
+                                },
+                                "enclave_options": {
+                                    "enabled": false
+                                },
+                                "platform_details": "Linux/UNIX",
+                                "usage_operation": "RunInstances",
+                                "usage_operation_update_time": "2022-03-16T00:01:48+00:00",
+                                "private_dns_name_options": {
+                                    "hostname_type": "ip-name",
+                                    "enable_resource_name_dns_a_record": true,
+                                    "enable_resource_name_dns_aaaa_record": false
+                                }
+                            }
+                        ],
+                        "invocation": {
+                            "module_args": {
+                                "region": "us-east-1",
+                                "filters": {
+                                    "tag:function": "f5firewall"
+                                },
+                                "debug_botocore_endpoint_logs": false,
+                                "validate_certs": true,
+                                "instance_ids": [],
+                                "ec2_url": null,
+                                "aws_access_key": null,
+                                "aws_secret_key": null,
+                                "security_token": null,
+                                "aws_ca_bundle": null,
+                                "profile": null,
+                                "aws_config": null,
+                                "minimum_uptime": null
+                            }
+                        },
+                        "_ansible_no_log": false,
+                        "changed": false
+                    },
+                    "start": "2022-03-25T13:37:10.624288",
+                    "end": "2022-03-25T13:37:13.593229",
+                    "duration": 2.968941,
+                    "event_loop": null
+                },
+                {
+                    "playbook": "/home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml",
+                    "playbook_uuid": "5aea9e6e-1fa2-404a-8327-3ee020598320",
+                    "play": "Create EC2 Security Group",
+                    "play_uuid": "3223c2c3-b7a4-aa77-88a7-00000000000a",
+                    "play_pattern": "all",
+                    "task": "Create Facts for F5 configuration",
+                    "task_uuid": "3223c2c3-b7a4-aa77-88a7-00000000000d",
+                    "task_action": "set_fact",
+                    "task_args": "",
+                    "task_path": "/home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml:19",
+                    "host": "controller-rhel",
+                    "uuid": "87f4a94b-4a65-4bc6-bfe5-ef1a048085d0",
+                    "__host": "controller-rhel",
+                    "__result": "OK",
+                    "__changed": false,
+                    "__duration": "0s",
+                    "__number": 1,
+                    "__task": "Create Facts for F5 configuration",
+                    "__task_action": "set_fact",
+                    "remote_addr": "controller-rhel",
+                    "res": {
+                        "results": [
+                            {
+                                "ansible_facts": {
+                                    "f5_private_ip": "172.31.13.250"
+                                },
+                                "_ansible_no_log": false,
+                                "failed": false,
+                                "changed": false,
+                                "item": {
+                                    "ami_launch_index": 0,
+                                    "image_id": "ami-0a33f66cb79f64069",
+                                    "instance_id": "i-0bcf7f0d7b76adcb0",
+                                    "instance_type": "m5.xlarge",
+                                    "key_name": "craig-f5-demo",
+                                    "launch_time": "2022-03-25T13:12:12+00:00",
+                                    "monitoring": {
+                                        "state": "disabled"
+                                    },
+                                    "placement": {
+                                        "availability_zone": "us-east-1a",
+                                        "group_name": "",
+                                        "tenancy": "default"
+                                    },
+                                    "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                    "private_ip_address": "172.31.13.250",
+                                    "product_codes": [
+                                        {
+                                            "product_code_id": "3ouya04g99e5euh4vbxtao1jz",
+                                            "product_code_type": "marketplace"
+                                        }
+                                    ],
+                                    "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                    "public_ip_address": "52.2.160.165",
+                                    "state": {
+                                        "code": 16,
+                                        "name": "running"
+                                    },
+                                    "state_transition_reason": "",
+                                    "subnet_id": "subnet-0eec001516d14e70b",
+                                    "vpc_id": "vpc-0ae1d7baeaa323b44",
+                                    "architecture": "x86_64",
+                                    "block_device_mappings": [
+                                        {
+                                            "device_name": "/dev/xvda",
+                                            "ebs": {
+                                                "attach_time": "2022-03-16T00:01:49+00:00",
+                                                "delete_on_termination": true,
+                                                "status": "attached",
+                                                "volume_id": "vol-0111def72870500da"
+                                            }
+                                        }
+                                    ],
+                                    "client_token": "47812d78-ccf5-47bb-b673-82ea516356c3",
+                                    "ebs_optimized": true,
+                                    "ena_support": true,
+                                    "hypervisor": "xen",
+                                    "network_interfaces": [
+                                        {
+                                            "association": {
+                                                "ip_owner_id": "962147768365",
+                                                "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                                "public_ip": "52.2.160.165"
+                                            },
+                                            "attachment": {
+                                                "attach_time": "2022-03-16T00:01:48+00:00",
+                                                "attachment_id": "eni-attach-046b998bd37f4fca7",
+                                                "delete_on_termination": false,
+                                                "device_index": 0,
+                                                "status": "attached",
+                                                "network_card_index": 0
+                                            },
+                                            "description": "Primary network interface",
+                                            "groups": [
+                                                {
+                                                    "group_name": "launch-wizard-1",
+                                                    "group_id": "sg-095c5d0feaeade32f"
+                                                }
+                                            ],
+                                            "ipv6_addresses": [],
+                                            "mac_address": "02:18:68:64:36:99",
+                                            "network_interface_id": "eni-0f6cee489f895511d",
+                                            "owner_id": "962147768365",
+                                            "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                            "private_ip_address": "172.31.13.250",
+                                            "private_ip_addresses": [
+                                                {
+                                                    "association": {
+                                                        "ip_owner_id": "962147768365",
+                                                        "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                                        "public_ip": "52.2.160.165"
+                                                    },
+                                                    "primary": true,
+                                                    "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                                    "private_ip_address": "172.31.13.250"
+                                                }
+                                            ],
+                                            "source_dest_check": true,
+                                            "status": "in-use",
+                                            "subnet_id": "subnet-0eec001516d14e70b",
+                                            "vpc_id": "vpc-0ae1d7baeaa323b44",
+                                            "interface_type": "interface"
+                                        }
+                                    ],
+                                    "root_device_name": "/dev/xvda",
+                                    "root_device_type": "ebs",
+                                    "security_groups": [
+                                        {
+                                            "group_name": "launch-wizard-1",
+                                            "group_id": "sg-095c5d0feaeade32f"
+                                        }
+                                    ],
+                                    "source_dest_check": true,
+                                    "tags": {
+                                        "Name": "craig-f5",
+                                        "function": "f5firewall",
+                                        "project": "devsecops_demo"
+                                    },
+                                    "virtualization_type": "hvm",
+                                    "cpu_options": {
+                                        "core_count": 2,
+                                        "threads_per_core": 2
+                                    },
+                                    "capacity_reservation_specification": {
+                                        "capacity_reservation_preference": "open"
+                                    },
+                                    "hibernation_options": {
+                                        "configured": false
+                                    },
+                                    "metadata_options": {
+                                        "state": "applied",
+                                        "http_tokens": "optional",
+                                        "http_put_response_hop_limit": 1,
+                                        "http_endpoint": "enabled",
+                                        "http_protocol_ipv6": "disabled",
+                                        "instance_metadata_tags": "disabled"
+                                    },
+                                    "enclave_options": {
+                                        "enabled": false
+                                    },
+                                    "platform_details": "Linux/UNIX",
+                                    "usage_operation": "RunInstances",
+                                    "usage_operation_update_time": "2022-03-16T00:01:48+00:00",
+                                    "private_dns_name_options": {
+                                        "hostname_type": "ip-name",
+                                        "enable_resource_name_dns_a_record": true,
+                                        "enable_resource_name_dns_aaaa_record": false
+                                    }
+                                },
+                                "ansible_loop_var": "item",
+                                "_ansible_item_label": {
+                                    "ami_launch_index": 0,
+                                    "image_id": "ami-0a33f66cb79f64069",
+                                    "instance_id": "i-0bcf7f0d7b76adcb0",
+                                    "instance_type": "m5.xlarge",
+                                    "key_name": "craig-f5-demo",
+                                    "launch_time": "2022-03-25T13:12:12+00:00",
+                                    "monitoring": {
+                                        "state": "disabled"
+                                    },
+                                    "placement": {
+                                        "availability_zone": "us-east-1a",
+                                        "group_name": "",
+                                        "tenancy": "default"
+                                    },
+                                    "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                    "private_ip_address": "172.31.13.250",
+                                    "product_codes": [
+                                        {
+                                            "product_code_id": "3ouya04g99e5euh4vbxtao1jz",
+                                            "product_code_type": "marketplace"
+                                        }
+                                    ],
+                                    "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                    "public_ip_address": "52.2.160.165",
+                                    "state": {
+                                        "code": 16,
+                                        "name": "running"
+                                    },
+                                    "state_transition_reason": "",
+                                    "subnet_id": "subnet-0eec001516d14e70b",
+                                    "vpc_id": "vpc-0ae1d7baeaa323b44",
+                                    "architecture": "x86_64",
+                                    "block_device_mappings": [
+                                        {
+                                            "device_name": "/dev/xvda",
+                                            "ebs": {
+                                                "attach_time": "2022-03-16T00:01:49+00:00",
+                                                "delete_on_termination": true,
+                                                "status": "attached",
+                                                "volume_id": "vol-0111def72870500da"
+                                            }
+                                        }
+                                    ],
+                                    "client_token": "47812d78-ccf5-47bb-b673-82ea516356c3",
+                                    "ebs_optimized": true,
+                                    "ena_support": true,
+                                    "hypervisor": "xen",
+                                    "network_interfaces": [
+                                        {
+                                            "association": {
+                                                "ip_owner_id": "962147768365",
+                                                "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                                "public_ip": "52.2.160.165"
+                                            },
+                                            "attachment": {
+                                                "attach_time": "2022-03-16T00:01:48+00:00",
+                                                "attachment_id": "eni-attach-046b998bd37f4fca7",
+                                                "delete_on_termination": false,
+                                                "device_index": 0,
+                                                "status": "attached",
+                                                "network_card_index": 0
+                                            },
+                                            "description": "Primary network interface",
+                                            "groups": [
+                                                {
+                                                    "group_name": "launch-wizard-1",
+                                                    "group_id": "sg-095c5d0feaeade32f"
+                                                }
+                                            ],
+                                            "ipv6_addresses": [],
+                                            "mac_address": "02:18:68:64:36:99",
+                                            "network_interface_id": "eni-0f6cee489f895511d",
+                                            "owner_id": "962147768365",
+                                            "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                            "private_ip_address": "172.31.13.250",
+                                            "private_ip_addresses": [
+                                                {
+                                                    "association": {
+                                                        "ip_owner_id": "962147768365",
+                                                        "public_dns_name": "ec2-52-2-160-165.compute-1.amazonaws.com",
+                                                        "public_ip": "52.2.160.165"
+                                                    },
+                                                    "primary": true,
+                                                    "private_dns_name": "ip-172-31-13-250.ec2.internal",
+                                                    "private_ip_address": "172.31.13.250"
+                                                }
+                                            ],
+                                            "source_dest_check": true,
+                                            "status": "in-use",
+                                            "subnet_id": "subnet-0eec001516d14e70b",
+                                            "vpc_id": "vpc-0ae1d7baeaa323b44",
+                                            "interface_type": "interface"
+                                        }
+                                    ],
+                                    "root_device_name": "/dev/xvda",
+                                    "root_device_type": "ebs",
+                                    "security_groups": [
+                                        {
+                                            "group_name": "launch-wizard-1",
+                                            "group_id": "sg-095c5d0feaeade32f"
+                                        }
+                                    ],
+                                    "source_dest_check": true,
+                                    "tags": {
+                                        "Name": "craig-f5",
+                                        "function": "f5firewall",
+                                        "project": "devsecops_demo"
+                                    },
+                                    "virtualization_type": "hvm",
+                                    "cpu_options": {
+                                        "core_count": 2,
+                                        "threads_per_core": 2
+                                    },
+                                    "capacity_reservation_specification": {
+                                        "capacity_reservation_preference": "open"
+                                    },
+                                    "hibernation_options": {
+                                        "configured": false
+                                    },
+                                    "metadata_options": {
+                                        "state": "applied",
+                                        "http_tokens": "optional",
+                                        "http_put_response_hop_limit": 1,
+                                        "http_endpoint": "enabled",
+                                        "http_protocol_ipv6": "disabled",
+                                        "instance_metadata_tags": "disabled"
+                                    },
+                                    "enclave_options": {
+                                        "enabled": false
+                                    },
+                                    "platform_details": "Linux/UNIX",
+                                    "usage_operation": "RunInstances",
+                                    "usage_operation_update_time": "2022-03-16T00:01:48+00:00",
+                                    "private_dns_name_options": {
+                                        "hostname_type": "ip-name",
+                                        "enable_resource_name_dns_a_record": true,
+                                        "enable_resource_name_dns_aaaa_record": false
+                                    }
+                                }
+                            }
+                        ],
+                        "msg": "All items completed",
+                        "changed": false
+                    },
+                    "start": "2022-03-25T13:37:13.603789",
+                    "end": "2022-03-25T13:37:13.630556",
+                    "duration": 0.026767,
+                    "event_loop": null
+                },
+                {
+                    "playbook": "/home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml",
+                    "playbook_uuid": "5aea9e6e-1fa2-404a-8327-3ee020598320",
+                    "play": "Create EC2 Security Group",
+                    "play_uuid": "3223c2c3-b7a4-aa77-88a7-00000000000a",
+                    "play_pattern": "all",
+                    "task": "Create security group",
+                    "task_uuid": "3223c2c3-b7a4-aa77-88a7-00000000000e",
+                    "task_action": "amazon.aws.ec2_group",
+                    "task_args": "",
+                    "task_path": "/home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml:28",
+                    "host": "controller-rhel",
+                    "uuid": "6eaeea28-a46d-44c9-add4-68d87a66dfa4",
+                    "__host": "controller-rhel",
+                    "__result": "OK",
+                    "__changed": true,
+                    "__duration": "6s",
+                    "__number": 2,
+                    "__task": "Create security group",
+                    "__task_action": "amazon.aws.ec2_group",
+                    "remote_addr": "controller-rhel",
+                    "res": {
+                        "changed": true,
+                        "description": "JuiceShop Security Group",
+                        "group_name": "sg_devsecops",
+                        "ip_permissions": [
+                            {
+                                "from_port": 22,
+                                "ip_protocol": "tcp",
+                                "ip_ranges": [
+                                    {
+                                        "cidr_ip": "0.0.0.0/0"
+                                    }
+                                ],
+                                "ipv6_ranges": [],
+                                "prefix_list_ids": [],
+                                "to_port": 22,
+                                "user_id_group_pairs": []
+                            },
+                            {
+                                "from_port": 3000,
+                                "ip_protocol": "tcp",
+                                "ip_ranges": [
+                                    {
+                                        "cidr_ip": "172.31.13.250/32"
+                                    }
+                                ],
+                                "ipv6_ranges": [],
+                                "prefix_list_ids": [],
+                                "to_port": 3000,
+                                "user_id_group_pairs": []
+                            }
+                        ],
+                        "owner_id": "962147768365",
+                        "group_id": "sg-0e34f2e01cd281166",
+                        "ip_permissions_egress": [
+                            {
+                                "ip_protocol": "-1",
+                                "ip_ranges": [
+                                    {
+                                        "cidr_ip": "0.0.0.0/0"
+                                    }
+                                ],
+                                "ipv6_ranges": [],
+                                "prefix_list_ids": [],
+                                "user_id_group_pairs": []
+                            }
+                        ],
+                        "vpc_id": "vpc-0ae1d7baeaa323b44",
+                        "tags": {},
+                        "invocation": {
+                            "module_args": {
+                                "name": "sg_devsecops",
+                                "vpc_id": "vpc-0ae1d7baeaa323b44",
+                                "description": "JuiceShop Security Group",
+                                "region": "us-east-1",
+                                "rules": [
+                                    {
+                                        "proto": "tcp",
+                                        "from_port": 22,
+                                        "to_port": 22,
+                                        "cidr_ip": "0.0.0.0/0"
+                                    },
+                                    {
+                                        "proto": "tcp",
+                                        "from_port": 3000,
+                                        "to_port": 3000,
+                                        "cidr_ip": "172.31.13.250/32"
+                                    }
+                                ],
+                                "debug_botocore_endpoint_logs": false,
+                                "validate_certs": true,
+                                "state": "present",
+                                "purge_rules": true,
+                                "purge_rules_egress": true,
+                                "purge_tags": true,
+                                "ec2_url": null,
+                                "aws_access_key": null,
+                                "aws_secret_key": null,
+                                "security_token": null,
+                                "aws_ca_bundle": null,
+                                "profile": null,
+                                "aws_config": null,
+                                "group_id": null,
+                                "rules_egress": null,
+                                "tags": null
+                            }
+                        },
+                        "_ansible_no_log": false
+                    },
+                    "start": "2022-03-25T13:37:13.639824",
+                    "end": "2022-03-25T13:37:20.520000",
+                    "duration": 6.880176,
+                    "event_loop": null
+                }
+            ]
+        }
+    ],
+    "stdout": [
+        "\u001b[0;34mansible-playbook [core 2.12.1]\u001b[0m",
+        "\u001b[0;34m  config file = /etc/ansible/ansible.cfg\u001b[0m",
+        "\u001b[0;34m  configured module search path = ['/home/runner/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']\u001b[0m",
+        "\u001b[0;34m  ansible python module location = /usr/lib/python3.8/site-packages/ansible\u001b[0m",
+        "\u001b[0;34m  ansible collection location = /home/runner/.ansible/collections:/usr/share/ansible/collections\u001b[0m",
+        "\u001b[0;34m  executable location = /usr/bin/ansible-playbook\u001b[0m",
+        "\u001b[0;34m  python version = 3.8.8 (default, Aug 11 2021, 06:52:42) [GCC 8.5.0 20210514 (Red Hat 8.5.0-3)]\u001b[0m",
+        "\u001b[0;34m  jinja version = 2.10.3\u001b[0m",
+        "\u001b[0;34m  libyaml = True\u001b[0m",
+        "\u001b[0;34mUsing /etc/ansible/ansible.cfg as config file\u001b[0m",
+        "\u001b[0;34mhost_list declined parsing /home/craig/demos/ansible/ans-tower-devsecops/local/inventory/devsecops as it did not pass its verify_file() method\u001b[0m",
+        "\u001b[0;34mscript declined parsing /home/craig/demos/ansible/ans-tower-devsecops/local/inventory/devsecops as it did not pass its verify_file() method\u001b[0m",
+        "\u001b[0;34mauto declined parsing /home/craig/demos/ansible/ans-tower-devsecops/local/inventory/devsecops as it did not pass its verify_file() method\u001b[0m",
+        "\u001b[0;34mParsed /home/craig/demos/ansible/ans-tower-devsecops/local/inventory/devsecops inventory source with ini plugin\u001b[0m",
+        "\u001b[0;34mSkipping callback 'awx_display', as we already have a stdout callback.\u001b[0m",
+        "\u001b[0;34mSkipping callback 'default', as we already have a stdout callback.\u001b[0m",
+        "\u001b[0;34mSkipping callback 'minimal', as we already have a stdout callback.\u001b[0m",
+        "\u001b[0;34mSkipping callback 'oneline', as we already have a stdout callback.\u001b[0m",
+        "",
+        "PLAYBOOK: ec2_sg_deploy.yml ****************************************************",
+        "\u001b[0;34m1 plays in /home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml\u001b[0m",
+        "",
+        "PLAY [Create EC2 Security Group] ***********************************************",
+        "\u001b[0;34mMETA: ran handlers\u001b[0m",
+        "",
+        "TASK [Gather EC2 facts] ********************************************************",
+        "\u001b[1;30mtask path: /home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml:10\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> ESTABLISH LOCAL CONNECTION FOR USER: root\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c 'echo ~root && sleep 0'\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c '( umask 77 && mkdir -p \"` echo /root/.ansible/tmp `\"&& mkdir \"` echo /root/.ansible/tmp/ansible-tmp-1648215430.6528356-25-270415547610946 `\" && echo ansible-tmp-1648215430.6528356-25-270415547610946=\"` echo /root/.ansible/tmp/ansible-tmp-1648215430.6528356-25-270415547610946 `\" ) && sleep 0'\u001b[0m",
+        "\u001b[0;34mUsing module file /usr/share/ansible/collections/ansible_collections/amazon/aws/plugins/modules/ec2_instance_info.py\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> PUT /home/runner/.ansible/tmp/ansible-local-20_5q02uhy/tmpbnxh8i_v TO /root/.ansible/tmp/ansible-tmp-1648215430.6528356-25-270415547610946/AnsiballZ_ec2_instance_info.py\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1648215430.6528356-25-270415547610946/ /root/.ansible/tmp/ansible-tmp-1648215430.6528356-25-270415547610946/AnsiballZ_ec2_instance_info.py && sleep 0'\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c '/bin/python3 /root/.ansible/tmp/ansible-tmp-1648215430.6528356-25-270415547610946/AnsiballZ_ec2_instance_info.py && sleep 0'\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1648215430.6528356-25-270415547610946/ > /dev/null 2>&1 && sleep 0'\u001b[0m",
+        "\u001b[0;32mok: [controller-rhel] => {\u001b[0m",
+        "\u001b[0;32m    \"changed\": false,\u001b[0m",
+        "\u001b[0;32m    \"instances\": [\u001b[0m",
+        "\u001b[0;32m        {\u001b[0m",
+        "\u001b[0;32m            \"ami_launch_index\": 0,\u001b[0m",
+        "\u001b[0;32m            \"architecture\": \"x86_64\",\u001b[0m",
+        "\u001b[0;32m            \"block_device_mappings\": [\u001b[0m",
+        "\u001b[0;32m                {\u001b[0m",
+        "\u001b[0;32m                    \"device_name\": \"/dev/xvda\",\u001b[0m",
+        "\u001b[0;32m                    \"ebs\": {\u001b[0m",
+        "\u001b[0;32m                        \"attach_time\": \"2022-03-16T00:01:49+00:00\",\u001b[0m",
+        "\u001b[0;32m                        \"delete_on_termination\": true,\u001b[0m",
+        "\u001b[0;32m                        \"status\": \"attached\",\u001b[0m",
+        "\u001b[0;32m                        \"volume_id\": \"vol-0111def72870500da\"\u001b[0m",
+        "\u001b[0;32m                    }\u001b[0m",
+        "\u001b[0;32m                }\u001b[0m",
+        "\u001b[0;32m            ],\u001b[0m",
+        "\u001b[0;32m            \"capacity_reservation_specification\": {\u001b[0m",
+        "\u001b[0;32m                \"capacity_reservation_preference\": \"open\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"client_token\": \"47812d78-ccf5-47bb-b673-82ea516356c3\",\u001b[0m",
+        "\u001b[0;32m            \"cpu_options\": {\u001b[0m",
+        "\u001b[0;32m                \"core_count\": 2,\u001b[0m",
+        "\u001b[0;32m                \"threads_per_core\": 2\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"ebs_optimized\": true,\u001b[0m",
+        "\u001b[0;32m            \"ena_support\": true,\u001b[0m",
+        "\u001b[0;32m            \"enclave_options\": {\u001b[0m",
+        "\u001b[0;32m                \"enabled\": false\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"hibernation_options\": {\u001b[0m",
+        "\u001b[0;32m                \"configured\": false\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"hypervisor\": \"xen\",\u001b[0m",
+        "\u001b[0;32m            \"image_id\": \"ami-0a33f66cb79f64069\",\u001b[0m",
+        "\u001b[0;32m            \"instance_id\": \"i-0bcf7f0d7b76adcb0\",\u001b[0m",
+        "\u001b[0;32m            \"instance_type\": \"m5.xlarge\",\u001b[0m",
+        "\u001b[0;32m            \"key_name\": \"craig-f5-demo\",\u001b[0m",
+        "\u001b[0;32m            \"launch_time\": \"2022-03-25T13:12:12+00:00\",\u001b[0m",
+        "\u001b[0;32m            \"metadata_options\": {\u001b[0m",
+        "\u001b[0;32m                \"http_endpoint\": \"enabled\",\u001b[0m",
+        "\u001b[0;32m                \"http_protocol_ipv6\": \"disabled\",\u001b[0m",
+        "\u001b[0;32m                \"http_put_response_hop_limit\": 1,\u001b[0m",
+        "\u001b[0;32m                \"http_tokens\": \"optional\",\u001b[0m",
+        "\u001b[0;32m                \"instance_metadata_tags\": \"disabled\",\u001b[0m",
+        "\u001b[0;32m                \"state\": \"applied\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"monitoring\": {\u001b[0m",
+        "\u001b[0;32m                \"state\": \"disabled\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"network_interfaces\": [\u001b[0m",
+        "\u001b[0;32m                {\u001b[0m",
+        "\u001b[0;32m                    \"association\": {\u001b[0m",
+        "\u001b[0;32m                        \"ip_owner_id\": \"962147768365\",\u001b[0m",
+        "\u001b[0;32m                        \"public_dns_name\": \"ec2-52-2-160-165.compute-1.amazonaws.com\",\u001b[0m",
+        "\u001b[0;32m                        \"public_ip\": \"52.2.160.165\"\u001b[0m",
+        "\u001b[0;32m                    },\u001b[0m",
+        "\u001b[0;32m                    \"attachment\": {\u001b[0m",
+        "\u001b[0;32m                        \"attach_time\": \"2022-03-16T00:01:48+00:00\",\u001b[0m",
+        "\u001b[0;32m                        \"attachment_id\": \"eni-attach-046b998bd37f4fca7\",\u001b[0m",
+        "\u001b[0;32m                        \"delete_on_termination\": false,\u001b[0m",
+        "\u001b[0;32m                        \"device_index\": 0,\u001b[0m",
+        "\u001b[0;32m                        \"network_card_index\": 0,\u001b[0m",
+        "\u001b[0;32m                        \"status\": \"attached\"\u001b[0m",
+        "\u001b[0;32m                    },\u001b[0m",
+        "\u001b[0;32m                    \"description\": \"Primary network interface\",\u001b[0m",
+        "\u001b[0;32m                    \"groups\": [\u001b[0m",
+        "\u001b[0;32m                        {\u001b[0m",
+        "\u001b[0;32m                            \"group_id\": \"sg-095c5d0feaeade32f\",\u001b[0m",
+        "\u001b[0;32m                            \"group_name\": \"launch-wizard-1\"\u001b[0m",
+        "\u001b[0;32m                        }\u001b[0m",
+        "\u001b[0;32m                    ],\u001b[0m",
+        "\u001b[0;32m                    \"interface_type\": \"interface\",\u001b[0m",
+        "\u001b[0;32m                    \"ipv6_addresses\": [],\u001b[0m",
+        "\u001b[0;32m                    \"mac_address\": \"02:18:68:64:36:99\",\u001b[0m",
+        "\u001b[0;32m                    \"network_interface_id\": \"eni-0f6cee489f895511d\",\u001b[0m",
+        "\u001b[0;32m                    \"owner_id\": \"962147768365\",\u001b[0m",
+        "\u001b[0;32m                    \"private_dns_name\": \"ip-172-31-13-250.ec2.internal\",\u001b[0m",
+        "\u001b[0;32m                    \"private_ip_address\": \"172.31.13.250\",\u001b[0m",
+        "\u001b[0;32m                    \"private_ip_addresses\": [\u001b[0m",
+        "\u001b[0;32m                        {\u001b[0m",
+        "\u001b[0;32m                            \"association\": {\u001b[0m",
+        "\u001b[0;32m                                \"ip_owner_id\": \"962147768365\",\u001b[0m",
+        "\u001b[0;32m                                \"public_dns_name\": \"ec2-52-2-160-165.compute-1.amazonaws.com\",\u001b[0m",
+        "\u001b[0;32m                                \"public_ip\": \"52.2.160.165\"\u001b[0m",
+        "\u001b[0;32m                            },\u001b[0m",
+        "\u001b[0;32m                            \"primary\": true,\u001b[0m",
+        "\u001b[0;32m                            \"private_dns_name\": \"ip-172-31-13-250.ec2.internal\",\u001b[0m",
+        "\u001b[0;32m                            \"private_ip_address\": \"172.31.13.250\"\u001b[0m",
+        "\u001b[0;32m                        }\u001b[0m",
+        "\u001b[0;32m                    ],\u001b[0m",
+        "\u001b[0;32m                    \"source_dest_check\": true,\u001b[0m",
+        "\u001b[0;32m                    \"status\": \"in-use\",\u001b[0m",
+        "\u001b[0;32m                    \"subnet_id\": \"subnet-0eec001516d14e70b\",\u001b[0m",
+        "\u001b[0;32m                    \"vpc_id\": \"vpc-0ae1d7baeaa323b44\"\u001b[0m",
+        "\u001b[0;32m                }\u001b[0m",
+        "\u001b[0;32m            ],\u001b[0m",
+        "\u001b[0;32m            \"placement\": {\u001b[0m",
+        "\u001b[0;32m                \"availability_zone\": \"us-east-1a\",\u001b[0m",
+        "\u001b[0;32m                \"group_name\": \"\",\u001b[0m",
+        "\u001b[0;32m                \"tenancy\": \"default\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"platform_details\": \"Linux/UNIX\",\u001b[0m",
+        "\u001b[0;32m            \"private_dns_name\": \"ip-172-31-13-250.ec2.internal\",\u001b[0m",
+        "\u001b[0;32m            \"private_dns_name_options\": {\u001b[0m",
+        "\u001b[0;32m                \"enable_resource_name_dns_a_record\": true,\u001b[0m",
+        "\u001b[0;32m                \"enable_resource_name_dns_aaaa_record\": false,\u001b[0m",
+        "\u001b[0;32m                \"hostname_type\": \"ip-name\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"private_ip_address\": \"172.31.13.250\",\u001b[0m",
+        "\u001b[0;32m            \"product_codes\": [\u001b[0m",
+        "\u001b[0;32m                {\u001b[0m",
+        "\u001b[0;32m                    \"product_code_id\": \"3ouya04g99e5euh4vbxtao1jz\",\u001b[0m",
+        "\u001b[0;32m                    \"product_code_type\": \"marketplace\"\u001b[0m",
+        "\u001b[0;32m                }\u001b[0m",
+        "\u001b[0;32m            ],\u001b[0m",
+        "\u001b[0;32m            \"public_dns_name\": \"ec2-52-2-160-165.compute-1.amazonaws.com\",\u001b[0m",
+        "\u001b[0;32m            \"public_ip_address\": \"52.2.160.165\",\u001b[0m",
+        "\u001b[0;32m            \"root_device_name\": \"/dev/xvda\",\u001b[0m",
+        "\u001b[0;32m            \"root_device_type\": \"ebs\",\u001b[0m",
+        "\u001b[0;32m            \"security_groups\": [\u001b[0m",
+        "\u001b[0;32m                {\u001b[0m",
+        "\u001b[0;32m                    \"group_id\": \"sg-095c5d0feaeade32f\",\u001b[0m",
+        "\u001b[0;32m                    \"group_name\": \"launch-wizard-1\"\u001b[0m",
+        "\u001b[0;32m                }\u001b[0m",
+        "\u001b[0;32m            ],\u001b[0m",
+        "\u001b[0;32m            \"source_dest_check\": true,\u001b[0m",
+        "\u001b[0;32m            \"state\": {\u001b[0m",
+        "\u001b[0;32m                \"code\": 16,\u001b[0m",
+        "\u001b[0;32m                \"name\": \"running\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"state_transition_reason\": \"\",\u001b[0m",
+        "\u001b[0;32m            \"subnet_id\": \"subnet-0eec001516d14e70b\",\u001b[0m",
+        "\u001b[0;32m            \"tags\": {\u001b[0m",
+        "\u001b[0;32m                \"Name\": \"craig-f5\",\u001b[0m",
+        "\u001b[0;32m                \"function\": \"f5firewall\",\u001b[0m",
+        "\u001b[0;32m                \"project\": \"devsecops_demo\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"usage_operation\": \"RunInstances\",\u001b[0m",
+        "\u001b[0;32m            \"usage_operation_update_time\": \"2022-03-16T00:01:48+00:00\",\u001b[0m",
+        "\u001b[0;32m            \"virtualization_type\": \"hvm\",\u001b[0m",
+        "\u001b[0;32m            \"vpc_id\": \"vpc-0ae1d7baeaa323b44\"\u001b[0m",
+        "\u001b[0;32m        }\u001b[0m",
+        "\u001b[0;32m    ],\u001b[0m",
+        "\u001b[0;32m    \"invocation\": {\u001b[0m",
+        "\u001b[0;32m        \"module_args\": {\u001b[0m",
+        "\u001b[0;32m            \"aws_access_key\": null,\u001b[0m",
+        "\u001b[0;32m            \"aws_ca_bundle\": null,\u001b[0m",
+        "\u001b[0;32m            \"aws_config\": null,\u001b[0m",
+        "\u001b[0;32m            \"aws_secret_key\": null,\u001b[0m",
+        "\u001b[0;32m            \"debug_botocore_endpoint_logs\": false,\u001b[0m",
+        "\u001b[0;32m            \"ec2_url\": null,\u001b[0m",
+        "\u001b[0;32m            \"filters\": {\u001b[0m",
+        "\u001b[0;32m                \"tag:function\": \"f5firewall\"\u001b[0m",
+        "\u001b[0;32m            },\u001b[0m",
+        "\u001b[0;32m            \"instance_ids\": [],\u001b[0m",
+        "\u001b[0;32m            \"minimum_uptime\": null,\u001b[0m",
+        "\u001b[0;32m            \"profile\": null,\u001b[0m",
+        "\u001b[0;32m            \"region\": \"us-east-1\",\u001b[0m",
+        "\u001b[0;32m            \"security_token\": null,\u001b[0m",
+        "\u001b[0;32m            \"validate_certs\": true\u001b[0m",
+        "\u001b[0;32m        }\u001b[0m",
+        "\u001b[0;32m    }\u001b[0m",
+        "\u001b[0;32m}\u001b[0m",
+        "",
+        "TASK [Create Facts for F5 configuration] ***************************************",
+        "\u001b[1;30mtask path: /home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml:19\u001b[0m",
+        "\u001b[0;32mok: [controller-rhel] => (item={'ami_launch_index': 0, 'image_id': 'ami-0a33f66cb79f64069', 'instance_id': 'i-0bcf7f0d7b76adcb0', 'instance_type': 'm5.xlarge', 'key_name': 'craig-f5-demo', 'launch_time': '2022-03-25T13:12:12+00:00', 'monitoring': {'state': 'disabled'}, 'placement': {'availability_zone': 'us-east-1a', 'group_name': '', 'tenancy': 'default'}, 'private_dns_name': 'ip-172-31-13-250.ec2.internal', 'private_ip_address': '172.31.13.250', 'product_codes': [{'product_code_id': '3ouya04g99e5euh4vbxtao1jz', 'product_code_type': 'marketplace'}], 'public_dns_name': 'ec2-52-2-160-165.compute-1.amazonaws.com', 'public_ip_address': '52.2.160.165', 'state': {'code': 16, 'name': 'running'}, 'state_transition_reason': '', 'subnet_id': 'subnet-0eec001516d14e70b', 'vpc_id': 'vpc-0ae1d7baeaa323b44', 'architecture': 'x86_64', 'block_device_mappings': [{'device_name': '/dev/xvda', 'ebs': {'attach_time': '2022-03-16T00:01:49+00:00', 'delete_on_termination': True, 'status': 'attached', 'volume_id': 'vol-0111def72870500da'}}], 'client_token': '47812d78-ccf5-47bb-b673-82ea516356c3', 'ebs_optimized': True, 'ena_support': True, 'hypervisor': 'xen', 'network_interfaces': [{'association': {'ip_owner_id': '962147768365', 'public_dns_name': 'ec2-52-2-160-165.compute-1.amazonaws.com', 'public_ip': '52.2.160.165'}, 'attachment': {'attach_time': '2022-03-16T00:01:48+00:00', 'attachment_id': 'eni-attach-046b998bd37f4fca7', 'delete_on_termination': False, 'device_index': 0, 'status': 'attached', 'network_card_index': 0}, 'description': 'Primary network interface', 'groups': [{'group_name': 'launch-wizard-1', 'group_id': 'sg-095c5d0feaeade32f'}], 'ipv6_addresses': [], 'mac_address': '02:18:68:64:36:99', 'network_interface_id': 'eni-0f6cee489f895511d', 'owner_id': '962147768365', 'private_dns_name': 'ip-172-31-13-250.ec2.internal', 'private_ip_address': '172.31.13.250', 'private_ip_addresses': [{'association': {'ip_owner_id': '962147768365', 'public_dns_name': 'ec2-52-2-160-165.compute-1.amazonaws.com', 'public_ip': '52.2.160.165'}, 'primary': True, 'private_dns_name': 'ip-172-31-13-250.ec2.internal', 'private_ip_address': '172.31.13.250'}], 'source_dest_check': True, 'status': 'in-use', 'subnet_id': 'subnet-0eec001516d14e70b', 'vpc_id': 'vpc-0ae1d7baeaa323b44', 'interface_type': 'interface'}], 'root_device_name': '/dev/xvda', 'root_device_type': 'ebs', 'security_groups': [{'group_name': 'launch-wizard-1', 'group_id': 'sg-095c5d0feaeade32f'}], 'source_dest_check': True, 'tags': {'Name': 'craig-f5', 'function': 'f5firewall', 'project': 'devsecops_demo'}, 'virtualization_type': 'hvm', 'cpu_options': {'core_count': 2, 'threads_per_core': 2}, 'capacity_reservation_specification': {'capacity_reservation_preference': 'open'}, 'hibernation_options': {'configured': False}, 'metadata_options': {'state': 'applied', 'http_tokens': 'optional', 'http_put_response_hop_limit': 1, 'http_endpoint': 'enabled', 'http_protocol_ipv6': 'disabled', 'instance_metadata_tags': 'disabled'}, 'enclave_options': {'enabled': False}, 'platform_details': 'Linux/UNIX', 'usage_operation': 'RunInstances', 'usage_operation_update_time': '2022-03-16T00:01:48+00:00', 'private_dns_name_options': {'hostname_type': 'ip-name', 'enable_resource_name_dns_a_record': True, 'enable_resource_name_dns_aaaa_record': False}}) => {\u001b[0m",
+        "\u001b[0;32m    \"ansible_facts\": {\u001b[0m",
+        "\u001b[0;32m        \"f5_private_ip\": \"172.31.13.250\"\u001b[0m",
+        "\u001b[0;32m    },\u001b[0m",
+        "\u001b[0;32m    \"ansible_loop_var\": \"item\",\u001b[0m",
+        "\u001b[0;32m    \"changed\": false,\u001b[0m",
+        "\u001b[0;32m    \"item\": {\u001b[0m",
+        "\u001b[0;32m        \"ami_launch_index\": 0,\u001b[0m",
+        "\u001b[0;32m        \"architecture\": \"x86_64\",\u001b[0m",
+        "\u001b[0;32m        \"block_device_mappings\": [\u001b[0m",
+        "\u001b[0;32m            {\u001b[0m",
+        "\u001b[0;32m                \"device_name\": \"/dev/xvda\",\u001b[0m",
+        "\u001b[0;32m                \"ebs\": {\u001b[0m",
+        "\u001b[0;32m                    \"attach_time\": \"2022-03-16T00:01:49+00:00\",\u001b[0m",
+        "\u001b[0;32m                    \"delete_on_termination\": true,\u001b[0m",
+        "\u001b[0;32m                    \"status\": \"attached\",\u001b[0m",
+        "\u001b[0;32m                    \"volume_id\": \"vol-0111def72870500da\"\u001b[0m",
+        "\u001b[0;32m                }\u001b[0m",
+        "\u001b[0;32m            }\u001b[0m",
+        "\u001b[0;32m        ],\u001b[0m",
+        "\u001b[0;32m        \"capacity_reservation_specification\": {\u001b[0m",
+        "\u001b[0;32m            \"capacity_reservation_preference\": \"open\"\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"client_token\": \"47812d78-ccf5-47bb-b673-82ea516356c3\",\u001b[0m",
+        "\u001b[0;32m        \"cpu_options\": {\u001b[0m",
+        "\u001b[0;32m            \"core_count\": 2,\u001b[0m",
+        "\u001b[0;32m            \"threads_per_core\": 2\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"ebs_optimized\": true,\u001b[0m",
+        "\u001b[0;32m        \"ena_support\": true,\u001b[0m",
+        "\u001b[0;32m        \"enclave_options\": {\u001b[0m",
+        "\u001b[0;32m            \"enabled\": false\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"hibernation_options\": {\u001b[0m",
+        "\u001b[0;32m            \"configured\": false\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"hypervisor\": \"xen\",\u001b[0m",
+        "\u001b[0;32m        \"image_id\": \"ami-0a33f66cb79f64069\",\u001b[0m",
+        "\u001b[0;32m        \"instance_id\": \"i-0bcf7f0d7b76adcb0\",\u001b[0m",
+        "\u001b[0;32m        \"instance_type\": \"m5.xlarge\",\u001b[0m",
+        "\u001b[0;32m        \"key_name\": \"craig-f5-demo\",\u001b[0m",
+        "\u001b[0;32m        \"launch_time\": \"2022-03-25T13:12:12+00:00\",\u001b[0m",
+        "\u001b[0;32m        \"metadata_options\": {\u001b[0m",
+        "\u001b[0;32m            \"http_endpoint\": \"enabled\",\u001b[0m",
+        "\u001b[0;32m            \"http_protocol_ipv6\": \"disabled\",\u001b[0m",
+        "\u001b[0;32m            \"http_put_response_hop_limit\": 1,\u001b[0m",
+        "\u001b[0;32m            \"http_tokens\": \"optional\",\u001b[0m",
+        "\u001b[0;32m            \"instance_metadata_tags\": \"disabled\",\u001b[0m",
+        "\u001b[0;32m            \"state\": \"applied\"\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"monitoring\": {\u001b[0m",
+        "\u001b[0;32m            \"state\": \"disabled\"\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"network_interfaces\": [\u001b[0m",
+        "\u001b[0;32m            {\u001b[0m",
+        "\u001b[0;32m                \"association\": {\u001b[0m",
+        "\u001b[0;32m                    \"ip_owner_id\": \"962147768365\",\u001b[0m",
+        "\u001b[0;32m                    \"public_dns_name\": \"ec2-52-2-160-165.compute-1.amazonaws.com\",\u001b[0m",
+        "\u001b[0;32m                    \"public_ip\": \"52.2.160.165\"\u001b[0m",
+        "\u001b[0;32m                },\u001b[0m",
+        "\u001b[0;32m                \"attachment\": {\u001b[0m",
+        "\u001b[0;32m                    \"attach_time\": \"2022-03-16T00:01:48+00:00\",\u001b[0m",
+        "\u001b[0;32m                    \"attachment_id\": \"eni-attach-046b998bd37f4fca7\",\u001b[0m",
+        "\u001b[0;32m                    \"delete_on_termination\": false,\u001b[0m",
+        "\u001b[0;32m                    \"device_index\": 0,\u001b[0m",
+        "\u001b[0;32m                    \"network_card_index\": 0,\u001b[0m",
+        "\u001b[0;32m                    \"status\": \"attached\"\u001b[0m",
+        "\u001b[0;32m                },\u001b[0m",
+        "\u001b[0;32m                \"description\": \"Primary network interface\",\u001b[0m",
+        "\u001b[0;32m                \"groups\": [\u001b[0m",
+        "\u001b[0;32m                    {\u001b[0m",
+        "\u001b[0;32m                        \"group_id\": \"sg-095c5d0feaeade32f\",\u001b[0m",
+        "\u001b[0;32m                        \"group_name\": \"launch-wizard-1\"\u001b[0m",
+        "\u001b[0;32m                    }\u001b[0m",
+        "\u001b[0;32m                ],\u001b[0m",
+        "\u001b[0;32m                \"interface_type\": \"interface\",\u001b[0m",
+        "\u001b[0;32m                \"ipv6_addresses\": [],\u001b[0m",
+        "\u001b[0;32m                \"mac_address\": \"02:18:68:64:36:99\",\u001b[0m",
+        "\u001b[0;32m                \"network_interface_id\": \"eni-0f6cee489f895511d\",\u001b[0m",
+        "\u001b[0;32m                \"owner_id\": \"962147768365\",\u001b[0m",
+        "\u001b[0;32m                \"private_dns_name\": \"ip-172-31-13-250.ec2.internal\",\u001b[0m",
+        "\u001b[0;32m                \"private_ip_address\": \"172.31.13.250\",\u001b[0m",
+        "\u001b[0;32m                \"private_ip_addresses\": [\u001b[0m",
+        "\u001b[0;32m                    {\u001b[0m",
+        "\u001b[0;32m                        \"association\": {\u001b[0m",
+        "\u001b[0;32m                            \"ip_owner_id\": \"962147768365\",\u001b[0m",
+        "\u001b[0;32m                            \"public_dns_name\": \"ec2-52-2-160-165.compute-1.amazonaws.com\",\u001b[0m",
+        "\u001b[0;32m                            \"public_ip\": \"52.2.160.165\"\u001b[0m",
+        "\u001b[0;32m                        },\u001b[0m",
+        "\u001b[0;32m                        \"primary\": true,\u001b[0m",
+        "\u001b[0;32m                        \"private_dns_name\": \"ip-172-31-13-250.ec2.internal\",\u001b[0m",
+        "\u001b[0;32m                        \"private_ip_address\": \"172.31.13.250\"\u001b[0m",
+        "\u001b[0;32m                    }\u001b[0m",
+        "\u001b[0;32m                ],\u001b[0m",
+        "\u001b[0;32m                \"source_dest_check\": true,\u001b[0m",
+        "\u001b[0;32m                \"status\": \"in-use\",\u001b[0m",
+        "\u001b[0;32m                \"subnet_id\": \"subnet-0eec001516d14e70b\",\u001b[0m",
+        "\u001b[0;32m                \"vpc_id\": \"vpc-0ae1d7baeaa323b44\"\u001b[0m",
+        "\u001b[0;32m            }\u001b[0m",
+        "\u001b[0;32m        ],\u001b[0m",
+        "\u001b[0;32m        \"placement\": {\u001b[0m",
+        "\u001b[0;32m            \"availability_zone\": \"us-east-1a\",\u001b[0m",
+        "\u001b[0;32m            \"group_name\": \"\",\u001b[0m",
+        "\u001b[0;32m            \"tenancy\": \"default\"\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"platform_details\": \"Linux/UNIX\",\u001b[0m",
+        "\u001b[0;32m        \"private_dns_name\": \"ip-172-31-13-250.ec2.internal\",\u001b[0m",
+        "\u001b[0;32m        \"private_dns_name_options\": {\u001b[0m",
+        "\u001b[0;32m            \"enable_resource_name_dns_a_record\": true,\u001b[0m",
+        "\u001b[0;32m            \"enable_resource_name_dns_aaaa_record\": false,\u001b[0m",
+        "\u001b[0;32m            \"hostname_type\": \"ip-name\"\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"private_ip_address\": \"172.31.13.250\",\u001b[0m",
+        "\u001b[0;32m        \"product_codes\": [\u001b[0m",
+        "\u001b[0;32m            {\u001b[0m",
+        "\u001b[0;32m                \"product_code_id\": \"3ouya04g99e5euh4vbxtao1jz\",\u001b[0m",
+        "\u001b[0;32m                \"product_code_type\": \"marketplace\"\u001b[0m",
+        "\u001b[0;32m            }\u001b[0m",
+        "\u001b[0;32m        ],\u001b[0m",
+        "\u001b[0;32m        \"public_dns_name\": \"ec2-52-2-160-165.compute-1.amazonaws.com\",\u001b[0m",
+        "\u001b[0;32m        \"public_ip_address\": \"52.2.160.165\",\u001b[0m",
+        "\u001b[0;32m        \"root_device_name\": \"/dev/xvda\",\u001b[0m",
+        "\u001b[0;32m        \"root_device_type\": \"ebs\",\u001b[0m",
+        "\u001b[0;32m        \"security_groups\": [\u001b[0m",
+        "\u001b[0;32m            {\u001b[0m",
+        "\u001b[0;32m                \"group_id\": \"sg-095c5d0feaeade32f\",\u001b[0m",
+        "\u001b[0;32m                \"group_name\": \"launch-wizard-1\"\u001b[0m",
+        "\u001b[0;32m            }\u001b[0m",
+        "\u001b[0;32m        ],\u001b[0m",
+        "\u001b[0;32m        \"source_dest_check\": true,\u001b[0m",
+        "\u001b[0;32m        \"state\": {\u001b[0m",
+        "\u001b[0;32m            \"code\": 16,\u001b[0m",
+        "\u001b[0;32m            \"name\": \"running\"\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"state_transition_reason\": \"\",\u001b[0m",
+        "\u001b[0;32m        \"subnet_id\": \"subnet-0eec001516d14e70b\",\u001b[0m",
+        "\u001b[0;32m        \"tags\": {\u001b[0m",
+        "\u001b[0;32m            \"Name\": \"craig-f5\",\u001b[0m",
+        "\u001b[0;32m            \"function\": \"f5firewall\",\u001b[0m",
+        "\u001b[0;32m            \"project\": \"devsecops_demo\"\u001b[0m",
+        "\u001b[0;32m        },\u001b[0m",
+        "\u001b[0;32m        \"usage_operation\": \"RunInstances\",\u001b[0m",
+        "\u001b[0;32m        \"usage_operation_update_time\": \"2022-03-16T00:01:48+00:00\",\u001b[0m",
+        "\u001b[0;32m        \"virtualization_type\": \"hvm\",\u001b[0m",
+        "\u001b[0;32m        \"vpc_id\": \"vpc-0ae1d7baeaa323b44\"\u001b[0m",
+        "\u001b[0;32m    }\u001b[0m",
+        "\u001b[0;32m}\u001b[0m",
+        "",
+        "TASK [Create security group] ***************************************************",
+        "\u001b[1;30mtask path: /home/craig/demos/ansible/ans-tower-devsecops/ec2_sg_deploy.yml:28\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> ESTABLISH LOCAL CONNECTION FOR USER: root\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c 'echo ~root && sleep 0'\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c '( umask 77 && mkdir -p \"` echo /root/.ansible/tmp `\"&& mkdir \"` echo /root/.ansible/tmp/ansible-tmp-1648215433.671622-44-222111934554914 `\" && echo ansible-tmp-1648215433.671622-44-222111934554914=\"` echo /root/.ansible/tmp/ansible-tmp-1648215433.671622-44-222111934554914 `\" ) && sleep 0'\u001b[0m",
+        "\u001b[0;34mUsing module file /usr/share/ansible/collections/ansible_collections/amazon/aws/plugins/modules/ec2_group.py\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> PUT /home/runner/.ansible/tmp/ansible-local-20_5q02uhy/tmpmx_u6vbm TO /root/.ansible/tmp/ansible-tmp-1648215433.671622-44-222111934554914/AnsiballZ_ec2_group.py\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1648215433.671622-44-222111934554914/ /root/.ansible/tmp/ansible-tmp-1648215433.671622-44-222111934554914/AnsiballZ_ec2_group.py && sleep 0'\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c '/bin/python3 /root/.ansible/tmp/ansible-tmp-1648215433.671622-44-222111934554914/AnsiballZ_ec2_group.py && sleep 0'\u001b[0m",
+        "\u001b[0;34m<192.168.20.40> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1648215433.671622-44-222111934554914/ > /dev/null 2>&1 && sleep 0'\u001b[0m",
+        "\u001b[0;33mchanged: [controller-rhel] => {\u001b[0m",
+        "\u001b[0;33m    \"changed\": true,\u001b[0m",
+        "\u001b[0;33m    \"description\": \"JuiceShop Security Group\",\u001b[0m",
+        "\u001b[0;33m    \"group_id\": \"sg-0e34f2e01cd281166\",\u001b[0m",
+        "\u001b[0;33m    \"group_name\": \"sg_devsecops\",\u001b[0m",
+        "\u001b[0;33m    \"invocation\": {\u001b[0m",
+        "\u001b[0;33m        \"module_args\": {\u001b[0m",
+        "\u001b[0;33m            \"aws_access_key\": null,\u001b[0m",
+        "\u001b[0;33m            \"aws_ca_bundle\": null,\u001b[0m",
+        "\u001b[0;33m            \"aws_config\": null,\u001b[0m",
+        "\u001b[0;33m            \"aws_secret_key\": null,\u001b[0m",
+        "\u001b[0;33m            \"debug_botocore_endpoint_logs\": false,\u001b[0m",
+        "\u001b[0;33m            \"description\": \"JuiceShop Security Group\",\u001b[0m",
+        "\u001b[0;33m            \"ec2_url\": null,\u001b[0m",
+        "\u001b[0;33m            \"group_id\": null,\u001b[0m",
+        "\u001b[0;33m            \"name\": \"sg_devsecops\",\u001b[0m",
+        "\u001b[0;33m            \"profile\": null,\u001b[0m",
+        "\u001b[0;33m            \"purge_rules\": true,\u001b[0m",
+        "\u001b[0;33m            \"purge_rules_egress\": true,\u001b[0m",
+        "\u001b[0;33m            \"purge_tags\": true,\u001b[0m",
+        "\u001b[0;33m            \"region\": \"us-east-1\",\u001b[0m",
+        "\u001b[0;33m            \"rules\": [\u001b[0m",
+        "\u001b[0;33m                {\u001b[0m",
+        "\u001b[0;33m                    \"cidr_ip\": \"0.0.0.0/0\",\u001b[0m",
+        "\u001b[0;33m                    \"from_port\": 22,\u001b[0m",
+        "\u001b[0;33m                    \"proto\": \"tcp\",\u001b[0m",
+        "\u001b[0;33m                    \"to_port\": 22\u001b[0m",
+        "\u001b[0;33m                },\u001b[0m",
+        "\u001b[0;33m                {\u001b[0m",
+        "\u001b[0;33m                    \"cidr_ip\": \"172.31.13.250/32\",\u001b[0m",
+        "\u001b[0;33m                    \"from_port\": 3000,\u001b[0m",
+        "\u001b[0;33m                    \"proto\": \"tcp\",\u001b[0m",
+        "\u001b[0;33m                    \"to_port\": 3000\u001b[0m",
+        "\u001b[0;33m                }\u001b[0m",
+        "\u001b[0;33m            ],\u001b[0m",
+        "\u001b[0;33m            \"rules_egress\": null,\u001b[0m",
+        "\u001b[0;33m            \"security_token\": null,\u001b[0m",
+        "\u001b[0;33m            \"state\": \"present\",\u001b[0m",
+        "\u001b[0;33m            \"tags\": null,\u001b[0m",
+        "\u001b[0;33m            \"validate_certs\": true,\u001b[0m",
+        "\u001b[0;33m            \"vpc_id\": \"vpc-0ae1d7baeaa323b44\"\u001b[0m",
+        "\u001b[0;33m        }\u001b[0m",
+        "\u001b[0;33m    },\u001b[0m",
+        "\u001b[0;33m    \"ip_permissions\": [\u001b[0m",
+        "\u001b[0;33m        {\u001b[0m",
+        "\u001b[0;33m            \"from_port\": 22,\u001b[0m",
+        "\u001b[0;33m            \"ip_protocol\": \"tcp\",\u001b[0m",
+        "\u001b[0;33m            \"ip_ranges\": [\u001b[0m",
+        "\u001b[0;33m                {\u001b[0m",
+        "\u001b[0;33m                    \"cidr_ip\": \"0.0.0.0/0\"\u001b[0m",
+        "\u001b[0;33m                }\u001b[0m",
+        "\u001b[0;33m            ],\u001b[0m",
+        "\u001b[0;33m            \"ipv6_ranges\": [],\u001b[0m",
+        "\u001b[0;33m            \"prefix_list_ids\": [],\u001b[0m",
+        "\u001b[0;33m            \"to_port\": 22,\u001b[0m",
+        "\u001b[0;33m            \"user_id_group_pairs\": []\u001b[0m",
+        "\u001b[0;33m        },\u001b[0m",
+        "\u001b[0;33m        {\u001b[0m",
+        "\u001b[0;33m            \"from_port\": 3000,\u001b[0m",
+        "\u001b[0;33m            \"ip_protocol\": \"tcp\",\u001b[0m",
+        "\u001b[0;33m            \"ip_ranges\": [\u001b[0m",
+        "\u001b[0;33m                {\u001b[0m",
+        "\u001b[0;33m                    \"cidr_ip\": \"172.31.13.250/32\"\u001b[0m",
+        "\u001b[0;33m                }\u001b[0m",
+        "\u001b[0;33m            ],\u001b[0m",
+        "\u001b[0;33m            \"ipv6_ranges\": [],\u001b[0m",
+        "\u001b[0;33m            \"prefix_list_ids\": [],\u001b[0m",
+        "\u001b[0;33m            \"to_port\": 3000,\u001b[0m",
+        "\u001b[0;33m            \"user_id_group_pairs\": []\u001b[0m",
+        "\u001b[0;33m        }\u001b[0m",
+        "\u001b[0;33m    ],\u001b[0m",
+        "\u001b[0;33m    \"ip_permissions_egress\": [\u001b[0m",
+        "\u001b[0;33m        {\u001b[0m",
+        "\u001b[0;33m            \"ip_protocol\": \"-1\",\u001b[0m",
+        "\u001b[0;33m            \"ip_ranges\": [\u001b[0m",
+        "\u001b[0;33m                {\u001b[0m",
+        "\u001b[0;33m                    \"cidr_ip\": \"0.0.0.0/0\"\u001b[0m",
+        "\u001b[0;33m                }\u001b[0m",
+        "\u001b[0;33m            ],\u001b[0m",
+        "\u001b[0;33m            \"ipv6_ranges\": [],\u001b[0m",
+        "\u001b[0;33m            \"prefix_list_ids\": [],\u001b[0m",
+        "\u001b[0;33m            \"user_id_group_pairs\": []\u001b[0m",
+        "\u001b[0;33m        }\u001b[0m",
+        "\u001b[0;33m    ],\u001b[0m",
+        "\u001b[0;33m    \"owner_id\": \"962147768365\",\u001b[0m",
+        "\u001b[0;33m    \"tags\": {},\u001b[0m",
+        "\u001b[0;33m    \"vpc_id\": \"vpc-0ae1d7baeaa323b44\"\u001b[0m",
+        "\u001b[0;33m}\u001b[0m",
+        "\u001b[0;34mMETA: ran handlers\u001b[0m",
+        "\u001b[0;34mMETA: ran handlers\u001b[0m",
+        "",
+        "PLAY RECAP *********************************************************************",
+        "\u001b[0;33mcontroller-rhel\u001b[0m            : \u001b[0;32mok=3   \u001b[0m \u001b[0;33mchanged=1   \u001b[0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   "
+    ],
+    "status": "successful",
+    "status_color": 10
+}
