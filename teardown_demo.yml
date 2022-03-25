@@ -1,0 +1,109 @@
+---
+- name: Terminate instances that were previously launched
+  hosts: all
+  connection: local
+  gather_facts: false
+  become: false
+
+  tasks:    
+  - name: Remove EC2 Web Servers
+    amazon.aws.ec2_instance:
+      state: "{{ ec2_webserver_teardown_state }}"
+      region: "{{ ec2_region }}"
+      filters:
+        "tag:function": "{{ ec2_webserver_tag }}"
+
+  - name: Stop Firewall
+    amazon.aws.ec2_instance:
+      state: "stopped"
+      region: "{{ ec2_region }}"
+      filters:
+        "tag:function": "{{ ec2_f5_tag }}"
+
+  - name: Remove {{ ec2_sg_name }} security group
+    amazon.aws.ec2_group:
+      name: "{{ ec2_sg_name }}"
+      region: "{{ ec2_region }}"
+      state: absent
+
+- name: F5 Virtual Server Remove
+  hosts: all
+  connection: local
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Gather ec2 facts
+      amazon.aws.ec2_instance_info:
+        region: "{{ ec2_region }}"
+        filters:
+          instance-state-name: ["running","shutting-down", "stopping", "stopped"]
+          "tag:project": "{{ ec2_project_tag }}"
+      register: ec2
+
+    - debug:
+        var: ec2
+        
+    - name: Create Facts for F5 configuration
+      set_fact:
+        f5_public_ip: "{{ item['public_ip_address'] }}"
+        f5_private_ip: "{{ item['private_ip_address'] }}"
+        cacheable: true
+      when: (item.tags.function == ec2_f5_tag)
+      loop: "{{ ec2.instances }}"
+
+
+    - name: Delete {{ f5_vs_name }} VS
+      f5firewall.f5_modules.bigip_virtual_server:
+        name: "{{ f5_vs_name }}"
+        state: absent
+        provider:
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
+          server_port: 8443
+          validate_certs:  "{{ f5_validate_certs }}"
+          transport: rest
+
+    - name: Delete Pool Members
+      f5firewall.f5_modules.bigip_pool_member:
+        pool: "{{ f5_pool_name }}"
+        port: 80
+        host: "{{ item['private_ip_address'] }}"
+        preserve_node: yes
+        state: absent
+        provider:
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
+          server_port: 8443
+          validate_certs: "{{ f5_validate_certs }}"
+          transport: rest
+      when: (item.tags.function == ec2_webserver_tag)
+      loop: "{{ ec2.instances }}"
+
+    - name: Delete {{ f5_pool_name }} pool
+      f5firewall.f5_modules.bigip_pool:
+        name: "{{ f5_pool_name }}"
+        state: absent
+        provider:
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
+          server_port: 8443
+          validate_certs: "{{ f5_validate_certs }}"
+          transport: rest
+
+    - name: Delete F5 nodes
+      bigip_node:
+        name: "{{ item['private_ip_address'] }}"
+        state: absent
+        provider:
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          server: "{{ f5_public_ip }}"
+          server_port: 8443
+          validate_certs: "{{ f5_validate_certs }}"
+          transport: rest
+      when: (item.tags.function == ec2_webserver_tag)
+      loop: "{{ ec2.instances }}"

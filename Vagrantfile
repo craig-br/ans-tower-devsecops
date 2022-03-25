@@ -10,27 +10,32 @@ Vagrant.configure("2") do |config|
   config.hostmanager.manage_guest = true
   config.hostmanager.include_offline = true
 
-  # Define tower-rhel node
-  config.vm.define "tower-rhel" do |tower_rhel|
-    tower_rhel.vm.box = "generic/rhel8"
-    tower_rhel.vm.network "private_network", ip: "192.168.20.40", nic_type: "virtio"
-    tower_rhel.vm.network "forwarded_port", guest: 443, host: 4443
-    tower_rhel.vm.hostname = "tower-rhel.vagrant.local"
-    tower_rhel.vm.synced_folder ".", "/vagrant", disabled: true
-    # Tower Node VirtualBox Customisations
-    tower_rhel.vm.provider "virtualbox" do |v|
+  # Define controller-rhel node
+  config.vm.define "controller-rhel" do |controller_rhel|
+    controller_rhel.vm.box = "generic/rhel8"
+    controller_rhel.vm.network "private_network", ip: "192.168.20.40", nic_type: "virtio"
+    controller_rhel.vm.network "forwarded_port", guest: 443, host: 4443
+    controller_rhel.vm.hostname = "controller-rhel.vagrant.local"
+    controller_rhel.vm.synced_folder ".", "/vagrant", disabled: true
+    # controller Node VirtualBox Customisations
+    controller_rhel.vm.provider "virtualbox" do |v|
       v.memory = 5120
       v.cpus = 2
       v.customize ["modifyvm", :id, "--ioapic", "on"]
-      v.name = "tower-rhel"
+      v.name = "controller-rhel"
     end
-    # Tower Node Ansible
-    tower_rhel.vm.provision "ansible" do |ansible|
-      ansible.playbook = "./provisioning/tower_bootstrap.yml"
+    # Controller Node Ansible
+    controller_rhel.vm.provision "ansible" do |ansible|
+      ansible.playbook = "./provisioning/controller_bootstrap.yml"
       ansible.groups = {
         "ciservers" => ["jenkins"],
-        "adminservers" => ["tower-rhel"],
+        "adminservers" => ["controller-rhel","controller-rhel.vagrant.local"],
         "qcservers" => ["sonar"]
+      }
+      ansible.host_vars = {
+        "controller-rhel" => {"ansible_host" => "192.168.20.40",
+                              "ansible_port" => 22,
+                              "ansible_python_interpreter" => "/bin/python3" }
       }
     end
   end
