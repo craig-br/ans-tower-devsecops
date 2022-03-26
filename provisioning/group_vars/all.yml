@@ -7,7 +7,18 @@ rhsm_pool_ids: "{{ lookup('env', 'RHSM_POOL_IDS') | default( 'your rhsm pool ids
 rhsm_repos:
   - rhel-8-for-x86_64-baseos-rpms
   - rhel-8-for-x86_64-appstream-rpms
-  # - ansible-2.9-for-rhel-8-x86_64-rpms
+  - ansible-automation-platform-2.1-for-rhel-8-x86_64-rpms
+
 ## SSH Key Vars
 demo_ssh_key_file: "{{ lookup('file', lookup('env', 'DEMO_SSH_KEY_FILE')) | default( 'Your demo pub key', true ) }}"
 demo_ssh_key_username: "{{ lookup('env', 'DEMO_SSH_KEY_USERNAME') | default( 'vagrant', true ) }}"
+
+#Controller
+registry_username:  "{{ lookup('env', 'REGISTRY_USERNAME') or registry_username }}"
+registry_password:  "{{ lookup('env', 'REGISTRY_PASSWORD') or registry_password }}"
+aap_dir: "/home/{{ ansible_user }}/aap_install"
+username: "{{ ansible_user }}"
+ansible_user: "vagrant"
+ansible_host_key_checking: false
+ansible_python_interpreter: "/usr/bin/python3"
+admin_password: "{{ lookup('env', 'ADMIN_PASSWORD') | default('admin') }}"

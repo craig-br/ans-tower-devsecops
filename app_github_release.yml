@@ -12,7 +12,7 @@
           Authorization: "token {{ gh_password }}"
         body_format: json
         body:
-          '{"target_commitish": "{{ target_commitish | default("master") }}",  "name": "JuiceShop Demo {{ pkg_version }}", "draft": false, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
+          '{"target_commitish": "{{ target_commitish | default("master") }}",  "name": "JuiceShop Demo {{ tag_name }}", "draft": false, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
         status_code: 201
       register: release_output
       until: release_output.json.errors is not defined

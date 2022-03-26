@@ -1,8 +1,9 @@
 ---
-- name: Prepare for deployment
+- name: Setup provsioner
   hosts: localhost
+  connection: local
   become: false
-  gather_facts: false 
+  gather_facts: false
 
   tasks:
     - name: Install collections
@@ -10,7 +11,6 @@
         ansible-galaxy collection install {{ item }}
       loop: 
       - ansible.workshops
-      - awx.awx
       tags:
         - env-setup
 
@@ -18,24 +18,12 @@
       ansible.builtin.include_role:
         name: ansible.workshops.aap_download
       tags:
-        - env-setup
+          - env-setup
 
-- name: Install controller
+- name: Configure Controller
   hosts: adminservers
-  become: true
-  gather_facts: true
-  vars:
-    aap_dir: "/home/{{ ansible_user }}/aap_install"
-    username: "{{ ansible_user }}"
-    ansible_user: "vagrant"
-    # ansible_ssh_user: "rhel"
-    # ansible_ssh_pass: "ansible123!"
-    # ansible_sudo_pass: "ansible123!"
-    ansible_host_key_checking: false
-    ansible_python_interpreter: "/usr/bin/python3"
-    controller_install_command: "ANSIBLE_HOST_KEY_CHECKING=False  ./setup.sh -e create_preload_data=False -e required_ram=0 -e registry_username='{{ registry_username }}' -e registry_password='{{ registry_password }}'"
-    # controller_install_command: "ANSIBLE_BECOME_METHOD='sudo'  ANSIBLE_BECOME=True ANSIBLE_PRIVATE_KEY_FILE='/home/rhel/.ssh/instruqt_lab' ANSIBLE_HOST_KEY_CHECKING=False  ./setup.sh -e required_ram=0 -e registry_username='{{ registry_username }}' -e registry_password='{{ registry_password }}'"
-    admin_password: 'admin'
+  become: false
+  gather_facts: false
 
   tasks:
     - name: setup aap directory
@@ -56,7 +44,17 @@
             - install-controller
       tags:
           - install-controller
-  
+
+    - name: install controller packages
+      ansible.builtin.package:
+        name:
+          - "@python38"
+          - automation-controller-cli
+          -  ansible-core
+      become: true
+      tags:
+      - install-controller
+
     - name: template controller inventory
       template:
         src: "controller_install.j2"
@@ -126,12 +124,6 @@
       tags:
       - install-controller
 
-- name: Configure Controller
-  hosts: localhost
-  become: false
-  gather_facts: false
-
-  tasks:
     - name: Create auth token
       awx.awx.token:
         description: "Controller auth token"
@@ -278,7 +270,7 @@
       ansible.builtin.slurp:
         src: "{{ aws_pvt_key }}"
       register: __aws_ssh_key
-      no_log: true
+      # no_log: true
       tags:
         - configure-controller
         - controller-credentials
