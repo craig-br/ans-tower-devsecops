@@ -1,22 +1,106 @@
 ---
-- name: Push Build to GitHub
+- name: Create new GitHUb release
   hosts: all
   gather_facts: false
 
   tasks:
-    - name: Create new JuiceShop Release
-      uri:
-        url: "https://api.github.com/repos/{{ gh_user }}/juice-shop/releases"
-        method: POST
-        headers:
-          Authorization: "token {{ gh_password }}"
-        body_format: json
-        body:
-          '{"target_commitish": "{{ target_commitish | default("master") }}",  "name": "JuiceShop Demo {{ tag_name }}", "draft": false, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
-        status_code: 201
-      register: release_output
-      until: release_output.json.errors is not defined
-      retries: 60
-      delay: 3
-      tags:
-        - create-release
+
+                        #   sh """
+                        #     git config --replace-all user.name ${env.GITHUB_USERNAME}
+                        #     git config --replace-all user.email ${env.GITHUB_USERNAME}
+                        #     git config credential.helper store
+                        #     echo https://${env.GITHUB_USERNAME}:${env.GITHUB_TOKEN}@github.com >> \$HOME/.git-credentials
+                        # """
+                        
+                        # // Bump the package version.
+                        # sh """
+                        #     git checkout master --force
+                        #     git tag ${newPkgVersion}
+                        #     npm --no-git-tag-version version ${newPkgVersion}
+                        #     git add .
+                        #     git commit -m ${newPkgVersion}
+                        #     git push origin master --force
+                        #     git push https://github.com/craig-br/juice-shop.git ${newPkgVersion}
+                        # """
+    - name: create repo dir
+      ansible.builtin.tempfile:
+        prefix: juiceshop_repo
+        state: directory
+      register: __juiceshop_tempdir
+
+    - name: Temp dir path
+      ansible.builtin.debug:
+        var: __juiceshop_tempdir.path
+
+    - name: Download JuiceShop source code
+      ansible.builtin.git:
+        repo: https://github.com/craig-br/juice-shop.git
+        dest: "{{ __juiceshop_tempdir.path }}/juice-shop"
+
+    - name: Configure GitHub repo email
+      community.general.git_config:
+        name: user.email
+        value: "{{ gh_user }}"
+        repo: "{{ __juiceshop_tempdir.path }}/juice-shop"
+
+    - name: Configure GitHub repo user
+      community.general.git_config:
+        name: user.name
+        value: "{{ gh_user }}"
+        repo: "{{ __juiceshop_tempdir.path }}/juice-shop"
+
+    - name: Configure GitHub credential store
+      community.general.git_config:
+        name: credential.helper
+        value: store
+        repo: "{{ __juiceshop_tempdir.path }}/juice-shop"
+
+    - name: Add repo name to store
+      ansible.builtin.command: >
+        echo https://{{ gh_user }}:{{ gh_password }}@github.com > \$HOME/.git-credentials
+      args:
+        chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
+      no_log: true
+
+    - name: Get latest JuiceShop tag
+      ansible.builtin.shell: >
+        git tag --list "*10.8.*" | sort --version-sort --reverse | head -n1 | cut -d "-" -f1
+      args:
+        chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
+      register: __latest_tag
+
+    - name: chec npm exists
+      ansible.builtin.shell: >
+        /bin/npm --version
+      args:
+        chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
+
+    # - debug:
+    #     var: __latest_tag
+      
+
+    #     git config --replace-all user.email {{ gh_password }} &&
+    #     git config credential.helper store &&
+    #     echo https://{{ gh_user }}:{{ gh_password }}@github.com >> \$HOME/.git-credentials
+    # - name: Get latest git tags
+    #   ansible.builtin.command: >
+    #     git config --replace-all user.name {{ gh_user }}
+    #   args:
+    #     chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
+
+    # - name: Create new JuiceShop Release
+    #   uri:
+    #     url: "https://api.github.com/repos/{{ gh_user }}/juice-shop/releases"
+    #     method: POST
+    #     headers:
+    #       Authorization: "token {{ gh_password }}"
+    #     body_format: json
+    #     body:
+    #       '{"target_commitish": "{{ target_commitish | default("master") }}",  "name": "JuiceShop Demo {{ tag_name }}", "draft": false, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
+    #     status_code: 201
+    #   register: release_output
+    #   until: release_output.json.errors is not defined
+    #   retries: 60
+    #   delay: 3
+    #   tags:
+    #     - create-release
