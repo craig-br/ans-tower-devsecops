@@ -36,6 +36,7 @@
       ansible.builtin.git:
         repo: https://github.com/craig-br/juice-shop.git
         dest: "{{ __juiceshop_tempdir.path }}/juice-shop"
+        version: develop
 
     - name: Configure GitHub repo email
       community.general.git_config:
@@ -62,45 +63,58 @@
         chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
       no_log: true
 
-    - name: Get latest JuiceShop tag
-      ansible.builtin.shell: >
-        git tag --list "*10.8.*" | sort --version-sort --reverse | head -n1 | cut -d "-" -f1
-      args:
-        chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
-      register: __latest_tag
-
-    - name: chec npm exists
-      ansible.builtin.shell: >
-        /bin/npm --version
-      args:
-        chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
-
-    # - debug:
-    #     var: __latest_tag
-      
-
-    #     git config --replace-all user.email {{ gh_password }} &&
-    #     git config credential.helper store &&
-    #     echo https://{{ gh_user }}:{{ gh_password }}@github.com >> \$HOME/.git-credentials
-    # - name: Get latest git tags
-    #   ansible.builtin.command: >
-    #     git config --replace-all user.name {{ gh_user }}
+    # - name: Get latest JuiceShop tag
+    #   ansible.builtin.shell: >
+    #     git tag --list "*10.8.*" | sort --version-sort --reverse | head -n1 | cut -d "-" -f1
     #   args:
     #     chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
+    #   register: __latest_tag
 
-    # - name: Create new JuiceShop Release
-    #   uri:
-    #     url: "https://api.github.com/repos/{{ gh_user }}/juice-shop/releases"
-    #     method: POST
-    #     headers:
-    #       Authorization: "token {{ gh_password }}"
-    #     body_format: json
-    #     body:
-    #       '{"target_commitish": "{{ target_commitish | default("master") }}",  "name": "JuiceShop Demo {{ tag_name }}", "draft": false, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
-    #     status_code: 201
-    #   register: release_output
-    #   until: release_output.json.errors is not defined
-    #   retries: 60
-    #   delay: 3
+    - name: create new tag
+      ansible.builtin.command: "{{ item }}"
+      args:
+        chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
+      loop:
+        - git tag --force {{ tag_name }}
+        - npm version --no-git-tag-version --new-version {{ tag_name }}
+        - git add .
+        - git commit -m " JuiceShop {{ tag_name }}"
+        - git push https://{{ gh_user }}:{{ gh_password }}@github.com/craig-br/juice-shop.git {{ tag_name }}
+
+
+    # - name: Create new release
+    #   community.general.github_release:
+    #     user: "{{ gh_user }}"
+    #     token: "{{ gh_password }}"
+    #     repo: https://github.com/craig-br/juice-shop.git
+    #     action: create_release
+    #     tag: "{{ tag_name }}"
+    #     target: "{{ tag_name }}"
+    #     name: "JuiceShop Release {{ tag_name }}"
+    #   # args:
+    #   #   chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
     #   tags:
-    #     - create-release
+    #     - release
+    - name: Create new JuiceShop Release
+      uri:
+        url: "https://api.github.com/repos/{{ gh_user }}/juice-shop/releases"
+        method: POST
+        headers:
+          Authorization: "token {{ gh_password }}"
+        body_format: json
+        body:
+          # '{"target_commitish": "{{ tag_name }}",  "name": "JuiceShop Demo {{ tag_name }}", "draft": false, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
+          '{"target_commitish": "{{ target_commitish | default("master") }}",  "name": "JuiceShop Demo {{ tag_name }}", "draft": false, "prerelease": {{ prerelease | default(false) }}, "accept": "application/vnd.github.v3+json", "tag_name": "{{ tag_name }}"}'
+        status_code: 201
+      register: release_output
+      until: release_output.json.errors is not defined
+      retries: 60
+      delay: 3
+      tags:
+        - create-release
+    - name: remove temp dir
+      ansible.builtin.file:
+        state: absent
+        path: "{{ __juiceshop_tempdir.path }}/juice-shop"
+    #     chdir: "{{ __juiceshop_tempdir.path }}/juice-shop"
+
