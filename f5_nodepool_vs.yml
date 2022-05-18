@@ -22,8 +22,6 @@
     when: (item.tags.function == ec2_f5_tag)
     loop: "{{ ec2.instances }}"
   
-  # - debug:
-  #     var: f5_private_ip
   - name: Create {{ f5_pool_name }} Pool
     f5networks.f5_modules.bigip_pool:
       name: "{{ f5_pool_name }}"

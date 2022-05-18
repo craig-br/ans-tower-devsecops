@@ -8,7 +8,7 @@
       url: "https://juiceshop.demoredhat.com:8080/job/{{ 'JuiceShop App Team' | urlencode }}/build/api/json"
       method: POST
       user: admin
-      password: "{{ jenkins_token  }}"
+      password: "{{ jenkins_token }}"
       validate_certs: false
       force_basic_auth: true
       status_code: 201
@@ -29,7 +29,4 @@
     failed_when: __jenkins_job_status.json.result != "SUCCESS"
     retries: 40
     delay: 10
-
-  # - debug:
-  #     var: __jenkins_job_status.building
   

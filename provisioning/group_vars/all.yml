@@ -11,7 +11,7 @@ rhsm_repos:
 
 ## SSH Key Vars
 demo_ssh_key_file: "{{ lookup('file', lookup('env', 'DEMO_SSH_KEY_FILE')) | default( 'Your demo pub key', true ) }}"
-demo_ssh_key_username: "{{ lookup('env', 'DEMO_SSH_KEY_USERNAME') | default( 'vagrant', true ) }}"
+demo_ssh_key_username: "{{ lookup('env', 'DEMO_SSH_KEY_USERNAME') | default( 'ec2-user', true ) }}"
 
 #Controller
 registry_username:  "{{ lookup('env', 'REGISTRY_USERNAME') or registry_username }}"

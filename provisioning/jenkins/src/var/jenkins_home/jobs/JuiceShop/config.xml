@@ -82,12 +82,12 @@ pipeline {
                         
                         // Bump the package version.
                         sh &quot;&quot;&quot;
+                            git checkout master --force
                             git tag ${newPkgVersion}
                             npm --no-git-tag-version version ${newPkgVersion}
-                            git checkout master
                             git add .
                             git commit -m ${newPkgVersion}
-                            git push origin master
+                            git push origin master --force
                             git push https://github.com/craig-br/juice-shop.git ${newPkgVersion}
                         &quot;&quot;&quot;
                         //sleep 2 // Give GitHub a moment to realize the tag exists

@@ -19,5 +19,6 @@
       ansible.posix.authorized_key:
         user: "{{ demo_ssh_key_username }}"
         state: present
-        key: "{{ demo_ssh_key_file }}"
+        key: "{{ lookup('file', demo_ssh_key_file) }}"
+        # key: "{{ demo_ssh_key_file }}"
       # no_log: true

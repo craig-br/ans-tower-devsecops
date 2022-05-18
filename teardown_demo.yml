@@ -1,31 +1,4 @@
 ---
-- name: Terminate instances that were previously launched
-  hosts: all
-  connection: local
-  gather_facts: false
-  become: false
-
-  tasks:    
-  - name: Remove EC2 Web Servers
-    amazon.aws.ec2_instance:
-      state: "{{ ec2_webserver_teardown_state }}"
-      region: "{{ ec2_region }}"
-      filters:
-        "tag:function": "{{ ec2_webserver_tag }}"
-
-  - name: Stop Firewall
-    amazon.aws.ec2_instance:
-      state: "stopped"
-      region: "{{ ec2_region }}"
-      filters:
-        "tag:function": "{{ ec2_f5_tag }}"
-
-  - name: Remove {{ ec2_sg_name }} security group
-    amazon.aws.ec2_group:
-      name: "{{ ec2_sg_name }}"
-      region: "{{ ec2_region }}"
-      state: absent
-
 - name: F5 Virtual Server Remove
   hosts: all
   connection: local
@@ -39,10 +12,9 @@
         filters:
           instance-state-name: ["running","shutting-down", "stopping", "stopped"]
           "tag:project": "{{ ec2_project_tag }}"
+      tags:
+        - ec2-facts
       register: ec2
-
-    - debug:
-        var: ec2
         
     - name: Create Facts for F5 configuration
       set_fact:
@@ -94,9 +66,17 @@
           validate_certs: "{{ f5_validate_certs }}"
           transport: rest
 
+    - name: debug ec2
+      debug:
+        var: item.private_ip_address
+      when: (item.tags.function == ec2_webserver_tag)
+      loop: "{{ ec2.instances }}"
+      tags:
+        - debug
+        
     - name: Delete F5 nodes
-      bigip_node:
-        name: "{{ item['private_ip_address'] }}"
+      f5networks.f5_modules.bigip_node:
+        name: "{{ item.private_ip_address }}"
         state: absent
         provider:
           user: "{{ f5_user }}"
@@ -107,3 +87,31 @@
           transport: rest
       when: (item.tags.function == ec2_webserver_tag)
       loop: "{{ ec2.instances }}"
+
+    - name: Stop Firewall
+      amazon.aws.ec2_instance:
+        state: "stopped"
+        region: "{{ ec2_region }}"
+        filters:
+          "tag:function": "{{ ec2_f5_tag }}"
+      tags:
+        - stop-firewall
+
+- name: Terminate instances that were previously launched
+  hosts: all
+  connection: local
+  gather_facts: false
+  become: false
+
+  tasks:    
+    - name: Remove EC2 Web Servers
+      amazon.aws.ec2_instance:
+        state: "{{ ec2_webserver_teardown_state }}"
+        region: "{{ ec2_region }}"
+        filters:
+          "tag:function": "{{ ec2_webserver_tag }}"
+    - name: Remove {{ ec2_sg_name }} security group
+      amazon.aws.ec2_group:
+        name: "{{ ec2_sg_name }}"
+        region: "{{ ec2_region }}"
+        state: absent

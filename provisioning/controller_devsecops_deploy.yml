@@ -1,5 +1,5 @@
 ---
-- name: Setup provsioner
+- name: Local config
   hosts: localhost
   connection: local
   become: false
@@ -22,7 +22,7 @@
 
 - name: Configure Controller
   hosts: adminservers
-  become: false
+  become: true
   gather_facts: false
 
   tasks:
@@ -48,15 +48,21 @@
     - name: install controller packages
       ansible.builtin.package:
         name:
-          - "@python38"
           - automation-controller-cli
-          -  ansible-core
-      become: true
+          - ansible-core
+          - "@php:7.4"
+          - subscription-manager-rhsm-certificates
+          - "@postgresql:12"
+          - python38
+          - jq
+          - git
+          - svn
+          - python3-setuptools
       tags:
       - install-controller
 
     - name: template controller inventory
-      template:
+      ansible.builtin.template:
         src: "controller_install.j2"
         dest: "{{ aap_dir }}/inventory"
       tags:
@@ -124,6 +130,26 @@
       tags:
       - install-controller
 
+    - name: Update appstream to python38
+      command: >
+        /usr/sbin/alternatives --set python3 /usr/bin/python3.8
+      tags:
+        - install-controller
+
+    - name: Install controller python dependencies
+      ansible.builtin.pip:
+        name:
+          - jmespath
+      tags:
+        - install-controller
+
+- name: Configure Controller
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
     - name: Create auth token
       awx.awx.token:
         description: "Controller auth token"
@@ -270,7 +296,7 @@
       ansible.builtin.slurp:
         src: "{{ aws_pvt_key }}"
       register: __aws_ssh_key
-      # no_log: true
+      no_log: true
       tags:
         - configure-controller
         - controller-credentials
@@ -640,7 +666,7 @@
         - controller-users
 
     - name: Give users access to job templates
-      tower_role:
+      awx.awx.role:
         user: "{{ item.user }}"
         role: "{{ item.role }}"
         job_template: "{{ item.job_template }}"
