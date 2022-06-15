@@ -98,7 +98,7 @@ pipeline {
             }
         }
         
-        // Create a release and deploy instances with Tower
+        // Create a release and deploy instances with controller
         stage (&apos;Controller - Publish and Cloud&apos;) {
             parallel {
                 stage(&apos;Controller - Create Release&apos;) {
