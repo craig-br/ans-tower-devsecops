@@ -23,6 +23,7 @@
       tags:
         function: "{{ ec2_webserver_tag }}"
         project: "{{ ec2_project_tag }}"
+        owner: "{{ ec2_owner_tag }}"
       wait_timeout: 500
     register: ec2
     until: ec2 is not failed
