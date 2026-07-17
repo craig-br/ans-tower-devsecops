@@ -3,10 +3,9 @@
   hosts: localhost
   connection: local
   gather_facts: false
-
   tasks:
-  - name: Deploy Web Servers
-    ec2:
+    - name: Deploy Web Servers
+      ec2:
         key_name: "{{ ec2_keyname }}"
         group: "{{ ec2_sg_name }}"
         instance_type: "{{ ec2_instance_type }}"
@@ -20,11 +19,11 @@
           Name: ec2_devsecops
           function: "{{ ec2_webserver_tag }}"
         wait_timeout: 500
-    register: ec2
+      register: ec2
 
-  - name: Wait for SSH to come up
-    wait_for:
-      host: "{{ item.public_ip }}"
-      port: 22
-      state: started 
-    loop: "{{ ec2.instances }}"
+    - name: Wait for SSH to come up
+      ansible.builtin.wait_for:
+        host: "{{ item.public_ip }}"
+        port: 22
+        state: started
+      loop: "{{ ec2.instances }}"

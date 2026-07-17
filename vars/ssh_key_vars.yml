@@ -1,2 +1,3 @@
-ssh_key_username: "Your key username"
-ssh_key_file: "Location of your public key file"
+---
+ssh_key_username: Your key username
+ssh_key_file: Location of your public key file

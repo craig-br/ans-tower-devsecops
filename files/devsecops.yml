@@ -1,5 +1,6 @@
+---
 application:
-  name: 'Juice Shop'
+  name: Juice Shop
   showChallengeSolvedNotifications: false
   showChallengeHints: false
   gitHubRibbon: false
