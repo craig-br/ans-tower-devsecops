@@ -1,13 +1,12 @@
 ---
 - name: Remove EC2 Security Group
   hosts: localhost
+  become: false
   connection: local
   gather_facts: false
-  become: false
-
   tasks:
-  - name: Remove {{ ec2_sg_name }} security group
-    ec2_group:
-      name: "{{ ec2_sg_name }}"
-      region: "{{ ec2_region }}"
-      state: absent
+    - name: Remove {{ ec2_sg_name }} security group
+      ec2_group:
+        name: "{{ ec2_sg_name }}"
+        region: "{{ ec2_region }}"
+        state: absent

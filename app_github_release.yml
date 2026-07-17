@@ -1,26 +1,24 @@
 ---
 - name: Push Build to GitHub
   hosts: all
-  gather_facts: false
   tags:
     - github-release
-
+  gather_facts: false
   tasks:
-  - name: Create Facts Release Version
-    set_fact:
-      pkg_version: "{{ pkg_version }}"
-      new_pkg_version: "{{ tag_name }}"
-      cacheable: true
+    - name: Create Facts Release Version
+      ansible.builtin.set_fact:
+        pkg_version: "{{ pkg_version }}"
+        new_pkg_version: "{{ tag_name }}"
+        cacheable: true
 
-  - name: Create new JuiceShop Release
-    uri:
-      url: https://api.github.com/repos/craig-br/juice-shop/releases
-      method: POST
-      headers:
-        Authorization: "token {{ github_token }}"
-      body_format: json
-      body:
-        '{"target_commitish": "{{ target_commitish }}",  "name": "{{ release_name }}", "draft": {{ draft }}, "prerelease": {{ prerelease }}, "accept": "{{ accept }}", "tag_name": "{{ tag_name }}"}'
-      status_code: 201
-    tags:
-      - create-release
+    - name: Create new JuiceShop Release
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/craig-br/juice-shop/releases
+        method: POST
+        headers:
+          Authorization: token {{ github_token }}
+        body_format: json
+        body: '{"target_commitish": "{{ target_commitish }}",  "name": "{{ release_name }}", "draft": {{ draft }}, "prerelease": {{ prerelease }}, "accept": "{{ accept }}", "tag_name": "{{ tag_name }}"}'
+        status_code: 201
+      tags:
+        - create-release

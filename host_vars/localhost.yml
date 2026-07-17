@@ -1,4 +1,4 @@
---- 
+---
 ##
 # Tower Vars
 ##
@@ -6,72 +6,61 @@ tower_host: vagrant.tower-rhel.local
 tower_username: admin
 tower_admin_password: admin
 tower_organization: JuiceShop
-tower_license: "location of tower license file"
-tower_config_file: "location of tower config file"
-
+tower_license: location of tower license file
+tower_config_file: location of tower config file
 #F5 Credentials
-f5_user: "Your F5 username"
-f5_password: "Your F5 Password"
-
+f5_user: Your F5 username
+f5_password: Your F5 Password
 #AWS Credentials
-aws_pvt_key: '$HOME/.ssh/"Your AWS Private Key"'
-aws_username: "Your AWS Username"
-aws_password: "Your AWS Password"
-
+aws_pvt_key: $HOME/.ssh/"Your AWS Private Key"
+aws_username: Your AWS Username
+aws_password: Your AWS Password
 #GitHub Credentials
-github_pvt_key: '$HOME/.ssh/"Your GitHub Private Key"'
+github_pvt_key: $HOME/.ssh/"Your GitHub Private Key"
 github_scm_url: https://github.com/craig-br/ans-tower-devsecops.git
-
 #Local SSH Credentials
-ssh_key_username: "Your key username"
-ssh_key_file: "Location of your public key file"
-
+ssh_key_username: Your key username
+ssh_key_file: Location of your public key file
 #Tower Settings
-pri_galaxy_token: "Your Automation Hub Token"
+pri_galaxy_token: Your Automation Hub Token
 pri_galaxy_url: https://cloud.redhat.com/api/automation-hub/
 pri_galaxy_auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-
 ##
 # RHSM Vars
 # https://github.com/openstack/ansible-role-redhat-subscription
 ##
 rhsm_vars:
-  rhsm_pool_ids: "rhsm poolid. Use Vault"
-  rhsm_username: "rhsm username. Use Vault"
-  rhsm_password: "Your RHSM Password. Use Vault"
+  rhsm_pool_ids: rhsm poolid. Use Vault
+  rhsm_username: rhsm username. Use Vault
+  rhsm_password: Your RHSM Password. Use Vault
   rhsm_repos_purge: false
   rhsm_repos:
     - rhel-7-server-rpms
     - rhel-7-server-extras-rpms
     - rhel-7-server-ansible-2.9-rpms
-
 ##
 # ec2 vars
 ##
 ec2_vars:
-  ec2_sg_name: "Security group name"
-  ec2_region: "EC2 Region"
-  ec2_f5_tag: "Firewall tag"
-  ec2_webserver_tag: "EC2 Web Server tag"
-  ec2_f5_state: "Is F5 present on EC2?"
+  ec2_sg_name: Security group name
+  ec2_region: EC2 Region
+  ec2_f5_tag: Firewall tag
+  ec2_webserver_tag: EC2 Web Server tag
+  ec2_f5_state: Is F5 present on EC2?
   f5_validate_certs: false
-  f5_user: "F5 user"
-  f5_password: "F5 password"
-  ec2_state: "ec2 default state"
-  ec2_keyname: "ec2 ssh keyname"
+  f5_user: F5 user
+  f5_password: F5 password
+  ec2_state: ec2 default state
+  ec2_keyname: ec2 ssh keyname
   ec2_instance_type: m5.large
   ec2_ami: ami-7c491f05
-  ec2_count: 3  
+  ec2_count: 3
   base_packages:
     - gcc
     - make
-  node_app_dir: "/usr/local/juice-shop_8.6.2/"
+  node_app_dir: /usr/local/juice-shop_8.6.2/
   app_rel_uri: https://github.com/bkimminich/juice-shop/releases/download/v8.6.2/juice-shop-8.6.2_node10_linux_x64.tgz
   app_custom_config: https://raw.githubusercontent.com/craig-br/ans-tower-devsecops/development/files/devsecops.yml
-  
-
-
-
 github_release_vars:
   tag_name: v8.6.2
   target_commitish: master
@@ -80,12 +69,10 @@ github_release_vars:
   draft: false
   prerelease: false
   accept: application/vnd.github.v3+json
-  github_token: "your github token"
-
+  github_token: your github token
 ##
 #Tower Deploy Vars
 ##
-
 #Tower On-Prem Inventory vars
 on_prem_inv_vars:
   - name: tower
@@ -98,7 +85,6 @@ on_prem_inv_vars:
     variables:
       ansible_host: localhost
       ansible_connection: local
-
 onprem_inv_group_vars:
   # - name: ciservers
   #   description: Continious Integration Servers
@@ -108,27 +94,24 @@ onprem_inv_group_vars:
     description: Tower Servers
     hosts:
       - tower
-
-    
 # Tower Users
 tower_user_vars:
   - user: jenkins
     role: execute
-    job_template: "Deploy JuiceShop App"
+    job_template: Deploy JuiceShop App
     state: present
   - user: jenkins
     role: execute
-    job_template: "Create JuiceShop App VS"
+    job_template: Create JuiceShop App VS
     state: present
   - user: jenkins
     role: execute
-    job_template: "Secure JuiceShop App"
+    job_template: Secure JuiceShop App
     state: present
   - user: jenkins
     role: execute
-    job_template: "GitHub Release"
+    job_template: GitHub Release
     state: present
-
 # Tower Job Templates:
 job_template_vars:
   - name: RHSM Subscribe
@@ -180,7 +163,6 @@ job_template_vars:
     use_fact_cache: true
     verbosity: 1
     inventory: On Prem Inventory
-
   - name: Deploy JuiceShop App
     playbook: app_ec2_deploy.yml
     description: Deploy JuiceShop App
@@ -213,7 +195,6 @@ job_template_vars:
     inventory: On Prem Inventory
     limit: adminservers
     ask_variables_on_launch: true
-
 #Workflow Vars
 workflow_cloud_inst_vars:
   # - name: RHSM Subscribe

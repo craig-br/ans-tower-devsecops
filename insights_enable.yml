@@ -5,13 +5,16 @@
   gather_facts: false
   tasks:
     - name: Install Insights client
-      package:
+      ansible.builtin.package:
         state: present
         name: insights-client
       tags:
         - insights
+
     - name: Register Guest with Insights
-      command: >
-        insights-client --register
+      ansible.builtin.command:
+        cmd: >
+          insights-client --register
+      changed_when: false
       tags:
-        - insights 
+        - insights

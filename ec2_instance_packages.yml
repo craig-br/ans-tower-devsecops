@@ -2,26 +2,26 @@
 - name: Install packages on RHEL guests
   hosts: all
   gather_facts: false
-  
   tasks:
     - name: Install additional packages
-      package:
+      ansible.builtin.package:
         name: "{{ base_packages + group_packages | default([]) }}"
         state: present
       tags:
         - packages
-   
+
     - name: Check if guest needs reboot
-      shell: needs-restarting -r
-      register: restart_required
+      ansible.builtin.command:
+        cmd: needs-restarting -r
       changed_when: false
       failed_when: false
+      register: restart_required
       tags:
         - packages
         - reboot
 
     - name: Reboot guest
-      reboot:
+      ansible.builtin.reboot:
         reboot_timeout: 180
       when: restart_required.rc == 1
       tags:

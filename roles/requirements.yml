@@ -1,19 +1,24 @@
 ---
-- name: geerlingguy.git
+- name: Geerlingguy.git
   src: https://github.com/geerlingguy/ansible-role-git.git
   scm: git
-- name: geerlingguy.ansible
+
+- name: Geerlingguy.ansible
   src: https://github.com/geerlingguy/ansible-role-ansible.git
   scm: git
-- name: geerlingguy.java
+
+- name: Geerlingguy.java
   src: https://github.com/geerlingguy/ansible-role-java.git
   scm: git
-- name: openstack.redhat-subscription
+
+- name: Openstack.redhat-subscription
   src: https://github.com/openstack/ansible-role-redhat-subscription.git
   scm: git
-- name: geerlingguy.repo-epel
+
+- name: Geerlingguy.repo-epel
   src: https://github.com/geerlingguy/ansible-role-repo-epel.git
   scm: git
-- name: geerlingguy.nodejs
+
+- name: Geerlingguy.nodejs
   src: https://github.com/geerlingguy/ansible-role-nodejs.git
   scm: git
