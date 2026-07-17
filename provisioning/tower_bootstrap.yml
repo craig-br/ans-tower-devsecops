@@ -4,10 +4,8 @@
   hosts: adminservers
   become: true
   gather_facts: true
-
   collections:
     - ansible.community
-
   tasks:
     - name: Subscribe RHSM
       redhat_subscription:
@@ -19,6 +17,7 @@
       when: ansible_distribution == "RedHat"
       tags:
         - tower-rhsm
+
     - name: Add DevSecOps Demo SSH key
       authorized_key:
         user: "{{ demo_ssh_key_username }}"

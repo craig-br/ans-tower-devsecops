@@ -50,7 +50,6 @@ job_template_vars:
     use_fact_cache: true
     verbosity: 1
     inventory: On Prem Inventory
-
   - name: Deploy JuiceShop App
     playbook: app_ec2_deploy.yml
     description: Deploy JuiceShop App
@@ -82,7 +81,6 @@ job_template_vars:
     inventory: On Prem Inventory
     limit: adminservers
     ask_variables_on_launch: true
-
 #Workflow Vars
 workflow_cloud_inst_vars:
   - name: RHSM Registration
